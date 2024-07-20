@@ -3,7 +3,7 @@ package com.sparta.mypet.domain.post.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sparta.mypet.common.Timestamped;
+import com.sparta.mypet.common.entity.Timestamped;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.comment.entity.Comment;
 import com.sparta.mypet.domain.like.entity.Like;

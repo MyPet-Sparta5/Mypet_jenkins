@@ -1,6 +1,6 @@
 package com.sparta.mypet.domain.auth.entity;
 
-import com.sparta.mypet.common.Timestamped;
+import com.sparta.mypet.common.entity.Timestamped;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
