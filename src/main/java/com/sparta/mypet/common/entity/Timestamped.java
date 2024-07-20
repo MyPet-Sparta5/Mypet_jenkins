@@ -1,4 +1,4 @@
-package com.sparta.mypet.common;
+package com.sparta.mypet.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

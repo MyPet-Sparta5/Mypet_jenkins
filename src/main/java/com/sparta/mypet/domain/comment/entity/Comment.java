@@ -1,6 +1,6 @@
 package com.sparta.mypet.domain.comment.entity;
 
-import com.sparta.mypet.common.Timestamped;
+import com.sparta.mypet.common.entity.Timestamped;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.post.entity.Post;
 
