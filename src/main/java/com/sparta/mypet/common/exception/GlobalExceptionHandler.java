@@ -5,13 +5,18 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.sparta.mypet.common.dto.MessageResponseDto;
+import com.sparta.mypet.common.entity.GlobalMessage;
+import com.sparta.mypet.common.exception.auth.PasswordInvalidException;
+import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
 import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;
 
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
 	/**
@@ -50,8 +55,25 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<MessageResponseDto> illegalArgumentExceptionHandler(IllegalArgumentException e) {
 
-		String errorMessage = "Exception caught: " + e.getMessage();
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.badRequest(errorMessage);
 	}
+
+	@ExceptionHandler(UserEmailDuplicateException.class)
+	public ResponseEntity<MessageResponseDto> userEmailDuplicateExceptionHandler(UserEmailDuplicateException e) {
+
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.conflictError(errorMessage);
+	}
+
+	@ExceptionHandler(PasswordInvalidException.class)
+	public ResponseEntity<MessageResponseDto> passwordInvalidExceptionHandler(PasswordInvalidException e) {
+
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.authorizedError(errorMessage);
+	}
+
 }
