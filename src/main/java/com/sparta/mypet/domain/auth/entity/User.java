@@ -25,16 +25,16 @@ public class User extends Timestamped {
 	@Column(name = "user_id")
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String email;
 
 	@Column(nullable = false)
 	private String password;
 
-	@Column(name = "username", nullable = false)
-	private String userName;
-
 	@Column(nullable = false)
+	private String nickname;
+
+	@Column(name = "penalty_count", nullable = false)
 	private Integer penaltyCount;
 
 	@Column
@@ -42,20 +42,20 @@ public class User extends Timestamped {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private UserRoleEnum role;
+	private UserRole role;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private UserStatusEnum status;
+	private UserStatus status;
 
 	@Builder
-	public User(String email, String password, String userName, Integer penaltyCount, UserRoleEnum role, UserStatusEnum status) {
+	public User(String email, String password, String nickname, Integer penaltyCount, UserRole role,
+		UserStatus status) {
 		this.email = email;
 		this.password = password;
-		this.userName = userName;
+		this.nickname = nickname;
 		this.penaltyCount = penaltyCount;
 		this.role = role;
 		this.status = status;
 	}
-
 }
