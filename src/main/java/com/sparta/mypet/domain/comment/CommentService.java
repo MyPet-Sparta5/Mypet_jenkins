@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
+import com.sparta.mypet.common.exception.CommentNotFoundException;
 import com.sparta.mypet.common.exception.PostNotFoundException;
 import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.entity.User;
@@ -30,12 +31,12 @@ public class CommentService {
 
 	@Transactional
 	public CommentResponseDto createComment(String email, Long postId, CommentRequestDto requestDto) {
-		User user = getUserByEmail(email);
 
-		Post post = getPostById(postId);
+		User user = findUserByEmail(email);
+
+		Post post = findPostById(postId);
 
 		Comment comment = createAndSaveComment(user, post, requestDto.getContent());
-
 		post.addComment(comment);
 
 		return new CommentResponseDto(comment);
@@ -47,12 +48,26 @@ public class CommentService {
 		return commentList.stream().map(CommentResponseDto::new).toList();
 	}
 
-	private User getUserByEmail(String email) { // request to user service
+	public void deleteComment(String email, Long commentId) {
+
+		User user = findUserByEmail(email);
+
+		Comment comment = commentRepository.findById(commentId)
+			.orElseThrow(() -> new CommentNotFoundException(GlobalMessage.COMMENT_NOT_FOUND.getMessage()));
+
+		if (!comment.getUser().getId().equals(user.getId())) {
+			throw new IllegalArgumentException(GlobalMessage.NOT_COMMENT_OWNER.getMessage());
+		}
+
+		commentRepository.delete(comment);
+	}
+
+	private User findUserByEmail(String email) { // request to user service
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage()));
 	}
 
-	private Post getPostById(Long postId) { // request to post service
+	private Post findPostById(Long postId) { // request to post service
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
 	}

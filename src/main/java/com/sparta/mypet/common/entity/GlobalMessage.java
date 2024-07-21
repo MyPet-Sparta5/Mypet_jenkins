@@ -26,7 +26,11 @@ public enum GlobalMessage {
 	PASSWORD_INVALID("비밀번호가 일치하지 않습니다."),
 
 	// Post
-	POST_NOT_FOUND("존재하지 않는 게시물입니다.");
+	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
+
+	// Comment
+	COMMENT_NOT_FOUND("존재하지 않는 댓글입니다."),
+	NOT_COMMENT_OWNER("댓글 작성자가 아닙니다.");
 
 
 	// Valid
