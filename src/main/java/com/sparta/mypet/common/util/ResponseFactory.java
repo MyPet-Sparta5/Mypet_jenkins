@@ -95,7 +95,7 @@ public class ResponseFactory {
 	 *
 	 * @return ResponseEntity 객체
 	 */
-	public static ResponseEntity<Null> noContent() {
+	public static ResponseEntity<Void> noContent() {
 		return ResponseEntity.status(STATUS_NO_CONTENT).build();
 	}
 
