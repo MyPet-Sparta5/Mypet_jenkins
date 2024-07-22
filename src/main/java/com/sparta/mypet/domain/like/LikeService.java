@@ -27,11 +27,27 @@ public class LikeService {
 	@Transactional
 	public void likePost(String email, Long postId) {
 		User user = findUserByEmail(email);
-
 		Post post = findPostById(postId);
+
+		if (likeRepository.existsByUserAndPost(user, post)) {
+			throw new IllegalStateException(GlobalMessage.LIKE_ALREADY_EXISTS.getMessage());
+		}
 
 		Like like = createAndSaveLike(user, post);
 		post.addLike(like);
+	}
+
+	@Transactional
+	public void removePostLike(String email, Long postId) {
+		User user = findUserByEmail(email);
+
+		Post post = findPostById(postId);
+
+		Like like = likeRepository.findByUserAndPost(user, post)
+			.orElseThrow(() -> new IllegalArgumentException(GlobalMessage.LIKE_NOT_FOUND.getMessage()));
+
+		post.removeLike(like);
+		likeRepository.delete(like);
 	}
 
 	private User findUserByEmail(String email) { // request to user service
@@ -48,5 +64,4 @@ public class LikeService {
 		Like like = Like.builder().user(user).post(post).build();
 		return likeRepository.save(like);
 	}
-
 }
