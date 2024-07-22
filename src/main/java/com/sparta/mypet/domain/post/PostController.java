@@ -3,6 +3,7 @@ package com.sparta.mypet.domain.post;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,6 +39,13 @@ public class PostController {
 		@Valid @RequestBody PostRequestDto requestDto, @PathVariable Long postId) {
 		PostResponseDto responseDto = postService.updatePost(userDetails.getUsername(), requestDto, postId);
 		return ResponseFactory.ok(responseDto, "게시물 수정 성공");
+	}
+
+	@DeleteMapping("/{postId}")
+	public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long postId) {
+		postService.deletePost(userDetails.getUsername(), postId);
+		return ResponseFactory.noContent();
 	}
 
 }
