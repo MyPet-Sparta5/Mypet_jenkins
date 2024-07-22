@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class PostService {
 
 	private final PostRepository postRepository;
-
 	private final UserRepository userRepository;
 
 	@Transactional
@@ -75,6 +74,19 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
+	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy) {
+		// 정렬 기준 - 최신순, 좋아요 수
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		if (sortBy.equals("likes")) {
+			sort = Sort.by(Sort.Direction.DESC, "likeCount");
+		}
+		Pageable pageable = PageRequest.of(page, pageSize, sort);
+		Page<Post> postList = postRepository.findAll(pageable);
+
+		return postList.map(PostResponseDto::new);
+	}
+
+
 	private void checkUser(Post post, User user) {
 		if (!post.getId().equals(user.getId())) {
 			throw new UserMisMatchException(GlobalMessage.NOT_POST_OWNER.getMessage());
@@ -90,4 +102,5 @@ public class PostService {
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
 	}
+
 }
