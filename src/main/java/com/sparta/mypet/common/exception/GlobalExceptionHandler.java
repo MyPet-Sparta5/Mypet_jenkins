@@ -15,9 +15,8 @@ import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
 import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -86,6 +85,13 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(PostNotFoundException.class)
 	public ResponseEntity<MessageResponseDto> handlePostNotFoundException(PostNotFoundException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.notFound(errorMessage);
+	}
+
+	@ExceptionHandler(UserMisMatchException.class)
+	public ResponseEntity<MessageResponseDto> userMisMatchException(UserMisMatchException e) {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.notFound(errorMessage);

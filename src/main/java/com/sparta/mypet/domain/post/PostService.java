@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
+import com.sparta.mypet.common.exception.PostNotFoundException;
+import com.sparta.mypet.common.exception.UserMisMatchException;
 import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
@@ -23,17 +25,27 @@ public class PostService {
 	private final UserRepository userRepository;
 
 	@Transactional
-	public PostResponseDto createPost(String email, PostRequestDto requestDto, Category category) {
+	public PostResponseDto createPost(String email, PostRequestDto requestDto, String category) {
 		User user = getUserByEmail(email);
 
 		Category postCategory = Category.FREEDOM;
 
-		if (category.equals(Category.BOAST)) {
+		if (category.equals("BOAST")) {
 			postCategory = Category.BOAST;
 		}
 
 		Post post = createAndSavePost(user, requestDto.getTitle(), requestDto.getContent(), postCategory);
 
+		return new PostResponseDto(post);
+	}
+
+	public PostResponseDto updatePost(String email, PostRequestDto requestDto, Long postId) {
+		User user = getUserByEmail(email);
+		Post post = getPostById(postId);
+
+		checkUser(post, user);
+
+		post.updatePost(requestDto);
 		return new PostResponseDto(post);
 	}
 
@@ -48,8 +60,20 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
+	private void checkUser(Post post, User user) {
+		if (!post.getId().equals(user.getId())) {
+			throw new UserMisMatchException(GlobalMessage.NOT_POST_OWNER.getMessage());
+		}
+	}
+
 	private User getUserByEmail(String email) { // request to user service
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage()));
 	}
+
+	public Post getPostById(Long postId) { // request to post service
+		return postRepository.findById(postId)
+			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
+	}
+
 }

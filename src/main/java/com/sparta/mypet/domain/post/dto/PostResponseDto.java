@@ -2,20 +2,14 @@ package com.sparta.mypet.domain.post.dto;
 
 import com.sparta.mypet.domain.post.entity.Post;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class PostResponseDto {
 
-	private Long id;
-	private String title;
-	private String content;
+	private final Long id;
+	private final String title;
+	private final String content;
 
 	public PostResponseDto(Post post) {
 		this.id = post.getId();
