@@ -66,7 +66,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 	}
 
 	@Override
-	protected boolean shouldNotFilter(@NonNull HttpServletRequest request) throws ServletException {
+	protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
 		return jwtService.isAuthorizationHeaderNotFound(request);
 	}
 
