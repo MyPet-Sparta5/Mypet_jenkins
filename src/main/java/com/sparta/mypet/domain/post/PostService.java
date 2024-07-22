@@ -85,6 +85,13 @@ public class PostService {
 		return postList.map(PostResponseDto::new);
 	}
 
+	@Transactional(readOnly = true)
+	public PostResponseDto getPost(Long postId) {
+		Post post = getPostById(postId);
+
+		return new PostResponseDto(post);
+	}
+
 	private void checkUser(Post post, User user) {
 		if (!post.getId().equals(user.getId())) {
 			throw new UserMisMatchException(GlobalMessage.NOT_POST_OWNER.getMessage());

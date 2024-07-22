@@ -59,4 +59,9 @@ public class PostController {
 		return ResponseFactory.ok(responseDtoList, "게시물 전체 조회 성공");
 	}
 
+	@GetMapping("/{postId}")
+	public ResponseEntity<DataResponseDto<PostResponseDto>> getPost(@PathVariable Long postId) {
+		PostResponseDto responseDto = postService.getPost(postId);
+		return ResponseFactory.ok(responseDto, "게시물 단건 조회 성공");
+	}
 }
