@@ -99,4 +99,10 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 
+	@ExceptionHandler(UserMisMatchException.class)
+	public ResponseEntity<String> userMisMatchException(DataNotFoundException ex) {
+		log.error("{}", ex.getMessage());
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+	}
+
 }

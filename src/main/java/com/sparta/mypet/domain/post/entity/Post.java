@@ -7,10 +7,13 @@ import com.sparta.mypet.common.entity.Timestamped;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.comment.entity.Comment;
 import com.sparta.mypet.domain.like.entity.Like;
+import com.sparta.mypet.domain.post.dto.PostRequestDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,8 +43,9 @@ public class Post extends Timestamped {
 	@Column(nullable = false)
 	private String postContent;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String category;
+	private Category category;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false)
@@ -60,12 +64,17 @@ public class Post extends Timestamped {
 	private final List<File> files = new ArrayList<>();
 
 	@Builder
-	public Post(String postContent, String postTitle, String category, User user, Long likeCount) {
+	public Post(String postContent, String postTitle, Category category, User user, Long likeCount) {
 		this.postContent = postContent;
 		this.postTitle = postTitle;
 		this.category = category;
 		this.user = user;
 		this.likeCount = likeCount;
+	}
+
+	public void updatePost(PostRequestDto requestDto){
+		this.postTitle = requestDto.getTitle();
+		this.postContent = requestDto.getContent();
 	}
 
 	public void addComment(Comment comment){
@@ -76,6 +85,7 @@ public class Post extends Timestamped {
 		this.likes.add(like);
 		likeCount++;
 	}
+
 
 	public void removeLike(Like like){
 		this.likes.remove(like);
