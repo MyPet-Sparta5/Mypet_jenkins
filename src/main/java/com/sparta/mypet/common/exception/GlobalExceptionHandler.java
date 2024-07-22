@@ -93,10 +93,4 @@ public class GlobalExceptionHandler {
 		return ResponseFactory.notFound(errorMessage);
 	}
 
-	@ExceptionHandler(DataNotFoundException.class)
-	public ResponseEntity<String> dataNotFoundException(DataNotFoundException ex) {
-		log.error("{}", ex.getMessage());
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-	}
-
 }
