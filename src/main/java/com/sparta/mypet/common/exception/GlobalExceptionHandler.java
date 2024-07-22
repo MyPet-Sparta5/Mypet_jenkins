@@ -2,7 +2,6 @@ package com.sparta.mypet.common.exception;
 
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,10 +15,8 @@ import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
 import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.constraints.Size;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -93,16 +90,12 @@ public class GlobalExceptionHandler {
 		return ResponseFactory.notFound(errorMessage);
 	}
 
-	@ExceptionHandler(DataNotFoundException.class)
-	public ResponseEntity<String> dataNotFoundException(DataNotFoundException ex) {
-		log.error("{}", ex.getMessage());
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-	}
-
+	// 이부분 사실 이해 못함.,,
 	@ExceptionHandler(UserMisMatchException.class)
-	public ResponseEntity<String> userMisMatchException(DataNotFoundException ex) {
-		log.error("{}", ex.getMessage());
-		return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+	public ResponseEntity<MessageResponseDto> userMisMatchException(UserMisMatchException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.notFound(errorMessage);
 	}
 
 }
