@@ -41,7 +41,7 @@ public class Post extends Timestamped {
 	private String postContent;
 
 	@Column(nullable = false)
-	private String category;
+	private Category category;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false)
@@ -60,7 +60,7 @@ public class Post extends Timestamped {
 	private final List<File> files = new ArrayList<>();
 
 	@Builder
-	public Post(String postContent, String postTitle, String category, User user, Long likeCount) {
+	public Post(String postContent, String postTitle, Category category, User user, Long likeCount) {
 		this.postContent = postContent;
 		this.postTitle = postTitle;
 		this.category = category;

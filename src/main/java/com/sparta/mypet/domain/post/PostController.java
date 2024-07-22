@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
+import com.sparta.mypet.domain.post.entity.Category;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class PostController {
 
 	@PostMapping
 	public ResponseEntity<DataResponseDto<PostResponseDto>> createPost(@AuthenticationPrincipal UserDetails userDetails,
-		@Valid @RequestBody PostRequestDto requestDto, @RequestParam("category") String category) {
+		@Valid @RequestBody PostRequestDto requestDto, @RequestParam("category") Category category) {
 		PostResponseDto responseDto = postService.createPost(userDetails.getUsername(), requestDto, category);
 		DataResponseDto<PostResponseDto> response = new DataResponseDto<>(200, "게시물 생성 성공", responseDto);
 		return new ResponseEntity<>(response, HttpStatus.CREATED);

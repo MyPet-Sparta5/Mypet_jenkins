@@ -23,7 +23,7 @@ public class PostService {
 	private final UserRepository userRepository;
 
 	@Transactional
-	public PostResponseDto createPost(String email, PostRequestDto requestDto, String category) {
+	public PostResponseDto createPost(String email, PostRequestDto requestDto, Category category) {
 		User user = getUserByEmail(email);
 
 		Category postCategory = Category.FREEDOM;
