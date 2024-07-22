@@ -16,6 +16,7 @@ import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;
 
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -84,6 +85,13 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(PostNotFoundException.class)
 	public ResponseEntity<MessageResponseDto> handlePostNotFoundException(PostNotFoundException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.notFound(errorMessage);
+	}
+
+	@ExceptionHandler(UserMisMatchException.class)
+	public ResponseEntity<MessageResponseDto> userMisMatchException(UserMisMatchException e) {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.notFound(errorMessage);

@@ -28,6 +28,7 @@ public enum GlobalMessage {
 
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
+	NOT_POST_OWNER("게시물 작성자가 아닙니다."),
 
 	// Comment
 	COMMENT_NOT_FOUND("존재하지 않는 댓글입니다."),
