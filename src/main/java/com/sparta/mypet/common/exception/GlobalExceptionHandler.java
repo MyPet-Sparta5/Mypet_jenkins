@@ -2,7 +2,6 @@ package com.sparta.mypet.common.exception;
 
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,7 +15,6 @@ import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
 import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.constraints.Size;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

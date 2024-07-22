@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.common.exception.DataNotFoundException;
 import com.sparta.mypet.common.exception.auth.PasswordInvalidException;
 import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
