@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class PostService {
 
 	private final PostRepository postRepository;
-
 	private final UserRepository userRepository;
 
 	@Transactional
@@ -85,7 +84,6 @@ public class PostService {
 
 		return postList.map(PostResponseDto::new);
 	}
-
 
 	private void checkUser(Post post, User user) {
 		if (!post.getId().equals(user.getId())) {
