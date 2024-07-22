@@ -49,6 +49,15 @@ public class PostService {
 		return new PostResponseDto(post);
 	}
 
+	public void deletePost(String email, Long postId) {
+		User user = getUserByEmail(email);
+		Post post = getPostById(postId);
+
+		checkUser(post, user);
+
+		postRepository.delete(post);
+	}
+
 	private Post createAndSavePost(User user, String title, String content, Category postCategory) {
 		Post post = Post.builder()
 			.user(user)
@@ -75,5 +84,4 @@ public class PostService {
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
 	}
-
 }
