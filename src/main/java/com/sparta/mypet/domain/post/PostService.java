@@ -62,7 +62,7 @@ public class PostService {
 
 	private void checkUser(Post post, User user) {
 		if (!post.getId().equals(user.getId())) {
-			throw new UserMisMatchException("게시물은 작성자만 접근 가능합니다.");
+			throw new UserMisMatchException(GlobalMessage.NOT_POST_OWNER.getMessage());
 		}
 	}
 
