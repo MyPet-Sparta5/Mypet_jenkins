@@ -2,6 +2,8 @@ package com.sparta.mypet.domain.comment;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.CommentNotFoundException;
 import com.sparta.mypet.common.exception.PostNotFoundException;
+import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.entity.User;
+import com.sparta.mypet.domain.comment.dto.CommentPageResponse;
 import com.sparta.mypet.domain.comment.dto.CommentRequestDto;
 import com.sparta.mypet.domain.comment.dto.CommentResponseDto;
 import com.sparta.mypet.domain.comment.entity.Comment;
@@ -42,10 +46,22 @@ public class CommentService {
 		return new CommentResponseDto(comment);
 	}
 
-	public List<CommentResponseDto> getComments(Long postId) {
+	public CommentPageResponse getComments(Long postId, int page, int pageSize, String sortBy) {
 
-		List<Comment> commentList = commentRepository.findAllByPostId(postId);
-		return commentList.stream().map(CommentResponseDto::new).toList();
+		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
+
+		Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
+
+		List<CommentResponseDto> responseDtoList = commentPage.getContent()
+			.stream()
+			.map(CommentResponseDto::new)
+			.toList();
+
+		CommentPageResponse.PageInfo pageInfo = new CommentPageResponse.PageInfo(pageable.getPageNumber(),
+			pageable.getPageSize(), commentPage.getTotalPages(), commentPage.getTotalElements(), commentPage.hasNext(),
+			pageable.hasPrevious());
+
+		return new CommentPageResponse(responseDtoList, pageInfo);
 	}
 
 	public void deleteComment(String email, Long commentId) {
