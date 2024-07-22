@@ -76,10 +76,7 @@ public class PostService {
 
 	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy) {
 		// 정렬 기준 - 최신순, 좋아요 수
-		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-		if (sortBy.equals("likes")) {
-			sort = Sort.by(Sort.Direction.DESC, "likeCount");
-		}
+		Sort sort = Sort.by(Sort.Direction.DESC, sortBy);
 		Pageable pageable = PageRequest.of(page, pageSize, sort);
 		Page<Post> postList = postRepository.findAll(pageable);
 
