@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,6 +40,13 @@ public class CommentController {
 	public ResponseEntity<DataResponseDto<List<CommentResponseDto>>> getComments(@PathVariable Long postId) {
 		List<CommentResponseDto> commentResponseDtoList = commentService.getComments(postId);
 		return ResponseFactory.ok(commentResponseDtoList, null);
+	}
+
+	@DeleteMapping("/comments/{commentId}")
+	public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long commentId) {
+		commentService.deleteComment(userDetails.getUsername(), commentId);
+		return ResponseFactory.noContent();
 	}
 
 }
