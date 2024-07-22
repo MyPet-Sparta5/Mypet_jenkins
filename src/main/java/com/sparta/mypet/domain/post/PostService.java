@@ -1,5 +1,9 @@
 package com.sparta.mypet.domain.post;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 public class PostService {
 
 	private final PostRepository postRepository;
-
 	private final UserRepository userRepository;
 
 	@Transactional
@@ -71,6 +74,17 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
+	@Transactional(readOnly = true)
+	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy) {
+		// 정렬 기준 - 최신순, 좋아요 수
+		Sort sort = getSortBy(sortBy);
+
+		Pageable pageable = PageRequest.of(page, pageSize, sort);
+		Page<Post> postList = postRepository.findAll(pageable);
+
+		return postList.map(PostResponseDto::new);
+	}
+
 	private void checkUser(Post post, User user) {
 		if (!post.getId().equals(user.getId())) {
 			throw new UserMisMatchException(GlobalMessage.NOT_POST_OWNER.getMessage());
@@ -86,4 +100,13 @@ public class PostService {
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
 	}
+
+	private Sort getSortBy(String sortBy) {
+		if ("like".equals(sortBy)) {
+			return Sort.by("like").descending();
+		} else {
+			return Sort.by("createdAt").descending();
+		}
+	}
+
 }

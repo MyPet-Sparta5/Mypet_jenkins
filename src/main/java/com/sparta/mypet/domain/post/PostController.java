@@ -1,9 +1,11 @@
 package com.sparta.mypet.domain.post;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,6 +48,15 @@ public class PostController {
 		@PathVariable Long postId) {
 		postService.deletePost(userDetails.getUsername(), postId);
 		return ResponseFactory.noContent();
+	}
+
+	@GetMapping
+	public ResponseEntity<DataResponseDto<Page<PostResponseDto>>> getPosts(
+		@RequestParam(value = "page", defaultValue = "1") int page,
+		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+		@RequestParam(defaultValue = "createdAt") String sortBy) {
+		Page<PostResponseDto> responseDtoList = postService.getPosts(page - 1, pageSize, sortBy);
+		return ResponseFactory.ok(responseDtoList, "게시물 전체 조회 성공");
 	}
 
 }

@@ -12,11 +12,13 @@ public class PostResponseDto {
 	private final String title;
 	private final String content;
 	private final Category category;
+	private final Long likeCount;
 
 	public PostResponseDto(Post post) {
 		this.id = post.getId();
 		this.title = post.getPostTitle();
 		this.content = post.getPostContent();
 		this.category = post.getCategory();
+		this.likeCount = post.getLikeCount();
 	}
 }
