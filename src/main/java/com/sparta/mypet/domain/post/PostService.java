@@ -39,6 +39,7 @@ public class PostService {
 		return new PostResponseDto(post);
 	}
 
+	@Transactional
 	public PostResponseDto updatePost(String email, PostRequestDto requestDto, Long postId) {
 		User user = getUserByEmail(email);
 		Post post = getPostById(postId);
@@ -49,6 +50,7 @@ public class PostService {
 		return new PostResponseDto(post);
 	}
 
+	@Transactional
 	public void deletePost(String email, Long postId) {
 		User user = getUserByEmail(email);
 		Post post = getPostById(postId);
