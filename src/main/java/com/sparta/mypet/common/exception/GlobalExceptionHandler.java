@@ -90,7 +90,6 @@ public class GlobalExceptionHandler {
 		return ResponseFactory.notFound(errorMessage);
 	}
 
-	// 이부분 사실 이해 못함.,,
 	@ExceptionHandler(UserMisMatchException.class)
 	public ResponseEntity<MessageResponseDto> userMisMatchException(UserMisMatchException e) {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
