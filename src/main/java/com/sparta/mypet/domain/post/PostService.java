@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.common.exception.DataNotFoundException;
 import com.sparta.mypet.common.exception.PostNotFoundException;
 import com.sparta.mypet.common.exception.UserMisMatchException;
 import com.sparta.mypet.domain.auth.UserRepository;
@@ -31,7 +30,7 @@ public class PostService {
 
 		Category postCategory = Category.FREEDOM;
 
-		if (category.equals(Category.BOAST)) {
+		if (category.equals("BOAST")) {
 			postCategory = Category.BOAST;
 		}
 
@@ -39,7 +38,6 @@ public class PostService {
 
 		return new PostResponseDto(post);
 	}
-
 
 	public PostResponseDto updatePost(String email, PostRequestDto requestDto, Long postId) {
 		User user = getUserByEmail(email);
@@ -50,7 +48,6 @@ public class PostService {
 		post.updatePost(requestDto);
 		return new PostResponseDto(post);
 	}
-
 
 	private Post createAndSavePost(User user, String title, String content, Category postCategory) {
 		Post post = Post.builder()
@@ -63,8 +60,8 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
-	private void checkUser(Post post, User user){
-		if(!post.getId().equals(user.getId())) {
+	private void checkUser(Post post, User user) {
+		if (!post.getId().equals(user.getId())) {
 			throw new UserMisMatchException("게시물은 작성자만 접근 가능합니다.");
 		}
 	}

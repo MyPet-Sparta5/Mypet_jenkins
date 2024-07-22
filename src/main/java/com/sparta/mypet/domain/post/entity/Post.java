@@ -72,27 +72,26 @@ public class Post extends Timestamped {
 		this.likeCount = likeCount;
 	}
 
-	public void updatePost(PostRequestDto requestDto){
+	public void updatePost(PostRequestDto requestDto) {
 		this.postTitle = requestDto.getTitle();
 		this.postContent = requestDto.getContent();
 	}
 
-	public void addComment(Comment comment){
+	public void addComment(Comment comment) {
 		this.comments.add(comment);
 	}
 
-	public void addLike(Like like){
+	public void addLike(Like like) {
 		this.likes.add(like);
 		likeCount++;
 	}
 
-
-	public void removeLike(Like like){
+	public void removeLike(Like like) {
 		this.likes.remove(like);
 		likeCount--;
 	}
 
-	public void addFiles(File file){
+	public void addFiles(File file) {
 		this.files.add(file);
 	}
 }

@@ -1,6 +1,5 @@
 package com.sparta.mypet.domain.post;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,8 +29,7 @@ public class PostController {
 	public ResponseEntity<DataResponseDto<PostResponseDto>> createPost(@AuthenticationPrincipal UserDetails userDetails,
 		@Valid @RequestBody PostRequestDto requestDto, @RequestParam("category") String category) {
 		PostResponseDto responseDto = postService.createPost(userDetails.getUsername(), requestDto, category);
-		DataResponseDto<PostResponseDto> response = new DataResponseDto<>(200, "게시물 생성 성공", responseDto);
-		return new ResponseEntity<>(response, HttpStatus.CREATED);
+		return ResponseFactory.created(responseDto, "게시물 생성 성공");
 	}
 
 	@PutMapping("/{postId}")
@@ -41,6 +39,5 @@ public class PostController {
 		DataResponseDto<PostResponseDto> response = new DataResponseDto<>(200, "게시물 수정 성공", responseDto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
-
 
 }
