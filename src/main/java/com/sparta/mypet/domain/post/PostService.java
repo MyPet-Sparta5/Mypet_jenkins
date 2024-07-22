@@ -1,9 +1,7 @@
 package com.sparta.mypet.domain.post;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.PostNotFoundException;
 import com.sparta.mypet.common.exception.UserMisMatchException;
+import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
@@ -63,23 +62,10 @@ public class PostService {
 		postRepository.delete(post);
 	}
 
-	private Post createAndSavePost(User user, String title, String content, Category postCategory) {
-		Post post = Post.builder()
-			.user(user)
-			.postTitle(title)
-			.postContent(content)
-			.category(postCategory)
-			.likeCount(0L)
-			.build();
-		return postRepository.save(post);
-	}
-
 	@Transactional(readOnly = true)
 	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy) {
-		// 정렬 기준 - 최신순, 좋아요 수
-		Sort sort = getSortBy(sortBy);
+		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
-		Pageable pageable = PageRequest.of(page, pageSize, sort);
 		Page<Post> postList = postRepository.findAll(pageable);
 
 		return postList.map(PostResponseDto::new);
@@ -90,6 +76,17 @@ public class PostService {
 		Post post = getPostById(postId);
 
 		return new PostResponseDto(post);
+	}
+
+	private Post createAndSavePost(User user, String title, String content, Category postCategory) {
+		Post post = Post.builder()
+			.user(user)
+			.postTitle(title)
+			.postContent(content)
+			.category(postCategory)
+			.likeCount(0L)
+			.build();
+		return postRepository.save(post);
 	}
 
 	private void checkUser(Post post, User user) {
@@ -106,14 +103,6 @@ public class PostService {
 	public Post getPostById(Long postId) { // request to post service
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
-	}
-
-	private Sort getSortBy(String sortBy) {
-		if ("like".equals(sortBy)) {
-			return Sort.by("like").descending();
-		} else {
-			return Sort.by("createdAt").descending();
-		}
 	}
 
 }
