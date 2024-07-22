@@ -15,7 +15,9 @@ import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
 import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
