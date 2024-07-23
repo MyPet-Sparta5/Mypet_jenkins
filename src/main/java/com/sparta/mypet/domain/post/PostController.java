@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
+import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.security.UserDetailsImpl;
@@ -60,8 +61,12 @@ public class PostController {
 	}
 
 	@GetMapping("/{postId}")
-	public ResponseEntity<DataResponseDto<PostResponseDto>> getPost(@PathVariable Long postId) {
-		PostResponseDto responseDto = postService.getPost(postId);
+	public ResponseEntity<DataResponseDto<PostResponseDto>> getPost(@PathVariable Long postId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+		User user = (userDetails != null) ? userDetails.getUser() : null;
+
+		PostResponseDto responseDto = postService.getPost(postId, user);
 		return ResponseFactory.ok(responseDto, "게시물 단건 조회 성공");
 	}
 }

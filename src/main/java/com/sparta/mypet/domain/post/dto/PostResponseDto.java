@@ -17,6 +17,7 @@ public class PostResponseDto {
 	private final Long likeCount;
 	private final String nickname;
 	private final LocalDateTime createAt;
+	private final boolean isLike;
 
 	public PostResponseDto(Post post) {
 		this.id = post.getId();
@@ -26,5 +27,17 @@ public class PostResponseDto {
 		this.likeCount = post.getLikeCount();
 		this.nickname = post.getUser().getNickname();
 		this.createAt = post.getCreatedAt();
+		this.isLike = false;
+	}
+
+	public PostResponseDto(Post post, boolean isLike) {
+		this.id = post.getId();
+		this.title = post.getPostTitle();
+		this.content = post.getPostContent();
+		this.category = post.getCategory();
+		this.likeCount = post.getLikeCount();
+		this.nickname = post.getUser().getNickname();
+		this.createAt = post.getCreatedAt();
+		this.isLike = isLike;
 	}
 }

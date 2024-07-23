@@ -34,7 +34,7 @@ Authorization: {{Authorization}}
 GET /api/posts/{{postId}} HTTP/1.1
 Host: {{root-path}}
 Content-Type: application/json
-
+Authorization: {{Authorization}}
 
 ### 게시물 전체조회
 GET /api/posts HTTP/1.1
