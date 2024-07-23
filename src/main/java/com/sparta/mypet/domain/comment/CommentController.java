@@ -17,6 +17,7 @@ import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.comment.dto.CommentPageResponse;
 import com.sparta.mypet.domain.comment.dto.CommentRequestDto;
 import com.sparta.mypet.domain.comment.dto.CommentResponseDto;
+import com.sparta.mypet.security.UserDetailsImpl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class CommentController {
 
 	@PostMapping("/posts/{postId}/comments")
 	public ResponseEntity<DataResponseDto<CommentResponseDto>> createComment(
-		@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long postId,
+		@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long postId,
 		@Valid @RequestBody CommentRequestDto requestDto) {
 
 		CommentResponseDto responseDto = commentService.createComment(userDetails.getUsername(), postId, requestDto);
@@ -47,7 +48,7 @@ public class CommentController {
 	}
 
 	@DeleteMapping("/comments/{commentId}")
-	public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal UserDetails userDetails,
+	public ResponseEntity<Void> deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@PathVariable Long commentId) {
 
 		commentService.deleteComment(userDetails.getUsername(), commentId);
