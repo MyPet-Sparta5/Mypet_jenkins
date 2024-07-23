@@ -12,6 +12,7 @@ import com.sparta.mypet.common.exception.custom.UserNotFoundException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.entity.User;
+import com.sparta.mypet.domain.like.LikeRepository;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Category;
@@ -25,6 +26,7 @@ public class PostService {
 
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
+	private final LikeRepository likeRepository;
 
 	@Transactional
 	public PostResponseDto createPost(User user, PostRequestDto requestDto, String category) {
@@ -72,10 +74,12 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public PostResponseDto getPost(Long postId) {
+	public PostResponseDto getPost(Long postId, User user) {
 		Post post = getPostById(postId);
 
-		return new PostResponseDto(post);
+		boolean isLike = isLikePost(user, post);
+
+		return new PostResponseDto(post, isLike);
 	}
 
 	private Post createAndSavePost(User user, String title, String content, Category postCategory) {
@@ -100,10 +104,15 @@ public class PostService {
 			.orElseThrow(() -> new UserNotFoundException(GlobalMessage.USER_NOT_FOUND.getMessage()));
 	}
 
-
 	public Post getPostById(Long postId) { // request to post service
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
 	}
 
+	public boolean isLikePost(User user, Post post) {
+		if(user == null){
+			return false;
+		}
+		return likeRepository.findByUserAndPost(user, post).isPresent();
+	}
 }
