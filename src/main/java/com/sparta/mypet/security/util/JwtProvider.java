@@ -5,8 +5,6 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import com.sparta.mypet.domain.auth.entity.UserRole;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,7 +26,7 @@ public final class JwtProvider {
 	 * @param signatureAlgorithm 토큰 서명 알고리즘
 	 * @return 생성된 JWT 토큰
 	 */
-	public static String generateToken(String authorizationKey, UserRole role, String username, long expiration,
+	public static String generateToken(String authorizationKey, Object role, String username, long expiration,
 		SecretKey secretKey, SignatureAlgorithm signatureAlgorithm) {
 
 		return Jwts.builder()
