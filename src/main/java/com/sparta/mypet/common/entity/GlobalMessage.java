@@ -19,6 +19,7 @@ public enum GlobalMessage {
 	// User
 	CREATE_USER_SUCCESS("회원가입이 성공적으로 완료되었습니다."),
 	LOGIN_SUCCESS("로그인이 성공적으로 완료되었습니다."),
+	LOGOUT_SUCCESS("로그아웃이 성공적으로 완료되었습니다."),
 
 	// 에러 메세지
 	// User

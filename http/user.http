@@ -23,3 +23,12 @@ Content-Type: application/json
 > {%
     client.global.set("Authorization", response.headers.valueOf("Authorization"));
 %}
+
+### 로그아웃
+POST /api/auth/logout HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
+> {%
+    client.global.set("Authorization", "");
+%}
