@@ -31,12 +31,14 @@ public enum GlobalMessage {
 
 	// Comment
 	COMMENT_NOT_FOUND("존재하지 않는 댓글입니다."),
-	NOT_COMMENT_OWNER("댓글 작성자가 아닙니다.");
+	NOT_COMMENT_OWNER("댓글 작성자가 아닙니다."),
 
+	//Like
+	LIKE_ALREADY_EXISTS("이미 좋아요를 누른 게시물입니다."),
+	LIKE_NOT_FOUND("해당 포스트에 좋아요를 하지않았습니다.");
 
 	// Valid
 	public static final String COMMENT_CONTENT_NOT_BLANK_MESSAGE = "댓글의 내용을 작성해야합니다.";
-
 
 	private final String message;
 
