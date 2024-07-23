@@ -6,8 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.common.exception.auth.PasswordInvalidException;
-import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
+import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
+import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
 import com.sparta.mypet.domain.auth.dto.SignupResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;

@@ -1,4 +1,4 @@
-package com.sparta.mypet.common.exception.auth;
+package com.sparta.mypet.common.exception.custom;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 

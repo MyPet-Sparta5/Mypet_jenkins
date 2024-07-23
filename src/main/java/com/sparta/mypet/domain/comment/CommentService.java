@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.common.exception.CommentNotFoundException;
-import com.sparta.mypet.common.exception.PostNotFoundException;
+import com.sparta.mypet.common.exception.custom.CommentNotFoundException;
+import com.sparta.mypet.common.exception.custom.PostNotFoundException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.entity.User;

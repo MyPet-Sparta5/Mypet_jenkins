@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.common.exception.auth.PasswordInvalidException;
+import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.domain.auth.dto.LoginRequestDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.security.JwtService;
