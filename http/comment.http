@@ -1,0 +1,23 @@
+### 댓글 쓰기
+
+POST /api/posts/{{postId}}/comments HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "content" : "테스트 댓글입니다."
+}
+
+### 댓글 가져오기
+
+GET /api/posts/{{postId}}/comments?page=1&size=10&sortBy=createdAt,desc HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+### 댓글 삭제
+
+DELETE /api/comments/{{commentId}} HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
