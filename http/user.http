@@ -1,0 +1,27 @@
+### 일반 유저 회원가입
+POST /api/users HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+Content-Length: 183
+
+{
+  "email" : "admin1234@gmail.com",
+  "password" : "aAsdswewq!324",
+  "repeatPassword" : "aAsdswewq!324",
+  "nickname" : "마돈나"
+}
+
+### 일반 유저 로그인
+POST /api/auth/login HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json
+Content-Length: 73
+
+{
+  "email" : "admin1234@gmail.com",
+  "password" : "aAsdswewq!324"
+
+}
+> {%
+    client.global.set("Authorization", response.headers.valueOf("Authorization"));
+%}
