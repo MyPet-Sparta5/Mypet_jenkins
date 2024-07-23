@@ -1,0 +1,76 @@
+### 회원가입
+POST /api/users HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+{
+  "email" : "test2@email.com",
+  "password" : "Test1234!@",
+  "repeatPassword" : "Test1234!@",
+  "nickname" : "Lee"
+}
+
+### 로그인
+POST /api/auth/login HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+{
+  "email" : "test2@email.com",
+  "password" : "Test1234!@"
+}
+
+> {%
+    client.global.set("Authorization", response.headers.valueOf("Authorization"));
+%}
+
+
+### 게시물 쓰기
+POST /api/posts?category=BOAST HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "title" : "제목 테스트",
+  "content" : "내용테스트",
+  "fileUrl" : "https://isplus.com/data/isp/image/2022/12/22/isp88870ed2-900e-48e0-9f52-5fbcc09ec833.600x.0.jpg"
+}
+
+### 댓글 쓰기
+
+POST /api/posts/{{postId}}/comments HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "content" : "테스트 댓글입니다."
+}
+
+### 댓글 가져오기
+
+GET /api/posts/{{postId}}/comments?page=1&size=10&sortBy=createdAt,desc HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+### 댓글 삭제
+
+DELETE /api/comments/{{commentId}} HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+### 좋아요 추가
+
+POST /api/posts/{{postId}}/likes HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+### 좋아요 삭제
+
+DELETE /api/posts/{{postId}}/likes HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
