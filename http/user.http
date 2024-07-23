@@ -28,3 +28,7 @@ Content-Type: application/json
 POST /api/auth/logout HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
+
+> {%
+    client.global.set("Authorization", "");
+%}
