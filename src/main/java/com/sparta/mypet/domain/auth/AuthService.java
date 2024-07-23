@@ -1,6 +1,5 @@
 package com.sparta.mypet.domain.auth;
 
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,18 +16,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 
-	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final UserService userService;
 	private final JwtService jwtService;
 
 	@Transactional
 	public String login(LoginRequestDto requestDto) {
 
-		User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(
-			() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage())
-		);
+		User user = userService.findUserByEmail(requestDto.getEmail());
 
-		if(!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
 			throw new PasswordInvalidException(GlobalMessage.PASSWORD_INVALID);
 		}
 
@@ -44,5 +41,17 @@ public class AuthService {
 		jwtService.setHeaderWithAccessToken(accessToken);
 
 		return accessToken;
+	}
+
+	@Transactional
+	public void logout(String token) {
+
+		String tokenValue = jwtService.substringAccessToken(token);
+		String email = jwtService.extractEmail(tokenValue);
+
+		User user = userService.findUserByEmail(email);
+		user.updateRefreshToken(null);
+
+		jwtService.deleteRefreshTokenAtCookie();
 	}
 }
