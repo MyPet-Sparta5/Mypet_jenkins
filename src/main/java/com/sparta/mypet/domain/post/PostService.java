@@ -2,13 +2,13 @@ package com.sparta.mypet.domain.post;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
+import com.sparta.mypet.common.exception.custom.UserNotFoundException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.entity.User;
@@ -27,8 +27,8 @@ public class PostService {
 	private final UserRepository userRepository;
 
 	@Transactional
-	public PostResponseDto createPost(String email, PostRequestDto requestDto, String category) {
-		User user = getUserByEmail(email);
+	public PostResponseDto createPost(User user, PostRequestDto requestDto, String category) {
+		userExists(user);
 
 		Category postCategory = Category.FREEDOM;
 
@@ -42,22 +42,22 @@ public class PostService {
 	}
 
 	@Transactional
-	public PostResponseDto updatePost(String email, PostRequestDto requestDto, Long postId) {
-		User user = getUserByEmail(email);
+	public PostResponseDto updatePost(User user, PostRequestDto requestDto, Long postId) {
+		userExists(user);
 		Post post = getPostById(postId);
 
-		checkUser(post, user);
+		checkPostAuthor(post, user);
 
 		post.updatePost(requestDto);
 		return new PostResponseDto(post);
 	}
 
 	@Transactional
-	public void deletePost(String email, Long postId) {
-		User user = getUserByEmail(email);
+	public void deletePost(User user, Long postId) {
+		userExists(user);
 		Post post = getPostById(postId);
 
-		checkUser(post, user);
+		checkPostAuthor(post, user);
 
 		postRepository.delete(post);
 	}
@@ -89,16 +89,17 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
-	private void checkUser(Post post, User user) {
-		if (!post.getId().equals(user.getId())) {
+	private void checkPostAuthor(Post post, User user) {
+		if (!post.getUser().getId().equals(user.getId())) {
 			throw new UserMisMatchException(GlobalMessage.NOT_POST_OWNER.getMessage());
 		}
 	}
 
-	private User getUserByEmail(String email) { // request to user service
-		return userRepository.findByEmail(email)
-			.orElseThrow(() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage()));
+	public void userExists(User user) { // request to post service
+		userRepository.findById(user.getId())
+			.orElseThrow(() -> new UserNotFoundException(GlobalMessage.USER_NOT_FOUND.getMessage()));
 	}
+
 
 	public Post getPostById(Long postId) { // request to post service
 		return postRepository.findById(postId)
