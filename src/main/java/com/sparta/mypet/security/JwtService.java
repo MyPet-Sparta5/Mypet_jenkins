@@ -164,4 +164,21 @@ public class JwtService {
 			.get(JwtConfig.AUTHORIZATION_KEY);
 	}
 
+	/**
+	 * Refresh 토큰 쿠키를 삭제합니다.
+	 */
+	public void deleteRefreshTokenAtCookie() {
+		// 덮어 쓰기
+		Cookie cookie = new Cookie(JwtConfig.REFRESH_TOKEN_COOKIE_NAME, null);
+		cookie.setHttpOnly(true);
+		cookie.setSecure(true);
+		cookie.setPath("/");
+		cookie.setMaxAge(0); // 쿠키 시간 초기화
+		HttpServletResponse response = ((ServletRequestAttributes)Objects.requireNonNull(
+			RequestContextHolder.getRequestAttributes())).getResponse();
+
+		if (response != null) {
+			response.addCookie(cookie);
+		}
+	}
 }
