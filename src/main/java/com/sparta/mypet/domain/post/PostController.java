@@ -52,10 +52,10 @@ public class PostController {
 
 	@GetMapping
 	public ResponseEntity<DataResponseDto<Page<PostResponseDto>>> getPosts(
-		@RequestParam(value = "page", defaultValue = "1") int page,
-		@RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-		@RequestParam(defaultValue = "createdAt") String sortBy) {
-		Page<PostResponseDto> responseDtoList = postService.getPosts(page - 1, pageSize, sortBy);
+		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "10") int pageSize,
+		@RequestParam(defaultValue = "createdAt, desc") String sortBy) {
+		Page<PostResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy);
 		return ResponseFactory.ok(responseDtoList, "게시물 전체 조회 성공");
 	}
 
