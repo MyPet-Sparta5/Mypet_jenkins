@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.sparta.mypet.common.dto.MessageResponseDto;
 import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.common.exception.auth.PasswordInvalidException;
-import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
+import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
+import com.sparta.mypet.common.exception.custom.PostNotFoundException;
+import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.common.exception.custom.LikeNotFoundException;
+import com.sparta.mypet.common.exception.custom.UserMisMatchException;
 import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;

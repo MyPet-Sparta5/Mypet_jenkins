@@ -21,11 +21,11 @@ public class DataInitialization implements CommandLineRunner {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
-	@Value("${admin-user-email}")
-	String adminEmail;
+	@Value("${admin.user.email}")
+	private String adminEmail;
 
-	@Value("${admin-user-password}")
-	String adminPassword;
+	@Value("${admin.user.password}")
+	private String adminPassword;
 
 	@Override
 	public void run(String... args) {

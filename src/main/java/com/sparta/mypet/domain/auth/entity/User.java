@@ -58,4 +58,8 @@ public class User extends Timestamped {
 		this.role = role;
 		this.status = status;
 	}
+
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 }

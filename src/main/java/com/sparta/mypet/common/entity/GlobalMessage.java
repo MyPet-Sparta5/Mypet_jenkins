@@ -18,6 +18,7 @@ public enum GlobalMessage {
 	// 응답 메시지
 	// User
 	CREATE_USER_SUCCESS("회원가입이 성공적으로 완료되었습니다."),
+	LOGIN_SUCCESS("로그인이 성공적으로 완료되었습니다."),
 
 	// 에러 메세지
 	// User
@@ -39,6 +40,7 @@ public enum GlobalMessage {
 
 	// Valid
 	public static final String COMMENT_CONTENT_NOT_BLANK_MESSAGE = "댓글의 내용을 작성해야합니다.";
+
 
 	private final String message;
 
