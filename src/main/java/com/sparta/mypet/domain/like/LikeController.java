@@ -3,6 +3,7 @@ package com.sparta.mypet.domain.like;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,13 @@ public class LikeController {
 	public ResponseEntity<MessageResponseDto> likePost(@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable Long postId) {
 		likeService.likePost(userDetails.getUsername(), postId);
+		return ResponseFactory.ok(null);
+	}
+
+	@DeleteMapping("/posts/{postId}/likes")
+	public ResponseEntity<MessageResponseDto> removePostLike(@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable Long postId) {
+		likeService.removePostLike(userDetails.getUsername(), postId);
 		return ResponseFactory.ok(null);
 	}
 

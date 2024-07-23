@@ -12,10 +12,10 @@ import com.sparta.mypet.common.dto.MessageResponseDto;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.auth.PasswordInvalidException;
 import com.sparta.mypet.common.exception.auth.UserEmailDuplicateException;
+import com.sparta.mypet.common.exception.custom.LikeNotFoundException;
 import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;
-
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,8 +27,7 @@ public class GlobalExceptionHandler {
 	 * @return 에러 메세지 응답
 	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<MessageResponseDto> handleMethodArgumentNotValidException(
-		MethodArgumentNotValidException e) {
+	public ResponseEntity<MessageResponseDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 
 		String errorMessages = e.getBindingResult()
 			.getAllErrors()
@@ -60,7 +59,7 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(IllegalArgumentException.class)
-	public ResponseEntity<MessageResponseDto> handleIllegalArgumentExceptionHandler(IllegalArgumentException e) {
+	public ResponseEntity<MessageResponseDto> handleIllegalArgumentException(IllegalArgumentException e) {
 
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
@@ -68,7 +67,7 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(UserEmailDuplicateException.class)
-	public ResponseEntity<MessageResponseDto> handleUserEmailDuplicateExceptionHandler(UserEmailDuplicateException e) {
+	public ResponseEntity<MessageResponseDto> handleUserEmailDuplicateException(UserEmailDuplicateException e) {
 
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
@@ -76,7 +75,7 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(PasswordInvalidException.class)
-	public ResponseEntity<MessageResponseDto> handlePasswordInvalidExceptionHandler(PasswordInvalidException e) {
+	public ResponseEntity<MessageResponseDto> handlePasswordInvalidException(PasswordInvalidException e) {
 
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
@@ -91,7 +90,14 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(UserMisMatchException.class)
-	public ResponseEntity<MessageResponseDto> userMisMatchException(UserMisMatchException e) {
+	public ResponseEntity<MessageResponseDto> handleUserMisMatchException(UserMisMatchException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.notFound(errorMessage);
+	}
+
+	@ExceptionHandler(LikeNotFoundException.class)
+	public ResponseEntity<MessageResponseDto> handleLikeNotFoundException(LikeNotFoundException e) {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.notFound(errorMessage);
