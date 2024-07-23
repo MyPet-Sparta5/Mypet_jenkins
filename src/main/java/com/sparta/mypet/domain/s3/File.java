@@ -1,4 +1,6 @@
-package com.sparta.mypet.domain.post.entity;
+package com.sparta.mypet.domain.s3;
+
+import com.sparta.mypet.domain.post.entity.Post;
 
 import jakarta.persistence.*;
 import lombok.Builder;

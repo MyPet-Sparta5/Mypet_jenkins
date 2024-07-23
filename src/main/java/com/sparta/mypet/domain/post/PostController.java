@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
@@ -31,14 +33,23 @@ public class PostController {
 	private final PostService postService;
 
 	@PostMapping
-	public ResponseEntity<DataResponseDto<PostResponseDto>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+	public ResponseEntity<DataResponseDto<PostResponseDto>> createPost(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@Valid @RequestBody PostRequestDto requestDto, @RequestParam("category") String category) {
 		PostResponseDto responseDto = postService.createPost(userDetails.getUser(), requestDto, category);
 		return ResponseFactory.created(responseDto, "게시물 생성 성공");
 	}
 
+	@PostMapping("/file")
+	public ResponseEntity<DataResponseDto<PostResponseDto>> createFilePost(
+		@Valid @RequestPart PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(value = "category", required = false) String category, @RequestPart("file") MultipartFile file) {
+		PostResponseDto responseDto = postService.createFilePost(userDetails.getUser(), requestDto, category, file);
+		return ResponseFactory.created(responseDto, "게시물 생성 성공");
+	}
+
 	@PutMapping("/{postId}")
-	public ResponseEntity<DataResponseDto<PostResponseDto>> updatePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+	public ResponseEntity<DataResponseDto<PostResponseDto>> updatePost(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@Valid @RequestBody PostRequestDto requestDto, @PathVariable Long postId) {
 		PostResponseDto responseDto = postService.updatePost(userDetails.getUser(), requestDto, postId);
 		return ResponseFactory.ok(responseDto, "게시물 수정 성공");

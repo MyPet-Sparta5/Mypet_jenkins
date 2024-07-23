@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
@@ -17,6 +18,9 @@ import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
+import com.sparta.mypet.domain.s3.File;
+import com.sparta.mypet.domain.s3.FileRepository;
+import com.sparta.mypet.domain.s3.FileService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +31,8 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final UserRepository userRepository;
 	private final LikeRepository likeRepository;
+	private final FileService fileService;
+	private final FileRepository fileRepository;
 
 	@Transactional
 	public PostResponseDto createPost(User user, PostRequestDto requestDto, String category) {
@@ -40,6 +46,22 @@ public class PostService {
 
 		Post post = createAndSavePost(user, requestDto.getTitle(), requestDto.getContent(), postCategory);
 
+		return new PostResponseDto(post);
+	}
+
+	@Transactional
+	public PostResponseDto createFilePost(User user, PostRequestDto requestDto, String category, MultipartFile file) {
+		userExists(user);
+
+		Category postCategory = Category.FREEDOM;
+
+		if (category.equals("BOAST")) {
+			postCategory = Category.BOAST;
+		}
+
+		Post post = createAndSavePost(user, requestDto.getTitle(), requestDto.getContent(), postCategory);
+		File postfile = fileService.uploadFile(file, post, user.getId());
+		post.addFiles(postfile);
 		return new PostResponseDto(post);
 	}
 
