@@ -2,6 +2,7 @@ package com.sparta.mypet.domain.auth;
 
 import java.util.Optional;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,5 +52,11 @@ public class UserService {
 		return SignupResponseDto.builder()
 			.user(saveUser)
 			.build();
+	}
+
+	public User findUserByEmail(String email) {
+		return userRepository.findByEmail(email).orElseThrow(
+			() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage())
+		);
 	}
 }
