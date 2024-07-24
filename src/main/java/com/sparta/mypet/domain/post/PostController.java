@@ -1,5 +1,7 @@
 package com.sparta.mypet.domain.post;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
@@ -31,23 +35,27 @@ public class PostController {
 	private final PostService postService;
 
 	@PostMapping
-	public ResponseEntity<DataResponseDto<PostResponseDto>> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-		@Valid @RequestBody PostRequestDto requestDto, @RequestParam("category") String category) {
-		PostResponseDto responseDto = postService.createPost(userDetails.getUser(), requestDto, category);
+	public ResponseEntity<DataResponseDto<PostResponseDto>> createPost(
+		@Valid @RequestPart PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestParam("category") String category,
+		@RequestPart(value = "file", required = false) List<MultipartFile> files) {
+
+		PostResponseDto responseDto = postService.createPost(userDetails.getUsername(), requestDto, category, files);
 		return ResponseFactory.created(responseDto, "게시물 생성 성공");
 	}
 
 	@PutMapping("/{postId}")
-	public ResponseEntity<DataResponseDto<PostResponseDto>> updatePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+	public ResponseEntity<DataResponseDto<PostResponseDto>> updatePost(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@Valid @RequestBody PostRequestDto requestDto, @PathVariable Long postId) {
-		PostResponseDto responseDto = postService.updatePost(userDetails.getUser(), requestDto, postId);
+		PostResponseDto responseDto = postService.updatePost(userDetails.getUsername(), requestDto, postId);
 		return ResponseFactory.ok(responseDto, "게시물 수정 성공");
 	}
 
 	@DeleteMapping("/{postId}")
 	public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@PathVariable Long postId) {
-		postService.deletePost(userDetails.getUser(), postId);
+		postService.deletePost(userDetails.getUsername(), postId);
 		return ResponseFactory.noContent();
 	}
 
@@ -55,8 +63,9 @@ public class PostController {
 	public ResponseEntity<DataResponseDto<Page<PostResponseDto>>> getPosts(
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
-		@RequestParam(defaultValue = "createdAt, desc") String sortBy) {
-		Page<PostResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy);
+		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
+		@RequestParam(defaultValue = "default") String category) {
+		Page<PostResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy, category);
 		return ResponseFactory.ok(responseDtoList, "게시물 전체 조회 성공");
 	}
 
