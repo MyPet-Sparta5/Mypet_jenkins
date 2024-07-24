@@ -1,5 +1,5 @@
-### 게시물 작성
-POST /api/posts?category=BOAST HTTP/1.1
+### 게시물 작성 (자랑 게시판) - 사용 X
+POST /api/posts
 Host: {{root-path}}
 Content-Type: application/json
 Authorization: {{Authorization}}
@@ -9,7 +9,6 @@ Authorization: {{Authorization}}
   "content" : "내용테스트",
   "fileUrl" : "https://isplus.com/data/isp/image/2022/12/22/isp88870ed2-900e-48e0-9f52-5fbcc09ec833.600x.0.jpg"
 }
-
 
 ### 게시물 수정
 PUT /api/posts/{{postId}} HTTP/1.1
@@ -38,5 +37,10 @@ Authorization: {{Authorization}}
 
 ### 게시물 전체조회
 GET /api/posts HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+### 자랑 게시물 조회
+GET /api/posts?category=BOAST HTTP/1.1
 Host: {{root-path}}
 Content-Type: application/json

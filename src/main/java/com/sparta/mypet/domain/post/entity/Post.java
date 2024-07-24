@@ -8,6 +8,7 @@ import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.comment.entity.Comment;
 import com.sparta.mypet.domain.like.entity.Like;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
+import com.sparta.mypet.domain.s3.entity.File;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -91,7 +92,7 @@ public class Post extends Timestamped {
 		likeCount--;
 	}
 
-	public void addFiles(File file) {
-		this.files.add(file);
+	public void addFiles(List<File> files) {
+		this.files.addAll(files);
 	}
 }
