@@ -92,7 +92,7 @@ public class Post extends Timestamped {
 		likeCount--;
 	}
 
-	public void addFiles(File file) {
-		this.files.add(file);
+	public void addFiles(List<File> files) {
+		this.files.addAll(files);
 	}
 }

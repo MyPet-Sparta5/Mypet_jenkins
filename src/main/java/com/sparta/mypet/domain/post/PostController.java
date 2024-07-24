@@ -1,5 +1,8 @@
 package com.sparta.mypet.domain.post;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,8 +45,19 @@ public class PostController {
 
 	@PostMapping("/file")
 	public ResponseEntity<DataResponseDto<PostResponseDto>> createFilePost(
-		@Valid @RequestPart PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam(value = "category", required = false) String category, @RequestPart("file") MultipartFile file) {
-		PostResponseDto responseDto = postService.createFilePost(userDetails.getUser(), requestDto, category, file);
+		@Valid @RequestPart PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestParam("category") String category,
+		@RequestPart(value = "file", required = false) List<MultipartFile> files) {
+
+		if (files == null) {
+			files = new ArrayList<>();
+		}
+
+		if (files.size() > 5) {
+			throw new IllegalArgumentException("파일을 5개 이상 업로드할 수 없습니다.");
+		}
+
+		PostResponseDto responseDto = postService.createFilePost(userDetails.getUser(), requestDto, category, files);
 		return ResponseFactory.created(responseDto, "게시물 생성 성공");
 	}
 

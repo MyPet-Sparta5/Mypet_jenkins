@@ -1,5 +1,7 @@
 package com.sparta.mypet.domain.post;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,6 @@ import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.s3.File;
-import com.sparta.mypet.domain.s3.FileRepository;
 import com.sparta.mypet.domain.s3.FileService;
 
 import lombok.RequiredArgsConstructor;
@@ -50,7 +51,8 @@ public class PostService {
 	}
 
 	@Transactional
-	public PostResponseDto createFilePost(User user, PostRequestDto requestDto, String category, MultipartFile file) {
+	public PostResponseDto createFilePost(User user, PostRequestDto requestDto, String category,
+		List<MultipartFile> files) {
 		userExists(user);
 
 		Category postCategory = Category.FREEDOM;
@@ -60,8 +62,12 @@ public class PostService {
 		}
 
 		Post post = createAndSavePost(user, requestDto.getTitle(), requestDto.getContent(), postCategory);
-		File postfile = fileService.uploadFile(file, post, user.getId());
-		post.addFiles(postfile);
+
+		if (files.size() > 0) {
+			List<File> postFiles = fileService.uploadFile(files, post, user.getEmail());
+			post.addFiles(postFiles);
+		}
+
 		return new PostResponseDto(post);
 	}
 
@@ -132,7 +138,7 @@ public class PostService {
 	}
 
 	public boolean isLikePost(User user, Post post) {
-		if(user == null){
+		if (user == null) {
 			return false;
 		}
 		return likeRepository.findByUserAndPost(user, post).isPresent();
