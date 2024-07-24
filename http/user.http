@@ -4,22 +4,10 @@ Host: {{root-path}}
 Content-Type: application/json
 
 {
-  "email" : "test2@email.com",
-  "password" : "Test1234!@",
-  "repeatPassword" : "Test1234!@",
-  "nickname" : "Lee"
-}
-
-###
-POST /api/users HTTP/1.1
-Host: {{root-path}}
-Content-Type: application/json
-
-{
-  "email" : "test3@email.com",
-  "password" : "Test1234!@",
-  "repeatPassword" : "Test1234!@",
-  "nickname" : "Leesss"
+  "email": "test2@email.com",
+  "password": "Test1234!@",
+  "repeatPassword": "Test1234!@",
+  "nickname": "Lee"
 }
 
 ### 로그인
@@ -28,23 +16,8 @@ Host: {{root-path}}
 Content-Type: application/json
 
 {
-  "email" : "test2@email.com",
-  "password" : "Test1234!@"
-}
-
-> {%
-    client.global.set("Authorization", response.headers.valueOf("Authorization"));
-%}
-
-
-### 로그인
-POST /api/auth/login HTTP/1.1
-Host: {{root-path}}
-Content-Type: application/json
-
-{
-  "email" : "test3@email.com",
-  "password" : "Test1234!@"
+  "email": "test2@email.com",
+  "password": "Test1234!@"
 }
 
 > {%
@@ -59,3 +32,16 @@ Authorization: {{Authorization}}
 > {%
     client.global.set("Authorization", "");
 %}
+
+### 리프레쉬 에세스 토큰
+POST /api/auth/refresh HTTP/1.1
+Host: {{root-path}}
+
+> {%
+    client.global.set("Authorization", response.headers.valueOf("Authorization"));
+%}
+
+### 회원 단건 조회(마이 페이지)
+GET /api/users HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
