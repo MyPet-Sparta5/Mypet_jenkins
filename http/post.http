@@ -6,8 +6,7 @@ Authorization: {{Authorization}}
 
 {
   "title" : "제목 테스트",
-  "content" : "내용테스트",
-  "fileUrl" : "https://isplus.com/data/isp/image/2022/12/22/isp88870ed2-900e-48e0-9f52-5fbcc09ec833.600x.0.jpg"
+  "content" : "내용테스트"
 }
 
 ### 게시물 수정
