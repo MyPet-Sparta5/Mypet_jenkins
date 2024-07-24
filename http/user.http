@@ -40,3 +40,8 @@ Host: {{root-path}}
 > {%
     client.global.set("Authorization", response.headers.valueOf("Authorization"));
 %}
+
+### 회원 단건 조회(마이 페이지)
+GET /api/users HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
