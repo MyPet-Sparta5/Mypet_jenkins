@@ -28,10 +28,14 @@ public class File {
 	@Column(name = "file_name", nullable = false)
 	private String name;
 
+	@Column(name = "file_order", nullable = false)
+	private int order;
+
 	@Builder
-	public File(Post post, String url, String name) {
+	public File(Post post, String url, String name, int order) {
 		this.post = post;
 		this.url = url;
 		this.name = name;
+		this.order = order;
 	}
 }
