@@ -11,6 +11,7 @@ import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
 import com.sparta.mypet.domain.auth.dto.SignupResponseDto;
+import com.sparta.mypet.domain.auth.dto.UserWithPostListResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
@@ -51,6 +52,16 @@ public class UserService {
 
 		return SignupResponseDto.builder()
 			.user(saveUser)
+			.build();
+	}
+
+	public UserWithPostListResponseDto getUser(String email) {
+
+		User user = findUserByEmail(email);
+
+		return UserWithPostListResponseDto.builder()
+			.user(user)
+			.postList(user.getPostList())
 			.build();
 	}
 
