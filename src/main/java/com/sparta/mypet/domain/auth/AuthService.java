@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.common.exception.custom.RefreshTokenInvalidException;
+import com.sparta.mypet.common.exception.custom.UserStatusNotActiveException;
 import com.sparta.mypet.domain.auth.dto.LoginRequestDto;
 import com.sparta.mypet.domain.auth.entity.User;
+import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.security.JwtService;
 import com.sparta.mypet.security.TokenType;
 
@@ -30,6 +32,10 @@ public class AuthService {
 
 		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
 			throw new PasswordInvalidException(GlobalMessage.PASSWORD_INVALID);
+		}
+
+		if (!user.getStatus().equals(UserStatus.ACTIVE)) {
+			throw new UserStatusNotActiveException(GlobalMessage.USER_STATUS_NOT_ACTIVE);
 		}
 
 		String accessToken = jwtService.generateToken(TokenType.ACCESS, user.getRole(), user.getEmail());

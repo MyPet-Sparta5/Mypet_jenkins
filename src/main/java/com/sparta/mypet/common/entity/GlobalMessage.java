@@ -30,6 +30,7 @@ public enum GlobalMessage {
 	PASSWORD_INVALID("비밀번호가 일치하지 않습니다."),
 	USER_NOT_FOUND("존재하지 않는 유저입니다."),
 	REFRESH_INVALID("Refresh 토큰이 일치하지 않습니다."),
+	USER_STATUS_NOT_ACTIVE("해당 유저는 ACTIVE 상태가 아닙니다."),
 
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
