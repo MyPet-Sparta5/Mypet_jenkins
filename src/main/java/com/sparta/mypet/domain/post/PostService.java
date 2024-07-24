@@ -77,7 +77,7 @@ public class PostService {
 		checkPostAuthor(post, user);
 
 		List<File> files = post.getFiles();
-		fileService.deleteFile(postId, files);
+		fileService.deleteFile(files);
 
 		postRepository.delete(post);
 	}

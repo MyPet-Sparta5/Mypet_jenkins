@@ -8,7 +8,7 @@ import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.comment.entity.Comment;
 import com.sparta.mypet.domain.like.entity.Like;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
-import com.sparta.mypet.domain.s3.File;
+import com.sparta.mypet.domain.s3.entity.File;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

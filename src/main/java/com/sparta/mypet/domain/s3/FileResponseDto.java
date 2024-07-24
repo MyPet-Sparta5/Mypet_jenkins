@@ -1,6 +1,7 @@
 package com.sparta.mypet.domain.s3;
 
-import com.sparta.mypet.domain.s3.File;
+import com.sparta.mypet.domain.s3.entity.File;
+
 import lombok.Getter;
 
 @Getter

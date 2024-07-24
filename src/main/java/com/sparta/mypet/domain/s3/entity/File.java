@@ -1,8 +1,16 @@
-package com.sparta.mypet.domain.s3;
+package com.sparta.mypet.domain.s3.entity;
 
 import com.sparta.mypet.domain.post.entity.Post;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,5 +45,13 @@ public class File {
 		this.url = url;
 		this.name = name;
 		this.order = order;
+	}
+
+	public void updateUrl(String url) {
+		this.url = url;
+	}
+
+	public String generateFileKey() {
+		return String.format("%d/%d-%s", post.getId(), id, name);
 	}
 }

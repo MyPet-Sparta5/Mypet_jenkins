@@ -17,8 +17,9 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.InvalidFileException;
-import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.post.entity.Post;
+import com.sparta.mypet.domain.s3.entity.File;
+import com.sparta.mypet.domain.s3.entity.FileContentType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,108 +28,106 @@ import lombok.RequiredArgsConstructor;
 public class FileService {
 
 	private final FileRepository fileRepository;
-	private final UserRepository userRepository;
 	private final AmazonS3Client amazonS3Client;
 
 	@Value("${cloud.aws.s3.bucketName}")
 	private String bucket;
 
-	private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
-	private static final long MAX_VIDEO_SIZE = 200 * 1024 * 1024;
+	/**
+	 * 파일 업로드 처리
+	 *
+	 * @param files 업로드할 파일 목록
+	 * @param post  파일이 속한 게시물
+	 * @return 업로드된 파일 목록
+	 */
+	public List<File> uploadFile(List<MultipartFile> files, Post post) {
+		List<File> uploadedFiles = new ArrayList<>();
 
-	public List<File> uploadFile(List<MultipartFile> files, Post post, String userEmail) {
-		try {
-			Long postId = post.getId();
-			List<File> uploadedFiles = new ArrayList<>();
+		int i = 0;
 
-			for (int i = 0; i < files.size(); i++) {
-				MultipartFile file = files.get(i);
-				validFile(file);
+		for (MultipartFile multiFile : files) {
+			validFile(multiFile);
 
-				String fileName = file.getOriginalFilename();
-				String key = generateFileKey(postId, userEmail, fileName, i);
+			String fileName = multiFile.getOriginalFilename();
 
-				ObjectMetadata metadata = new ObjectMetadata();
-				metadata.setContentType(file.getContentType());
-				metadata.setContentLength(file.getSize());
+			File file = File.builder()
+				.post(post)
+				.url("")
+				.name(fileName)
+				.order(i)
+				.build();
 
-				try (InputStream inputStream = file.getInputStream()) {
-					amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, metadata));
-				}
+			file = fileRepository.save(file);
 
-				String fileUrl = readFile(postId, userEmail, fileName, i);
-				File fileEntity = File.builder()
-					.post(post)
-					.url(fileUrl)
-					.name(fileName)
-					.order(i)
-					.build();
-				uploadedFiles.add(fileRepository.save(fileEntity));
-			}
+			String key = file.generateFileKey();
 
-			return uploadedFiles;
+			uploadToS3(multiFile, key);
 
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+			String fileUrl = generateFileUrl(key);
+			file.updateUrl(fileUrl);
+
+			uploadedFiles.add(file);
+
+			i++;
 		}
+
+		return uploadedFiles;
 	}
 
-	public String readFile(Long postId, String userEmail, String fileName, int i) {
-		String key = generateFileKey(postId, userEmail, fileName, i);
-		URL url = amazonS3Client.getUrl(bucket, key);
-		return url.toString();
-	}
-
-	public void deleteFile(Long postId, String userEmail, List<File> files) {
-
-		int size = files.size();
-		for (int i = 0; i < size; i++) {
-			String key = generateFileKey(postId, userEmail, files.get(i).getName(), i);
+	public void deleteFile(List<File> files) {
+		for (File file : files) {
+			String key = file.generateFileKey();
 			amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, key));
 		}
-
 	}
 
-	private String generateFileKey(Long postId, String userEmail, String fileName, int order) {
-		return String.format("%s/%s/%d-%s", userEmail, postId, order, fileName);
+	/**
+	 * 파일 URL 생성
+	 *
+	 * @param key S3에 저장된 파일 키
+	 * @return 파일의 URL
+	 */
+	private String generateFileUrl(String key) {
+		URL url = amazonS3Client.getUrl(bucket, key);
+		return url.toString();
 	}
 
 	/**
 	 * 파일 유효성 검사
 	 *
-	 * @param file
+	 * @param file 업로드할 파일
 	 */
 	private void validFile(MultipartFile file) {
 		if (file.isEmpty() || Objects.isNull(file.getOriginalFilename())) {
 			throw new InvalidFileException(GlobalMessage.UPLOAD_FILE_NOT_FOUND.getMessage());
 		}
+
 		String fileType = file.getContentType();
 		long fileSize = file.getSize();
 		FileContentType type = FileContentType.getContentType(fileType);
+
 		if (type == null) {
 			throw new InvalidFileException(GlobalMessage.INVALID_TYPE_FILE.getMessage());
 		}
 
-		switch (type) {
-			case JPG:
-			case PNG:
-			case JPEG:
-				if (fileSize > MAX_FILE_SIZE) {
-					throw new InvalidFileException(GlobalMessage.INVALID_SIZE_IMAGE.getMessage());
-				}
-				break;
-			case MP4:
-			case AVI:
-				case GIF:
-				if (fileSize > MAX_VIDEO_SIZE) {
-					throw new InvalidFileException(GlobalMessage.INVALID_SIZE_VIDEO.getMessage());
-				}
-				break;
-			default:
-				throw new IllegalArgumentException("");
-		}
-
+		type.validateFileSize(fileSize);
 	}
 
+	/**
+	 * S3에 파일 업로드
+	 *
+	 * @param file 파일
+	 * @param key  S3에 저장할 파일 키
+	 */
+	private void uploadToS3(MultipartFile file, String key) {
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentType(file.getContentType());
+		metadata.setContentLength(file.getSize());
+
+		try (InputStream inputStream = file.getInputStream()) {
+			amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, metadata));
+		} catch (IOException e) {
+			throw new InvalidFileException(GlobalMessage.UPLOAD_FAIL.getMessage() + e);
+		}
+	}
 }
