@@ -6,10 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
+import com.sparta.mypet.common.exception.custom.RefreshTokenInvalidException;
 import com.sparta.mypet.domain.auth.dto.LoginRequestDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.security.JwtService;
+import com.sparta.mypet.security.TokenType;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,11 +32,8 @@ public class AuthService {
 			throw new PasswordInvalidException(GlobalMessage.PASSWORD_INVALID);
 		}
 
-		String accessTokenType = "access";
-		String refreshTokenType = "refresh";
-
-		String accessToken = jwtService.generateToken(accessTokenType, user.getRole(), user.getEmail());
-		String refreshToken = jwtService.generateToken(refreshTokenType, user.getRole(), user.getEmail());
+		String accessToken = jwtService.generateToken(TokenType.ACCESS, user.getRole(), user.getEmail());
+		String refreshToken = jwtService.generateToken(TokenType.REFRESH, user.getRole(), user.getEmail());
 
 		user.updateRefreshToken(refreshToken);
 
@@ -53,5 +53,30 @@ public class AuthService {
 		user.updateRefreshToken(null);
 
 		jwtService.deleteRefreshTokenAtCookie();
+	}
+
+	@Transactional
+	public String refreshAccessToken(HttpServletRequest request) {
+
+		String refreshToken = jwtService.getRefreshTokenFromRequest(request);
+		String email = jwtService.extractEmail(refreshToken);
+
+		User user = userService.findUserByEmail(email);
+
+		if (!user.getRefreshToken().equals(refreshToken)) {
+			throw new RefreshTokenInvalidException(GlobalMessage.REFRESH_INVALID);
+		}
+
+		Object role = jwtService.extractRole(refreshToken);
+
+		String newAccessToken = jwtService.generateToken(TokenType.ACCESS, role, email);
+		String newRefreshToken = jwtService.generateToken(TokenType.REFRESH, role, email);
+
+		user.updateRefreshToken(newRefreshToken);
+
+		jwtService.setRefreshTokenAtCookie(newRefreshToken);
+		jwtService.setHeaderWithAccessToken(newAccessToken);
+
+		return newRefreshToken;
 	}
 }

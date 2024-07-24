@@ -20,13 +20,15 @@ public enum GlobalMessage {
 	CREATE_USER_SUCCESS("회원가입이 성공적으로 완료되었습니다."),
 	LOGIN_SUCCESS("로그인이 성공적으로 완료되었습니다."),
 	LOGOUT_SUCCESS("로그아웃이 성공적으로 완료되었습니다."),
+	REFRESH_TOKEN_SUCCESS("토큰 재발급이 성공적으로 완료되었습니다."),
 
 	// 에러 메세지
 	// User
 	USER_EMAIL_NOT_FOUND("존재하지 않는 이메일입니다."),
 	USER_EMAIL_DUPLICATE("이미 존재하는 이메일입니다."),
 	PASSWORD_INVALID("비밀번호가 일치하지 않습니다."),
-	USER_NOT_FOUND("존재하지않는 유저입니다"),
+	USER_NOT_FOUND("존재하지 않는 유저입니다."),
+	REFRESH_INVALID("Refresh 토큰이 일치하지 않습니다."),
 
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),

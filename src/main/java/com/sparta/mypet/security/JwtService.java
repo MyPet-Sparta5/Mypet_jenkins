@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.security.config.JwtConfig;
 import com.sparta.mypet.security.util.JwtProvider;
 
@@ -30,8 +29,8 @@ public class JwtService {
 	 * @param username 유저의 식별자 (여기서는 Email)
 	 * @return 생성된 JWT 토큰
 	 */
-	public String generateToken(String tokenType, UserRole role, String username) {
-		long expiration = (tokenType.equals("access")) ? JwtConfig.staticAccessTokenExpiration :
+	public String generateToken(TokenType tokenType, Object role, String username) {
+		long expiration = (tokenType.equals(TokenType.ACCESS)) ? JwtConfig.staticAccessTokenExpiration :
 			JwtConfig.staticRefreshTokenExpiration;
 
 		return JwtProvider.generateToken(JwtConfig.AUTHORIZATION_KEY, role, username,
@@ -151,7 +150,9 @@ public class JwtService {
 	 * @return 추출된 이메일
 	 */
 	public String extractEmail(String token) {
-		return JwtProvider.extractAllClaims(token, JwtProvider.getSecretKey(JwtConfig.staticSecretKey)).getSubject();
+		return JwtProvider.extractAllClaims(
+			token, JwtProvider.getSecretKey(JwtConfig.staticSecretKey)
+		).getSubject();
 	}
 
 	/**
@@ -159,9 +160,10 @@ public class JwtService {
 	 * @param token JWT 토큰
 	 * @return 추출된 User Role
 	 */
-	public UserRole extractRole(String token) {
-		return (UserRole)JwtProvider.extractAllClaims(token, JwtProvider.getSecretKey(JwtConfig.staticSecretKey))
-			.get(JwtConfig.AUTHORIZATION_KEY);
+	public Object extractRole(String token) {
+		return JwtProvider.extractAllClaims(
+			token, JwtProvider.getSecretKey(JwtConfig.staticSecretKey)
+		).get(JwtConfig.AUTHORIZATION_KEY);
 	}
 
 	/**

@@ -59,3 +59,11 @@ Authorization: {{Authorization}}
 > {%
     client.global.set("Authorization", "");
 %}
+
+### 리프레쉬 에세스 토큰
+POST /api/auth/refresh HTTP/1.1
+Host: {{root-path}}
+
+> {%
+    client.global.set("Authorization", response.headers.valueOf("Authorization"));
+%}

@@ -44,13 +44,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 					setAuthenticationContext(accessToken);
 				} else {
 					log.info("Invalid Token: {}", accessToken);
-					sendTokenExpiredResponse(response);
+					sendExpiredTokenResponse(response);
 					return;
 				}
 			}
 		} catch (ExpiredJwtException e) {
 			log.error("Expired JWT token", e);
-			sendTokenExpiredResponse(response);
+			sendExpiredTokenResponse(response);
 			return;
 		} catch (SecurityException | MalformedJwtException e) {
 			log.error("Invalid JWT token", e);
@@ -80,19 +80,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
-	private void sendTokenExpiredResponse(HttpServletResponse response) throws IOException {
-		sendErrorResponse(response, "The access token has expired");
+	private void sendExpiredTokenResponse(HttpServletResponse response) throws IOException {
+		sendErrorResponse(response, "The access token has expired", "Expired-Token");
 	}
 
 	private void sendInvalidTokenResponse(HttpServletResponse response) throws IOException {
-		sendErrorResponse(response, "The access token is invalid");
+		sendErrorResponse(response, "The access token is invalid", "Invalid-Token");
 	}
 
 	private void sendAuthenticationFailureResponse(HttpServletResponse response) throws IOException {
-		sendErrorResponse(response, "Authentication failed");
+		sendErrorResponse(response, "Authentication failed", "Authentication-Failed");
 	}
 
-	private void sendErrorResponse(HttpServletResponse response, String message) throws IOException {
+	private void sendErrorResponse(HttpServletResponse response, String message, String error) throws IOException {
 		int status = HttpServletResponse.SC_UNAUTHORIZED;
 
 		response.setStatus(status);
@@ -101,6 +101,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		Map<String, Object> responseBody = new HashMap<>();
 		responseBody.put("status", status);
 		responseBody.put("message", message);
+		responseBody.put("data", error);
 
 		response.getWriter().write(objectMapper.writeValueAsString(responseBody));
 	}

@@ -12,6 +12,7 @@ import com.sparta.mypet.common.dto.MessageResponseDto;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
+import com.sparta.mypet.common.exception.custom.RefreshTokenInvalidException;
 import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.common.exception.custom.LikeNotFoundException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
@@ -103,6 +104,13 @@ public class GlobalExceptionHandler {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.notFound(errorMessage);
+	}
+
+	@ExceptionHandler(RefreshTokenInvalidException.class)
+	public ResponseEntity<MessageResponseDto> handleRefreshTokenInvalidException(RefreshTokenInvalidException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.authorizedError(errorMessage);
 	}
 
 }
