@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
@@ -12,6 +13,7 @@ import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
 import com.sparta.mypet.domain.auth.dto.SignupResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserWithPostListResponseDto;
+import com.sparta.mypet.domain.auth.dto.UserWithdrawResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
@@ -62,6 +64,19 @@ public class UserService {
 		return UserWithPostListResponseDto.builder()
 			.user(user)
 			.postList(user.getPostList())
+			.build();
+	}
+
+	// 유저를 탈퇴 처리 후, 로그아웃 API 호출을 통해 token 초기화!
+	@Transactional
+	public UserWithdrawResponseDto withdrawUser(String email) {
+
+		User user = findUserByEmail(email);
+
+		user.updateUserStatus(UserStatus.WITHDRAWAL);
+
+		return UserWithdrawResponseDto.builder()
+			.user(user)
 			.build();
 	}
 
