@@ -21,6 +21,7 @@ public enum GlobalMessage {
 	LOGIN_SUCCESS("로그인이 성공적으로 완료되었습니다."),
 	LOGOUT_SUCCESS("로그아웃이 성공적으로 완료되었습니다."),
 	REFRESH_TOKEN_SUCCESS("토큰 재발급이 성공적으로 완료되었습니다."),
+	GET_USER_SUCCESS("회원 조회가 성공적으로 완료되었습니다."),
 
 	// 에러 메세지
 	// User
