@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sparta.mypet.common.dto.DataResponseDto;
-import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.common.exception.custom.InvalidFileException;
 import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
@@ -41,10 +39,6 @@ public class PostController {
 		@Valid @RequestPart PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestParam("category") String category,
 		@RequestPart(value = "file", required = false) List<MultipartFile> files) {
-
-		if (files.size() > 5) {
-			throw new InvalidFileException(GlobalMessage.MAX_FILE_COUNT_EXCEEDED.getMessage());
-		}
 
 		PostResponseDto responseDto = postService.createPost(userDetails.getUsername(), requestDto, category, files);
 		return ResponseFactory.created(responseDto, "게시물 생성 성공");

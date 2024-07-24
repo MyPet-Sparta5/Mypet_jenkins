@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
+import com.sparta.mypet.common.exception.custom.InvalidFileException;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
 import com.sparta.mypet.common.util.PaginationUtil;
@@ -48,8 +49,10 @@ public class PostService {
 
 		Post post = createAndSavePost(user, requestDto.getTitle(), requestDto.getContent(), postCategory);
 		user.addPost(post);
-
 		if (files != null && postCategory.equals(Category.BOAST)) {
+			if (files.size() > 5) {
+				throw new InvalidFileException(GlobalMessage.MAX_FILE_COUNT_EXCEEDED.getMessage());
+			}
 			List<File> postFiles = fileService.uploadFile(files, post);
 			post.addFiles(postFiles);
 		}
