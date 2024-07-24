@@ -33,7 +33,6 @@ public class PostService {
 	private final UserRepository userRepository;
 	private final LikeRepository likeRepository;
 	private final FileService fileService;
-	private final FileRepository fileRepository;
 
 	@Transactional
 	public PostResponseDto createPost(User user, PostRequestDto requestDto, String category) {
@@ -74,6 +73,7 @@ public class PostService {
 	@Transactional
 	public PostResponseDto updatePost(User user, PostRequestDto requestDto, Long postId) {
 		userExists(user);
+
 		Post post = getPostById(postId);
 
 		checkPostAuthor(post, user);
@@ -88,6 +88,10 @@ public class PostService {
 		Post post = getPostById(postId);
 
 		checkPostAuthor(post, user);
+
+		// 배열로 바꾸면 삭제도 배열로 구현
+		List<File> files = post.getFiles();
+		fileService.deleteFile(postId, user.getEmail(), files);
 
 		postRepository.delete(post);
 	}
