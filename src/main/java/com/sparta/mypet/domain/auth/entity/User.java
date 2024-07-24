@@ -1,7 +1,12 @@
 package com.sparta.mypet.domain.auth.entity;
 
-import com.sparta.mypet.common.entity.Timestamped;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.sparta.mypet.common.entity.Timestamped;
+import com.sparta.mypet.domain.post.entity.Post;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,6 +14,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,6 +54,9 @@ public class User extends Timestamped {
 	@Column(nullable = false)
 	private UserStatus status;
 
+	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	private final List<Post> postList = new ArrayList<>();
+
 	@Builder
 	public User(String email, String password, String nickname, Integer penaltyCount, UserRole role,
 		UserStatus status) {
@@ -61,5 +70,9 @@ public class User extends Timestamped {
 
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+	public void addPost(Post post) {
+		this.postList.add(post);
 	}
 }
