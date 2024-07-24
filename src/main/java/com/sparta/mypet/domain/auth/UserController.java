@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,6 +15,7 @@ import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
 import com.sparta.mypet.domain.auth.dto.SignupResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserWithPostListResponseDto;
+import com.sparta.mypet.domain.auth.dto.UserWithdrawResponseDto;
 import com.sparta.mypet.security.UserDetailsImpl;
 
 import jakarta.validation.Valid;
@@ -43,4 +45,12 @@ public class UserController {
 		return ResponseFactory.ok(responseDto, GlobalMessage.GET_USER_SUCCESS.getMessage());
 	}
 
+	@PutMapping("/users/withdraw")
+	public ResponseEntity<DataResponseDto<UserWithdrawResponseDto>> withdrawUser(
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+		UserWithdrawResponseDto responseDto = userService.withdrawUser(userDetails.getUsername());
+
+		return ResponseFactory.ok(responseDto, GlobalMessage.WITHDRAW_USER_SUCCESS.getMessage());
+	}
 }

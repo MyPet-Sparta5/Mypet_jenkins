@@ -72,6 +72,10 @@ public class User extends Timestamped {
 		this.refreshToken = refreshToken;
 	}
 
+	public void updateUserStatus(UserStatus status) {
+		this.status = status;
+	}
+
 	public void addPost(Post post) {
 		this.postList.add(post);
 	}

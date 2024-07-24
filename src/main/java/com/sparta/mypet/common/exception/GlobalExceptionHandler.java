@@ -16,6 +16,7 @@ import com.sparta.mypet.common.exception.custom.RefreshTokenInvalidException;
 import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.common.exception.custom.LikeNotFoundException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
+import com.sparta.mypet.common.exception.custom.UserStatusNotActiveException;
 import com.sparta.mypet.common.util.ResponseFactory;
 
 import jakarta.validation.ConstraintViolationException;
@@ -108,6 +109,13 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(RefreshTokenInvalidException.class)
 	public ResponseEntity<MessageResponseDto> handleRefreshTokenInvalidException(RefreshTokenInvalidException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.authorizedError(errorMessage);
+	}
+
+	@ExceptionHandler(UserStatusNotActiveException.class)
+	public ResponseEntity<MessageResponseDto> handleUserStatusNotActiveException(UserStatusNotActiveException e) {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.authorizedError(errorMessage);

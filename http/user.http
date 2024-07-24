@@ -45,3 +45,8 @@ Host: {{root-path}}
 GET /api/users HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
+
+### 회원 탈퇴(상태 변경 : ACTIVE => WITHDRAWAL)
+PUT /api/users/withdraw HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}

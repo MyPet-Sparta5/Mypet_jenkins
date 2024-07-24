@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.common.exception.custom.RefreshTokenInvalidException;
+import com.sparta.mypet.common.exception.custom.UserStatusNotActiveException;
 import com.sparta.mypet.domain.auth.dto.LoginRequestDto;
 import com.sparta.mypet.domain.auth.entity.User;
+import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.security.JwtService;
 import com.sparta.mypet.security.TokenType;
 
@@ -27,9 +29,16 @@ public class AuthService {
 	public String login(LoginRequestDto requestDto) {
 
 		User user = userService.findUserByEmail(requestDto.getEmail());
+		UserStatus userStatus = user.getStatus();
 
 		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
 			throw new PasswordInvalidException(GlobalMessage.PASSWORD_INVALID);
+		}
+
+		if (userStatus.equals(UserStatus.WITHDRAWAL)) {
+			throw new UserStatusNotActiveException(GlobalMessage.USER_STATUS_WITHDRAWAL);
+		} else if (userStatus.equals(UserStatus.SUSPENSION) || userStatus.equals(UserStatus.BAN)) {
+			throw new UserStatusNotActiveException(GlobalMessage.USER_STATUS_STOP);
 		}
 
 		String accessToken = jwtService.generateToken(TokenType.ACCESS, user.getRole(), user.getEmail());
@@ -44,15 +53,14 @@ public class AuthService {
 	}
 
 	@Transactional
-	public void logout(String token) {
-
-		String tokenValue = jwtService.substringAccessToken(token);
-		String email = jwtService.extractEmail(tokenValue);
+	public void logout(String email) {
 
 		User user = userService.findUserByEmail(email);
+
 		user.updateRefreshToken(null);
 
-		jwtService.deleteRefreshTokenAtCookie();
+		jwtService.deleteRefreshTokenAtCookie(); // refresh 토큰 마감시간 0초로 덮어씌우기
+		// access 토큰 프론트에서 클리어
 	}
 
 	@Transactional
