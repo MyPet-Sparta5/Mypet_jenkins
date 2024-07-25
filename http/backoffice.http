@@ -1,0 +1,4 @@
+### 유저 전체조회
+GET /api/admin/user-manage HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
