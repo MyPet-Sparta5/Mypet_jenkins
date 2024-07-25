@@ -3,6 +3,7 @@ package com.sparta.mypet.domain.petcare;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.petcare.dto.PetFacilityDto;
@@ -17,6 +18,7 @@ public class PetFacilityService {
 
 	private final PetFacilityRepository petFacilityRepository;
 
+	@Transactional(readOnly = true)
 	public Page<PetFacilityDto> searchFacilities(String category, double x, double y, double radius, int page, int size,
 		String sort) {
 
