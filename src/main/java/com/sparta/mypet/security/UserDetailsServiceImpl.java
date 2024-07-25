@@ -5,8 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.domain.auth.UserRepository;
+import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
 
 import lombok.RequiredArgsConstructor;
@@ -15,13 +14,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	private final UserRepository userRepository;
+	private final UserService userService;
 
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		User user = userRepository.findByEmail(email).orElseThrow(
-			() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage())
-		);
+		User user = userService.findUserByEmail(email);
 
 		return new UserDetailsImpl(user);
 	}
