@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
+import com.sparta.mypet.common.exception.custom.InvalidCategoryException;
 import com.sparta.mypet.common.exception.custom.InvalidFileException;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
@@ -35,24 +36,22 @@ public class PostService {
 	private final LikeRepository likeRepository;
 	private final FileService fileService;
 
+	private static final int MAX_FILE_COUNT = 5;
+
 	@Transactional
 	public PostResponseDto createPost(String email, PostRequestDto requestDto, String category,
 		List<MultipartFile> files) {
+		if (files != null && files.size() > MAX_FILE_COUNT) {
+			throw new InvalidFileException(GlobalMessage.MAX_FILE_COUNT_EXCEEDED.getMessage());
+		}
 
 		User user = findUserByEmail(email);
 
-		Category postCategory = Category.FREEDOM;
-
-		if (category.equals("BOAST")) {
-			postCategory = Category.BOAST;
-		}
+		Category postCategory = category.equals("BOAST") ? Category.BOAST : Category.FREEDOM;
 
 		Post post = createAndSavePost(user, requestDto.getTitle(), requestDto.getContent(), postCategory);
 		user.addPost(post);
 		if (files != null && postCategory.equals(Category.BOAST)) {
-			if (files.size() > 5) {
-				throw new InvalidFileException(GlobalMessage.MAX_FILE_COUNT_EXCEEDED.getMessage());
-			}
 			List<File> postFiles = fileService.uploadFile(files, post);
 			post.addFiles(postFiles);
 		}
@@ -80,7 +79,7 @@ public class PostService {
 		checkPostAuthor(post, user);
 
 		List<File> files = post.getFiles();
-		fileService.deleteFile(files);
+		fileService.deleteFiles(files);
 
 		postRepository.delete(post);
 	}
@@ -91,19 +90,16 @@ public class PostService {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
 		Page<Post> postList;
+		Category categoryEnum;
 
-		switch (category) {
-			case "BOAST":
-				postList = postRepository.findByCategory(Category.BOAST, pageable);
-				break;
-			case "FREEDOM":
-				postList = postRepository.findByCategory(Category.FREEDOM, pageable);
-				break;
-			case "default":
-			default:
-				postList = postRepository.findAll(pageable);
-				break;
+		try {
+			categoryEnum = Category.valueOf(category);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidCategoryException(GlobalMessage.INVALID_ENUM_CATEGORY.getMessage());
 		}
+
+		postList = categoryEnum.equals(Category.DEFAULT) ? postRepository.findAll(pageable) :
+			postRepository.findByCategory(categoryEnum, pageable);
 
 		return postList.map(PostResponseDto::new);
 	}

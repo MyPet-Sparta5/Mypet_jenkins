@@ -40,6 +40,7 @@ public enum GlobalMessage {
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
 	NOT_POST_OWNER("게시물 작성자가 아닙니다."),
+	INVALID_ENUM_CATEGORY("존재하지 않는 카테고리입니다."),
 
 	// File
 	UPLOAD_FILE_NOT_FOUND("업로드 하려는 파일이 없습니다"),
