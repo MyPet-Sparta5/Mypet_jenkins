@@ -2,3 +2,13 @@
 GET /api/admin/user-manage HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
+
+### 유저 상태 변경
+PUT /api/admin/user-manage/{{userId}}/status HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "status": "BAN"
+}
