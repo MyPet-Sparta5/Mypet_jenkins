@@ -1,5 +1,8 @@
 package com.sparta.mypet.security.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +14,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.sparta.mypet.security.JwtService;
 import com.sparta.mypet.security.UserDetailsServiceImpl;
@@ -44,12 +50,16 @@ public class WebSecurityConfig {
 		http.sessionManagement(
 			sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-		http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-			.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
+		// CORS 설정 추가
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
+		http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.requestMatchers(
+			PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
 			.requestMatchers(HttpMethod.POST, "/api/users").permitAll() // 회원가입 요청 허가
 			.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // 로그인 요청 허가
 			.requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll() // 토큰 재발급 요청 허가
 			.requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
+			.requestMatchers(HttpMethod.GET, "/api/facilities/**").permitAll()
 			.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		);
 
@@ -57,4 +67,18 @@ public class WebSecurityConfig {
 
 		return http.build();
 	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 리액트 앱의 주소
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("*"));
+		configuration.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
+
 }
