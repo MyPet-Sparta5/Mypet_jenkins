@@ -43,9 +43,9 @@ public class FileService {
 	public List<File> uploadFile(List<MultipartFile> files, Post post) {
 		List<File> uploadedFiles = new ArrayList<>();
 
-		int i = 0;
+		for (int i = 0; i < files.size(); i++) {
+			MultipartFile multiFile = files.get(i);
 
-		for (MultipartFile multiFile : files) {
 			validFile(multiFile);
 
 			String fileName = multiFile.getOriginalFilename();
@@ -67,14 +67,12 @@ public class FileService {
 			file.updateUrl(fileUrl);
 
 			uploadedFiles.add(file);
-
-			i++;
 		}
 
 		return uploadedFiles;
 	}
 
-	public void deleteFile(List<File> files) {
+	public void deleteFiles(List<File> files) {
 		for (File file : files) {
 			String key = file.generateFileKey();
 			amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, key));
