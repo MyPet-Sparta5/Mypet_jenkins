@@ -37,7 +37,7 @@ public class PetFacility {
 	private String phone; // 전화 번호
 	@Column
 	private String operatingHours; // 영업 시간
-	@Column
-	private boolean isClosed; // 폐업을 했는지?
+	@Column(nullable = false)
+	private Boolean isClosed; // 폐업을 했는지?
 
 }
