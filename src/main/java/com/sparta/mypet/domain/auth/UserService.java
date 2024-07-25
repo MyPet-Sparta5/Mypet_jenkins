@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
+import com.sparta.mypet.common.exception.custom.UserNotFoundException;
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
 import com.sparta.mypet.domain.auth.dto.SignupResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserWithPostListResponseDto;
@@ -83,6 +84,12 @@ public class UserService {
 	public User findUserByEmail(String email) {
 		return userRepository.findByEmail(email).orElseThrow(
 			() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage())
+		);
+	}
+
+	public User findUserById(Long userId) {
+		return userRepository.findById(userId).orElseThrow(
+			() -> new UserNotFoundException(GlobalMessage.USER_NOT_FOUND.getMessage())
 		);
 	}
 }

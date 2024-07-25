@@ -24,6 +24,9 @@ public enum GlobalMessage {
 	GET_USER_SUCCESS("회원 조회가 성공적으로 완료되었습니다."),
 	WITHDRAW_USER_SUCCESS("회원 탈퇴가 성공적으로 완료되었습니다."),
 
+	// Report
+	CREATE_REPORT_SUCCESS("유저 신고가 성공적으로 완료되었습니다."),
+
 	// 에러 메세지
 	// User
 	USER_EMAIL_NOT_FOUND("존재하지 않는 이메일입니다."),
@@ -50,9 +53,12 @@ public enum GlobalMessage {
 	COMMENT_NOT_FOUND("존재하지 않는 댓글입니다."),
 	NOT_COMMENT_OWNER("댓글 작성자가 아닙니다."),
 
-	//Like
+	// Like
 	LIKE_ALREADY_EXISTS("이미 좋아요를 누른 게시물입니다."),
-	LIKE_NOT_FOUND("해당 포스트에 좋아요를 하지않았습니다.");
+	LIKE_NOT_FOUND("해당 포스트에 좋아요를 하지않았습니다."),
+
+	// Report
+	SELF_REPORT_NOT("자기 자신을 신고할 수 없습니다.");
 
 	// Valid
 	public static final String COMMENT_CONTENT_NOT_BLANK_MESSAGE = "댓글의 내용을 작성해야합니다.";

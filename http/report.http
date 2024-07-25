@@ -1,0 +1,9 @@
+### 유저 신고하기(신고 생성)
+POST /api/reports/users/3 HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "reportIssue": "비속어 사용으로 신고합니다!!"
+}
