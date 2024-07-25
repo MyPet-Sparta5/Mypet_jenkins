@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.backoffice.dto.UserListResponseDto;
+import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
+import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 
@@ -40,5 +42,12 @@ public class BackOfficeController {
 		@Valid @RequestBody UserStatusRequestDto requestDto, @PathVariable Long userId) {
 		UserStatusResponseDto responseDto = backOfficeService.updateUserStatus(requestDto, userId);
 		return ResponseFactory.ok(responseDto, "사용자 상태 변경 성공");
+	}
+
+	@PutMapping("/user-manage/{userId}/role")
+	public ResponseEntity<DataResponseDto<UserRoleResponseDto>> updateUserRole(
+		@Valid @RequestBody UserRoleRequestDto requestDto, @PathVariable Long userId) {
+		UserRoleResponseDto responseDto = backOfficeService.updateUserRole(requestDto, userId);
+		return ResponseFactory.ok(responseDto, "사용자 권한 변경 성공");
 	}
 }

@@ -9,8 +9,11 @@ import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
+import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.domain.backoffice.dto.UserListResponseDto;
+import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
+import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 
@@ -40,5 +43,15 @@ public class BackOfficeService {
 		updatedUser.updateUserStatus(userStatus);
 
 		return new UserStatusResponseDto(updatedUser);
+	}
+
+	@Transactional
+	public UserRoleResponseDto updateUserRole(UserRoleRequestDto requestDto, Long userId) {
+		User updatedUser = userService.findUserById(userId);
+		UserRole userRole = UserRole.valueOf(requestDto.getRole());
+
+		updatedUser.updateUserRole(userRole);
+
+		return new UserRoleResponseDto(updatedUser);
 	}
 }

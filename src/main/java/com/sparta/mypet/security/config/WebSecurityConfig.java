@@ -60,6 +60,7 @@ public class WebSecurityConfig {
 			.requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll() // 토큰 재발급 요청 허가
 			.requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/api/facilities/**").permitAll()
+			.requestMatchers("/api/admin/user-manage/*/role").hasAuthority("ROLE_ADMIN")
 			.requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
 			.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		);
