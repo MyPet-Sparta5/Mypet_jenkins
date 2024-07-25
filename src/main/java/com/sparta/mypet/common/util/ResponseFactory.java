@@ -7,8 +7,6 @@ import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.dto.MessageResponseDto;
 import com.sparta.mypet.common.entity.GlobalMessage;
 
-import jakarta.validation.constraints.Null;
-
 /**
  * HTTP 응답을 생성하기 위한 클래스입니다.
  * 이 클래스는 다양한 HTTP 상태 코드에 대한 응답을 생성합니다.
