@@ -95,4 +95,8 @@ public class Post extends Timestamped {
 	public void addFiles(List<File> files) {
 		this.files.addAll(files);
 	}
+
+	public boolean isLikedByUser(User user) {
+		return likes.stream().anyMatch(like -> like.getUser().equals(user));
+	}
 }

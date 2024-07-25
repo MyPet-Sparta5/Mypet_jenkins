@@ -2,7 +2,6 @@ package com.sparta.mypet.domain.post.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
@@ -21,7 +20,7 @@ public class PostResponseDto {
 	private final String nickname;
 	private final LocalDateTime createAt;
 	private final boolean isLike;
-	private List<FileResponseDto> files;
+	private final List<FileResponseDto> files;
 
 	public PostResponseDto(Post post) {
 		this.id = post.getId();
@@ -32,7 +31,7 @@ public class PostResponseDto {
 		this.nickname = post.getUser().getNickname();
 		this.createAt = post.getCreatedAt();
 		this.isLike = false;
-		this.files = post.getFiles().stream().map(FileResponseDto::new).collect(Collectors.toList());
+		this.files = post.getFiles().stream().map(FileResponseDto::new).toList();
 	}
 
 	public PostResponseDto(Post post, boolean isLike) {
@@ -44,6 +43,6 @@ public class PostResponseDto {
 		this.nickname = post.getUser().getNickname();
 		this.createAt = post.getCreatedAt();
 		this.isLike = isLike;
-		this.files = post.getFiles().stream().map(FileResponseDto::new).collect(Collectors.toList());
+		this.files = post.getFiles().stream().map(FileResponseDto::new).toList();
 	}
 }

@@ -28,13 +28,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class PostController {
 
 	private final PostService postService;
 
-	@PostMapping
+	@PostMapping("/posts")
 	public ResponseEntity<DataResponseDto<PostResponseDto>> createPost(
 		@Valid @RequestPart PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestParam("category") String category,
@@ -44,7 +44,7 @@ public class PostController {
 		return ResponseFactory.created(responseDto, "게시물 생성 성공");
 	}
 
-	@PutMapping("/{postId}")
+	@PutMapping("/posts/{postId}")
 	public ResponseEntity<DataResponseDto<PostResponseDto>> updatePost(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@Valid @RequestBody PostRequestDto requestDto, @PathVariable Long postId) {
@@ -52,14 +52,14 @@ public class PostController {
 		return ResponseFactory.ok(responseDto, "게시물 수정 성공");
 	}
 
-	@DeleteMapping("/{postId}")
+	@DeleteMapping("/posts/{postId}")
 	public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@PathVariable Long postId) {
 		postService.deletePost(userDetails.getUsername(), postId);
 		return ResponseFactory.noContent();
 	}
 
-	@GetMapping
+	@GetMapping("/posts")
 	public ResponseEntity<DataResponseDto<Page<PostResponseDto>>> getPosts(
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
@@ -69,7 +69,7 @@ public class PostController {
 		return ResponseFactory.ok(responseDtoList, "게시물 전체 조회 성공");
 	}
 
-	@GetMapping("/{postId}")
+	@GetMapping("/posts/{postId}")
 	public ResponseEntity<DataResponseDto<PostResponseDto>> getPost(@PathVariable Long postId,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
