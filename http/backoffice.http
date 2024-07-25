@@ -1,3 +1,17 @@
+### admin - 로그인
+POST /api/auth/login HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+{
+  "email": "admin@mypet.com",
+  "password": "admin1234"
+}
+
+> {%
+    client.global.set("Authorization", response.headers.valueOf("Authorization"));
+%}
+
 ### 유저 전체조회
 GET /api/admin/user-manage HTTP/1.1
 Host: {{root-path}}
@@ -11,4 +25,14 @@ Authorization: {{Authorization}}
 
 {
   "status": "BAN"
+}
+
+### 유저 권한 변경
+PUT /api/admin/user-manage/{{userId}}/role HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "role": "USER"
 }

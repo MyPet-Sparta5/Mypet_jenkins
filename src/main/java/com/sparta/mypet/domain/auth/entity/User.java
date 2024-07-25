@@ -76,6 +76,10 @@ public class User extends Timestamped {
 		this.status = status;
 	}
 
+	public void updateUserRole(UserRole role) {
+		this.role = role;
+	}
+
 	public void addPost(Post post) {
 		this.postList.add(post);
 	}
