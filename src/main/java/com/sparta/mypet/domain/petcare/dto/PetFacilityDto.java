@@ -15,7 +15,7 @@ public class PetFacilityDto {
 	private final String category;
 	private final String phone;
 	private final String operatingHours;
-	private final boolean isClosed;
+	private final Boolean isClosed;
 
 	public PetFacilityDto(PetFacility petFacility) {
 		this.id = petFacility.getId();
@@ -27,6 +27,6 @@ public class PetFacilityDto {
 		this.category = petFacility.getCategory().name();
 		this.phone = petFacility.getPhone();
 		this.operatingHours = petFacility.getOperatingHours();
-		this.isClosed = petFacility.isClosed();
+		this.isClosed = petFacility.getIsClosed();
 	}
 }
