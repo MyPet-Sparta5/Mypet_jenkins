@@ -62,4 +62,11 @@ public class Report extends Timestamped {
 		this.handleUserId = handleUserId;
 	}
 
+	/**
+	 * 신고 변경 상태를 설정.
+	 * @param reportStatus 변경할 상태
+	 */
+	public void updateReportStatus(ReportStatus reportStatus) {
+		this.reportStatus = reportStatus;
+	}
 }

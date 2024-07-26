@@ -59,7 +59,8 @@ public enum GlobalMessage {
 	LIKE_NOT_FOUND("해당 포스트에 좋아요를 하지않았습니다."),
 
 	// Report
-	SELF_REPORT_NOT("자기 자신을 신고할 수 없습니다.");
+	SELF_REPORT_NOT("자기 자신을 신고할 수 없습니다."),
+	REPORT_NOT_FOUND("존재하지 않는 신고입니다.");
 
 	// Valid
 	public static final String COMMENT_CONTENT_NOT_BLANK_MESSAGE = "댓글의 내용을 작성해야합니다.";
