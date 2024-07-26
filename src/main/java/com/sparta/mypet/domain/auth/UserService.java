@@ -2,6 +2,8 @@ package com.sparta.mypet.domain.auth;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
+	@Transactional
 	public SignupResponseDto signup(SignupRequestDto requestDto) {
 
 		Optional<User> duplicateUser = userRepository.findByEmail(requestDto.getEmail());
@@ -53,19 +56,20 @@ public class UserService {
 
 		User saveUser = userRepository.save(user);
 
-		return SignupResponseDto.builder()
-			.user(saveUser)
-			.build();
+		return SignupResponseDto.builder().user(saveUser).build();
 	}
 
+	@Transactional(readOnly = true)
 	public UserWithPostListResponseDto getUser(String email) {
 
 		User user = findUserByEmail(email);
 
-		return UserWithPostListResponseDto.builder()
-			.user(user)
-			.postList(user.getPostList())
-			.build();
+		return UserWithPostListResponseDto.builder().user(user).postList(user.getPostList()).build();
+	}
+
+	@Transactional(readOnly = true)
+	public Page<User> findAll(Pageable pageable) {
+		return userRepository.findAll(pageable);
 	}
 
 	// 유저를 탈퇴 처리 후, 로그아웃 API 호출을 통해 token 초기화!
@@ -76,20 +80,16 @@ public class UserService {
 
 		user.updateUserStatus(UserStatus.WITHDRAWAL);
 
-		return UserWithdrawResponseDto.builder()
-			.user(user)
-			.build();
+		return UserWithdrawResponseDto.builder().user(user).build();
 	}
 
 	public User findUserByEmail(String email) {
-		return userRepository.findByEmail(email).orElseThrow(
-			() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage())
-		);
+		return userRepository.findByEmail(email)
+			.orElseThrow(() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage()));
 	}
 
 	public User findUserById(Long userId) {
-		return userRepository.findById(userId).orElseThrow(
-			() -> new UserNotFoundException(GlobalMessage.USER_NOT_FOUND.getMessage())
-		);
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new UserNotFoundException(GlobalMessage.USER_NOT_FOUND.getMessage()));
 	}
 }

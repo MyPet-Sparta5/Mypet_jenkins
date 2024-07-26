@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -40,6 +41,7 @@ public class FileService {
 	 * @param post  파일이 속한 게시물
 	 * @return 업로드된 파일 목록
 	 */
+	@Transactional
 	public List<File> uploadFile(List<MultipartFile> files, Post post) {
 		List<File> uploadedFiles = new ArrayList<>();
 
@@ -50,23 +52,18 @@ public class FileService {
 
 			String fileName = multiFile.getOriginalFilename();
 
-			File file = File.builder()
-				.post(post)
-				.url("")
-				.name(fileName)
-				.order(i)
-				.build();
+			File file = File.builder().post(post).url("").name(fileName).order(i).build();
 
-			file = fileRepository.save(file);
+			File savedFile = fileRepository.save(file);
 
-			String key = file.generateFileKey();
+			String key = savedFile.generateFileKey();
 
 			uploadToS3(multiFile, key);
 
 			String fileUrl = generateFileUrl(key);
-			file.updateUrl(fileUrl);
+			savedFile.updateUrl(fileUrl);
 
-			uploadedFiles.add(file);
+			uploadedFiles.add(savedFile);
 		}
 
 		return uploadedFiles;

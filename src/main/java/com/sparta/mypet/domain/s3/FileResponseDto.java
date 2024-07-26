@@ -6,9 +6,9 @@ import lombok.Getter;
 
 @Getter
 public class FileResponseDto {
-	private String url;
-	private String name;
-	private int order;
+	private final String url;
+	private final String name;
+	private final int order;
 
 	public FileResponseDto(File file) {
 		this.url = file.getUrl();

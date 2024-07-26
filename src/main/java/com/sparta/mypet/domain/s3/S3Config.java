@@ -17,15 +17,12 @@ public class S3Config {
 	private String accessKey;
 	@Value("${cloud.aws.credentials.secretKey}")
 	private String secretKey;
-	@Value("${cloud.aws.region.static}")
-	private String region;
 
 	@Bean
 	public AmazonS3Client amazonS3() {
 		AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
 
-		return (AmazonS3Client)AmazonS3ClientBuilder
-			.standard()
+		return (AmazonS3Client)AmazonS3ClientBuilder.standard()
 			.withCredentials(new AWSStaticCredentialsProvider(credentials))
 			.withRegion(Regions.AP_NORTHEAST_2)
 			.build();

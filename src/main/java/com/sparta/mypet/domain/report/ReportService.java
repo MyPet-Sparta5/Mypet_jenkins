@@ -1,6 +1,7 @@
 package com.sparta.mypet.domain.report;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.domain.auth.UserService;
@@ -19,6 +20,7 @@ public class ReportService {
 	private final ReportRepository reportRepository;
 	private final UserService userService;
 
+	@Transactional
 	public ReportResponseDto createReport(ReportRequestDto requestDto, Long reportedUserId, String reporterUsername) {
 
 		User reportedUser = userService.findUserById(reportedUserId);

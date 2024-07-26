@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +14,8 @@ import com.sparta.mypet.common.exception.custom.InvalidFileException;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
 import com.sparta.mypet.common.util.PaginationUtil;
-import com.sparta.mypet.domain.auth.UserRepository;
+import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
-import com.sparta.mypet.domain.like.LikeRepository;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Category;
@@ -32,9 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class PostService {
 
 	private final PostRepository postRepository;
-	private final UserRepository userRepository;
-	private final LikeRepository likeRepository;
 	private final FileService fileService;
+	private final UserService userService;
 
 	private static final int MAX_FILE_COUNT = 5;
 
@@ -45,7 +42,7 @@ public class PostService {
 			throw new InvalidFileException(GlobalMessage.MAX_FILE_COUNT_EXCEEDED.getMessage());
 		}
 
-		User user = findUserByEmail(email);
+		User user = userService.findUserByEmail(email);
 
 		Category postCategory = category.equals("BOAST") ? Category.BOAST : Category.FREEDOM;
 
@@ -61,9 +58,9 @@ public class PostService {
 
 	@Transactional
 	public PostResponseDto updatePost(String email, PostRequestDto requestDto, Long postId) {
-		User user = findUserByEmail(email);
+		User user = userService.findUserByEmail(email);
 
-		Post post = getPostById(postId);
+		Post post = findPostById(postId);
 
 		checkPostAuthor(post, user);
 
@@ -73,8 +70,8 @@ public class PostService {
 
 	@Transactional
 	public void deletePost(String email, Long postId) {
-		User user = findUserByEmail(email);
-		Post post = getPostById(postId);
+		User user = userService.findUserByEmail(email);
+		Post post = findPostById(postId);
 
 		checkPostAuthor(post, user);
 
@@ -106,9 +103,9 @@ public class PostService {
 
 	@Transactional(readOnly = true)
 	public PostResponseDto getPost(Long postId, User user) {
-		Post post = getPostById(postId);
+		Post post = findPostById(postId);
 
-		boolean isLike = isLikePost(user, post);
+		boolean isLike = isLikePost(user, postId);
 
 		return new PostResponseDto(post, isLike);
 	}
@@ -130,20 +127,13 @@ public class PostService {
 		}
 	}
 
-	public Post getPostById(Long postId) { // request to post service
+	public Post findPostById(Long postId) {
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
 	}
 
-	public boolean isLikePost(User user, Post post) {
-		if (user == null) {
-			return false;
-		}
-		return likeRepository.findByUserAndPost(user, post).isPresent();
-	}
-
-	private User findUserByEmail(String email) { // request to user service
-		return userRepository.findByEmail(email)
-			.orElseThrow(() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage()));
+	public boolean isLikePost(User user, Long postId) {
+		Post post = findPostById(postId);
+		return post.isLikedByUser(user);
 	}
 }

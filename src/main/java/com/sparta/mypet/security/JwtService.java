@@ -2,16 +2,17 @@ package com.sparta.mypet.security;
 
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.sparta.mypet.security.config.JwtConfig;
 import com.sparta.mypet.security.util.JwtProvider;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,21 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class JwtService {
 
+	public static final String TOKEN_PREFIX = "Bearer ";
+	public static final String HEADER = "Authorization";
+	public static final String AUTHORIZATION_KEY = "auth";
+	public static final String REFRESH_TOKEN_COOKIE_NAME = "RefreshToken";
+	public static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
+
+	@Value("${jwt.secret.key}")
+	private String secretKey;
+
+	@Value("${access.token.expiration}")
+	private Long accessTokenExpiration; // access token 만료 시간
+
+	@Value("${refresh.token.expiration}")
+	private Long refreshTokenExpiration; // refresh token 만료 시간
+
 	/**
 	 * JWT 토큰을 생성합니다.
 	 * @param tokenType 토큰의 종류 (access, refresh)
@@ -30,11 +46,10 @@ public class JwtService {
 	 * @return 생성된 JWT 토큰
 	 */
 	public String generateToken(TokenType tokenType, Object role, String username) {
-		long expiration = (tokenType.equals(TokenType.ACCESS)) ? JwtConfig.staticAccessTokenExpiration :
-			JwtConfig.staticRefreshTokenExpiration;
+		long expiration = (tokenType.equals(TokenType.ACCESS)) ? accessTokenExpiration : refreshTokenExpiration;
 
-		return JwtProvider.generateToken(JwtConfig.AUTHORIZATION_KEY, role, username,
-			expiration, JwtProvider.getSecretKey(JwtConfig.staticSecretKey), JwtConfig.SIGNATURE_ALGORITHM);
+		return JwtProvider.generateToken(AUTHORIZATION_KEY, role, username, expiration,
+			JwtProvider.getSecretKey(secretKey), SIGNATURE_ALGORITHM);
 	}
 
 	/**
@@ -42,12 +57,11 @@ public class JwtService {
 	 * @param accessToken 설정할 Access 토큰
 	 */
 	public void setHeaderWithAccessToken(String accessToken) {
-		HttpServletResponse response = (
-			(ServletRequestAttributes)Objects.requireNonNull(RequestContextHolder.getRequestAttributes())
-		).getResponse();
+		HttpServletResponse response = ((ServletRequestAttributes)Objects.requireNonNull(
+			RequestContextHolder.getRequestAttributes())).getResponse();
 
 		if (response != null) {
-			response.setHeader(JwtConfig.HEADER, JwtConfig.TOKEN_PREFIX + accessToken);
+			response.setHeader(HEADER, TOKEN_PREFIX + accessToken);
 		}
 	}
 
@@ -56,15 +70,14 @@ public class JwtService {
 	 * @param refreshToken 저장할 Refresh 토큰
 	 */
 	public void setRefreshTokenAtCookie(String refreshToken) {
-		Cookie cookie = new Cookie(JwtConfig.REFRESH_TOKEN_COOKIE_NAME, refreshToken);
+		Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
 		cookie.setPath("/");
-		cookie.setMaxAge(JwtConfig.staticRefreshTokenExpirationSecond);
+		cookie.setMaxAge((int)(refreshTokenExpiration / 1000));
 
-		HttpServletResponse response = (
-			(ServletRequestAttributes)Objects.requireNonNull(RequestContextHolder.getRequestAttributes())
-		).getResponse();
+		HttpServletResponse response = ((ServletRequestAttributes)Objects.requireNonNull(
+			RequestContextHolder.getRequestAttributes())).getResponse();
 
 		if (response != null) {
 			response.addCookie(cookie);
@@ -77,7 +90,7 @@ public class JwtService {
 	 * @return Authorization Header 존재 여부
 	 */
 	public Boolean isAuthorizationHeaderNotFound(HttpServletRequest request) {
-		return request.getHeader(JwtConfig.HEADER) == null;
+		return request.getHeader(HEADER) == null;
 	}
 
 	/**
@@ -87,7 +100,7 @@ public class JwtService {
 	 */
 	public String getAccessTokenFromRequest(HttpServletRequest request) {
 
-		return request.getHeader(JwtConfig.HEADER);
+		return request.getHeader(HEADER);
 	}
 
 	/**
@@ -97,7 +110,7 @@ public class JwtService {
 	 */
 	public String substringAccessToken(String tokenValue) {
 
-		if (tokenValue.startsWith(JwtConfig.TOKEN_PREFIX)) {
+		if (tokenValue.startsWith(TOKEN_PREFIX)) {
 			return tokenValue.substring(7);
 		}
 		return null;
@@ -112,7 +125,7 @@ public class JwtService {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals(JwtConfig.REFRESH_TOKEN_COOKIE_NAME)) {
+				if (cookie.getName().equals(REFRESH_TOKEN_COOKIE_NAME)) {
 					return cookie.getValue();
 				}
 			}
@@ -127,10 +140,7 @@ public class JwtService {
 	 */
 	public Boolean validateToken(String token) {
 		try {
-			Jwts.parserBuilder()
-				.setSigningKey(JwtProvider.getSecretKey(JwtConfig.staticSecretKey))
-				.build()
-				.parseClaimsJws(token);
+			Jwts.parserBuilder().setSigningKey(JwtProvider.getSecretKey(secretKey)).build().parseClaimsJws(token);
 			return true;
 		} catch (SecurityException | MalformedJwtException e) {
 			log.error("Invalid JWT signature.");
@@ -150,9 +160,7 @@ public class JwtService {
 	 * @return 추출된 이메일
 	 */
 	public String extractEmail(String token) {
-		return JwtProvider.extractAllClaims(
-			token, JwtProvider.getSecretKey(JwtConfig.staticSecretKey)
-		).getSubject();
+		return JwtProvider.extractAllClaims(token, JwtProvider.getSecretKey(secretKey)).getSubject();
 	}
 
 	/**
@@ -161,9 +169,7 @@ public class JwtService {
 	 * @return 추출된 User Role
 	 */
 	public Object extractRole(String token) {
-		return JwtProvider.extractAllClaims(
-			token, JwtProvider.getSecretKey(JwtConfig.staticSecretKey)
-		).get(JwtConfig.AUTHORIZATION_KEY);
+		return JwtProvider.extractAllClaims(token, JwtProvider.getSecretKey(secretKey)).get(AUTHORIZATION_KEY);
 	}
 
 	/**
@@ -171,7 +177,7 @@ public class JwtService {
 	 */
 	public void deleteRefreshTokenAtCookie() {
 		// 덮어 쓰기
-		Cookie cookie = new Cookie(JwtConfig.REFRESH_TOKEN_COOKIE_NAME, null);
+		Cookie cookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, null);
 		cookie.setHttpOnly(true);
 		cookie.setSecure(true);
 		cookie.setPath("/");
