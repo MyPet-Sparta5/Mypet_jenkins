@@ -41,3 +41,13 @@ Authorization: {{Authorization}}
 GET /api/admin/report-view HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
+
+### 신고 상태 변경
+PUT /api/admin/report-view/{{reportId}}/report-status HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "reportStatus": "IN_PROGRESS"
+}

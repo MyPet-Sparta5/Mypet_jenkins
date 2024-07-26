@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
+import com.sparta.mypet.common.exception.custom.ReportNotFoundException;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.report.dto.ReportRequestDto;
@@ -48,5 +49,11 @@ public class ReportService {
 	@Transactional(readOnly = true)
 	public Page<Report> findAll(Pageable pageable) {
 		return reportRepository.findAll(pageable);
+	}
+
+	@Transactional(readOnly = true)
+	public Report findById(Long id) {
+		return reportRepository.findById(id).orElseThrow(() ->
+			new ReportNotFoundException(GlobalMessage.REPORT_NOT_FOUND.getMessage()));
 	}
 }

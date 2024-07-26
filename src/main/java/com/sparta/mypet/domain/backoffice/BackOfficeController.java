@@ -2,6 +2,7 @@ package com.sparta.mypet.domain.backoffice;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,11 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
+import com.sparta.mypet.domain.backoffice.dto.ReportStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
+import com.sparta.mypet.security.UserDetailsImpl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,4 +63,14 @@ public class BackOfficeController {
 		Page<ReportListResponseDto> responseDtoList = backOfficeService.getReports(page, pageSize, sortBy);
 		return ResponseFactory.ok(responseDtoList, "신고 목록 전체 조회 성공");
 	}
+
+	@PutMapping("/report-view/{reportId}/report-status")
+	public ResponseEntity<DataResponseDto<ReportListResponseDto>> updateReportStatus(
+		@AuthenticationPrincipal UserDetailsImpl userDetails, @Valid @RequestBody ReportStatusRequestDto requestDto,
+		@PathVariable Long reportId) {
+		ReportListResponseDto responseDto = backOfficeService.updateReportStatus(userDetails.getUser(), requestDto,
+			reportId);
+		return ResponseFactory.ok(responseDto, "사용자 권한 변경 성공");
+	}
+
 }

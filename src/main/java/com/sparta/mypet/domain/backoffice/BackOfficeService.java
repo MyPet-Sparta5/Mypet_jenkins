@@ -11,6 +11,7 @@ import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
+import com.sparta.mypet.domain.backoffice.dto.ReportStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
@@ -18,6 +19,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 import com.sparta.mypet.domain.report.ReportService;
 import com.sparta.mypet.domain.report.entity.Report;
+import com.sparta.mypet.domain.report.entity.ReportStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -63,5 +65,16 @@ public class BackOfficeService {
 		Page<Report> reportList = reportService.findAll(pageable);
 
 		return reportList.map(ReportListResponseDto::new);
+	}
+
+	@Transactional
+	public ReportListResponseDto updateReportStatus(User user, ReportStatusRequestDto requestDto, Long reportId) {
+		Report report = reportService.findById(reportId);
+		ReportStatus reportStatus = ReportStatus.valueOf(requestDto.getReportStatus());
+
+		report.updateHandleUser(user.getId());
+		report.updateReportStatus(reportStatus);
+
+		return new ReportListResponseDto(report);
 	}
 }
