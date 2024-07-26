@@ -54,7 +54,7 @@ public class WebSecurityConfig {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
 		http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.requestMatchers(
-			PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
+				PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
 			.requestMatchers(HttpMethod.POST, "/api/users").permitAll() // 회원가입 요청 허가
 			.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // 로그인 요청 허가
 			.requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll() // 토큰 재발급 요청 허가
@@ -77,10 +77,10 @@ public class WebSecurityConfig {
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);
+		configuration.addExposedHeader("Authorization");
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
 	}
-
 }
