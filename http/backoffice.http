@@ -36,3 +36,8 @@ Authorization: {{Authorization}}
 {
   "role": "USER"
 }
+
+### 신고 목록 전체조회
+GET /api/admin/report-view HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}

@@ -1,5 +1,7 @@
 package com.sparta.mypet.domain.report;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +22,12 @@ public class ReportService {
 	private final ReportRepository reportRepository;
 	private final UserService userService;
 
-	@Transactional
 	public ReportResponseDto createReport(ReportRequestDto requestDto, Long reportedUserId, String reporterUsername) {
 
 		User reportedUser = userService.findUserById(reportedUserId);
 		User reporterUser = userService.findUserByEmail(reporterUsername);
 
-		if(reporterUser.getId().equals(reportedUserId)) {
+		if (reporterUser.getId().equals(reportedUserId)) {
 			throw new IllegalArgumentException(GlobalMessage.SELF_REPORT_NOT.getMessage());
 		}
 
@@ -42,5 +43,10 @@ public class ReportService {
 		return ReportResponseDto.builder()
 			.report(saveReport)
 			.build();
+	}
+
+	@Transactional(readOnly = true)
+	public Page<Report> findAll(Pageable pageable) {
+		return reportRepository.findAll(pageable);
 	}
 }
