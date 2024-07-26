@@ -9,6 +9,7 @@ import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.common.exception.custom.RefreshTokenInvalidException;
 import com.sparta.mypet.common.exception.custom.UserStatusNotActiveException;
 import com.sparta.mypet.domain.auth.dto.LoginRequestDto;
+import com.sparta.mypet.domain.auth.dto.LoginResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.security.JwtService;
@@ -26,7 +27,7 @@ public class AuthService {
 	private final JwtService jwtService;
 
 	@Transactional
-	public String login(LoginRequestDto requestDto) {
+	public LoginResponseDto login(LoginRequestDto requestDto) {
 
 		User user = userService.findUserByEmail(requestDto.getEmail());
 		UserStatus userStatus = user.getStatus();
@@ -49,7 +50,9 @@ public class AuthService {
 		jwtService.setRefreshTokenAtCookie(refreshToken);
 		jwtService.setHeaderWithAccessToken(accessToken);
 
-		return accessToken;
+		return LoginResponseDto.builder()
+			.user(user)
+			.build();
 	}
 
 	@Transactional
