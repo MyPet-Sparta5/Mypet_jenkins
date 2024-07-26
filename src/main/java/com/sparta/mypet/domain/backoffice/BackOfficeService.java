@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.util.PaginationUtil;
-import com.sparta.mypet.domain.auth.UserRepository;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
@@ -26,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BackOfficeService {
 
-	private final UserRepository userRepository;
 	private final UserService userService;
 	private final ReportService reportService;
 
@@ -34,7 +32,7 @@ public class BackOfficeService {
 	public Page<UserListResponseDto> getUsers(int page, int pageSize, String sortBy) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
-		Page<User> userList = userRepository.findAll(pageable);
+		Page<User> userList = userService.findAll(pageable);
 
 		return userList.map(UserListResponseDto::new);
 	}
