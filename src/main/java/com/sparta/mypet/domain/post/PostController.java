@@ -38,7 +38,7 @@ public class PostController {
 	public ResponseEntity<DataResponseDto<PostResponseDto>> createPost(
 		@Valid @RequestPart PostRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestParam("category") String category,
-		@RequestPart(value = "file", required = false) List<MultipartFile> files) {
+		@RequestPart(value = "files", required = false) List<MultipartFile> files) {
 
 		PostResponseDto responseDto = postService.createPost(userDetails.getUsername(), requestDto, category, files);
 		return ResponseFactory.created(responseDto, "게시물 생성 성공");
