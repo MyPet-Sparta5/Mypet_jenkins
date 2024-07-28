@@ -67,7 +67,7 @@ public class AuthService {
 	}
 
 	@Transactional
-	public String refreshAccessToken(HttpServletRequest request) {
+	public void refreshAccessToken(HttpServletRequest request) {
 
 		String refreshToken = jwtService.getRefreshTokenFromRequest(request);
 		String email = jwtService.extractEmail(refreshToken);
@@ -87,7 +87,5 @@ public class AuthService {
 
 		jwtService.setRefreshTokenAtCookie(newRefreshToken);
 		jwtService.setHeaderWithAccessToken(newAccessToken);
-
-		return newRefreshToken;
 	}
 }

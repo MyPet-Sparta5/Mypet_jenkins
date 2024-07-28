@@ -42,10 +42,10 @@ public class AuthController {
 	}
 
 	@PostMapping("/auth/refresh")
-	public ResponseEntity<DataResponseDto<String>> refreshAccessToken(HttpServletRequest request) {
+	public ResponseEntity<MessageResponseDto> refreshAccessToken(HttpServletRequest request) {
 
-		String newToken = authService.refreshAccessToken(request);
+		authService.refreshAccessToken(request);
 
-		return ResponseFactory.ok(newToken, GlobalMessage.REFRESH_TOKEN_SUCCESS.getMessage());
+		return ResponseFactory.ok(GlobalMessage.REFRESH_TOKEN_SUCCESS.getMessage());
 	}
 }
