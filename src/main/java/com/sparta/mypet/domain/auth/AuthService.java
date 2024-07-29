@@ -48,7 +48,7 @@ public class AuthService {
 		user.updateRefreshToken(refreshToken);
 
 		jwtService.setRefreshTokenAtCookie(refreshToken);
-		jwtService.setHeaderWithAccessToken(accessToken);
+		jwtService.setAccessTokenAtHeader(accessToken);
 
 		return LoginResponseDto.builder()
 			.user(user)
@@ -70,6 +70,11 @@ public class AuthService {
 	public void refreshAccessToken(HttpServletRequest request) {
 
 		String refreshToken = jwtService.getRefreshTokenFromRequest(request);
+
+		if (Boolean.FALSE.equals(jwtService.validateToken(refreshToken))) {
+			throw new RefreshTokenInvalidException(GlobalMessage.REFRESH_INVALID);
+		}
+
 		String email = jwtService.extractEmail(refreshToken);
 
 		User user = userService.findUserByEmail(email);
@@ -86,6 +91,6 @@ public class AuthService {
 		user.updateRefreshToken(newRefreshToken);
 
 		jwtService.setRefreshTokenAtCookie(newRefreshToken);
-		jwtService.setHeaderWithAccessToken(newAccessToken);
+		jwtService.setAccessTokenAtHeader(newAccessToken);
 	}
 }

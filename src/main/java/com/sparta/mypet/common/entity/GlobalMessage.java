@@ -33,7 +33,7 @@ public enum GlobalMessage {
 	USER_EMAIL_DUPLICATE("이미 존재하는 이메일입니다."),
 	PASSWORD_INVALID("비밀번호가 일치하지 않습니다."),
 	USER_NOT_FOUND("존재하지 않는 유저입니다."),
-	REFRESH_INVALID("Refresh 토큰이 일치하지 않습니다."),
+	REFRESH_INVALID("검증되지 않은 Refresh 토큰입니다."),
 	USER_STATUS_WITHDRAWAL("해당 유저는 탈퇴 상태입니다."),
 	USER_STATUS_STOP("해당 유저는 정지 상태입니다."),
 
