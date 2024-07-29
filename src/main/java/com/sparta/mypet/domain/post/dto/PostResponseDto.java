@@ -18,6 +18,7 @@ public class PostResponseDto {
 	private final Category category;
 	private final Long likeCount;
 	private final String nickname;
+	private final Long postUserId;
 	private final LocalDateTime createAt;
 	private final boolean isLike;
 	private final List<FileResponseDto> files;
@@ -29,6 +30,7 @@ public class PostResponseDto {
 		this.category = post.getCategory();
 		this.likeCount = post.getLikeCount();
 		this.nickname = post.getUser().getNickname();
+		this.postUserId = post.getUser().getId();
 		this.createAt = post.getCreatedAt();
 		this.isLike = false;
 		this.files = post.getFiles().stream().map(FileResponseDto::new).toList();
@@ -41,6 +43,7 @@ public class PostResponseDto {
 		this.category = post.getCategory();
 		this.likeCount = post.getLikeCount();
 		this.nickname = post.getUser().getNickname();
+		this.postUserId = post.getUser().getId();
 		this.createAt = post.getCreatedAt();
 		this.isLike = isLike;
 		this.files = post.getFiles().stream().map(FileResponseDto::new).toList();
