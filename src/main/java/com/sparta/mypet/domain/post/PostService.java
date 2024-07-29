@@ -102,12 +102,17 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public PostResponseDto getPost(Long postId, User user) {
+	public PostResponseDto getPost(Long postId, String email) {
 		Post post = findPostById(postId);
 
-		boolean isLike = isLikePost(user, postId);
+		if (email.isEmpty()) {
+			return new PostResponseDto(post);
+		}
 
-		return new PostResponseDto(post, isLike);
+		User user = userService.findUserByEmail(email);
+		boolean like = isLikePost(user, postId);
+
+		return new PostResponseDto(post, like);
 	}
 
 	private Post createAndSavePost(User user, String title, String content, Category postCategory) {

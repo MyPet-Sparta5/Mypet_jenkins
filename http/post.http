@@ -5,8 +5,8 @@ Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
-  "title" : "제목 테스트",
-  "content" : "내용테스트"
+  "title": "제목 테스트",
+  "content": "내용테스트"
 }
 
 ### 게시물 수정
@@ -16,8 +16,8 @@ Content-Type: application/json
 Authorization: {{Authorization}}
 
 {
-  "title" : "수정된 게시글",
-  "content" : "설명설명수정수정~"
+  "title": "수정된 게시글",
+  "content": "설명설명수정수정~"
 }
 
 
@@ -28,11 +28,16 @@ Content-Type: application/json
 Authorization: {{Authorization}}
 
 
-### 게시물 단건조회
+### 게시물 단건조회 (회원일 경우)
 GET /api/posts/{{postId}} HTTP/1.1
 Host: {{root-path}}
 Content-Type: application/json
 Authorization: {{Authorization}}
+
+### 게시물 단건조회 (비회원일 경우)
+GET /api/posts/{{postId}} HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
 
 ### 게시물 전체조회
 GET /api/posts HTTP/1.1
