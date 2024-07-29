@@ -2,7 +2,7 @@ version: '3.8'
 services:
   db:
     platform: linux/x86_64
-    image: mysql
+    image: mysql:8.0
     container_name: mypet
     restart: always
     ports:
