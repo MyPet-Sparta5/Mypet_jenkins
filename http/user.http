@@ -61,3 +61,15 @@ Authorization: {{Authorization}}
   "newNickname": "KIM",
   "currentPassword": "Test1234!@"
 }
+
+### 회원 비밀번호 변경
+PUT /api/users/password HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "currentPassword": "Test1234!@",
+  "newPassword": "Test1234!@@",
+  "newRepeatPassword": "Test1234!@@"
+}

@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.mypet.common.dto.DataResponseDto;
+import com.sparta.mypet.common.dto.MessageResponseDto;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
 import com.sparta.mypet.domain.auth.dto.SignupResponseDto;
+import com.sparta.mypet.domain.auth.dto.UserPasswordUpdateRequestDto;
 import com.sparta.mypet.domain.auth.dto.UserUpdateRequestDto;
 import com.sparta.mypet.domain.auth.dto.UserUpdateResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserWithPostListResponseDto;
@@ -64,5 +66,15 @@ public class UserController {
 		UserUpdateResponseDto responseDto = userService.updateUser(requestDto, userDetails.getUsername());
 
 		return ResponseFactory.ok(responseDto, GlobalMessage.UPDATE_USER_SUCCESS.getMessage());
+	}
+
+	@PutMapping("/users/password")
+	public ResponseEntity<MessageResponseDto> updateUserPassword(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@Valid @RequestBody UserPasswordUpdateRequestDto requestDto) {
+
+		userService.updateUserPassword(requestDto, userDetails.getUsername());
+
+		return ResponseFactory.ok(GlobalMessage.UPDATE_USER_PASSWORD_SUCCESS.getMessage());
 	}
 }

@@ -24,6 +24,7 @@ public enum GlobalMessage {
 	GET_USER_SUCCESS("회원 조회가 성공적으로 완료되었습니다."),
 	WITHDRAW_USER_SUCCESS("회원 탈퇴가 성공적으로 완료되었습니다."),
 	UPDATE_USER_SUCCESS("회원 정보 수정이 성공적으로 완료되었습니다."),
+	UPDATE_USER_PASSWORD_SUCCESS("회원 비밀번호 변경이 성공적으로 완료되었습니다."),
 
 	// Report
 	CREATE_REPORT_SUCCESS("유저 신고가 성공적으로 완료되었습니다."),
@@ -33,11 +34,13 @@ public enum GlobalMessage {
 	USER_EMAIL_NOT_FOUND("존재하지 않는 이메일입니다."),
 	USER_EMAIL_DUPLICATE("이미 존재하는 이메일입니다."),
 	PASSWORD_INVALID("비밀번호가 일치하지 않습니다."),
+	REPEAT_PASSWORD_INVALID("반복 비밀번호가 일치하지 않습니다."),
 	USER_NOT_FOUND("존재하지 않는 유저입니다."),
 	REFRESH_INVALID("검증되지 않은 Refresh 토큰입니다."),
 	USER_STATUS_WITHDRAWAL("해당 유저는 탈퇴 상태입니다."),
 	USER_STATUS_STOP("해당 유저는 정지 상태입니다."),
 	USER_NICKNAME_DUPLICATE("현재 닉네임과 같습니다."),
+	USER_PASSWORD_DUPLICATE("현재 비밀번호와 같습니다."),
 
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
