@@ -1,5 +1,7 @@
 package com.sparta.mypet.domain.backoffice.dto;
 
+import java.time.LocalDateTime;
+
 import com.sparta.mypet.domain.report.entity.Report;
 import com.sparta.mypet.domain.report.entity.ReportStatus;
 
@@ -14,6 +16,7 @@ public class ReportListResponseDto {
 	private Long reporterUserId; //신고를 한 유저
 	private Long reportedUserId; //신고를 당한 유저 아이디
 	private String reportedUserNickname; //신고를 당한 유저 닉네임
+	private LocalDateTime createdAt;
 
 	public ReportListResponseDto(Report report) {
 		this.id = report.getId();
@@ -23,5 +26,6 @@ public class ReportListResponseDto {
 		this.reporterUserId = report.getReporterUserId();
 		this.reportedUserId = report.getReportedUser().getId();
 		this.reportedUserNickname = report.getReportedUser().getNickname();
+		this.createdAt = report.getCreatedAt();
 	}
 }
