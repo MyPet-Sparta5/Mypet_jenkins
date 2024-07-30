@@ -16,6 +16,7 @@ import com.sparta.mypet.common.exception.custom.UserMisMatchException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
+import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Category;
@@ -32,7 +33,6 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final FileService fileService;
 	private final UserService userService;
-
 	private static final int MAX_FILE_COUNT = 5;
 
 	@Transactional
@@ -127,9 +127,17 @@ public class PostService {
 	}
 
 	private void checkPostAuthor(Post post, User user) {
-		if (!post.getUser().getId().equals(user.getId())) {
-			throw new UserMisMatchException(GlobalMessage.NOT_POST_OWNER.getMessage());
+		if (post.getUser().getId().equals(user.getId())) {
+			return;
 		}
+
+		String role = user.getRole().getAuthority();
+		if (UserRole.getAdminAuthority().equals(role) || UserRole.getManagerAuthority().equals(role)) {
+			return;
+		}
+
+		throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
+
 	}
 
 	public Post findPostById(Long postId) {
