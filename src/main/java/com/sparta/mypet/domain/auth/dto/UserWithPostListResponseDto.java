@@ -14,13 +14,15 @@ public class UserWithPostListResponseDto {
 	private final Long id;
 	private final String nickname;
 	private final String email;
-	private final List<PostMappedUserResponseDto> postList;
+	private final List<PostMappedUserResponseDto> freedomList;
+	private final List<PostMappedUserResponseDto> boastList;
 
 	@Builder
-	public UserWithPostListResponseDto(User user, List<Post> postList) {
+	public UserWithPostListResponseDto(User user, List<Post> freedomList, List<Post> boastList) {
 		this.id = user.getId();
 		this.nickname = user.getNickname();
 		this.email = user.getEmail();
-		this.postList = postList.stream().map(PostMappedUserResponseDto::new).toList();
+		this.freedomList = freedomList.stream().map(PostMappedUserResponseDto::new).toList();
+		this.boastList = boastList.stream().map(PostMappedUserResponseDto::new).toList();
 	}
 }

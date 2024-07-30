@@ -1,5 +1,6 @@
 package com.sparta.mypet.domain.auth;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -20,7 +21,11 @@ import com.sparta.mypet.domain.auth.dto.UserWithdrawResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
+import com.sparta.mypet.domain.post.entity.Category;
+import com.sparta.mypet.domain.post.entity.Post;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,6 +34,7 @@ public class UserService {
 
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final EntityManager entityManager;
 
 	@Transactional
 	public SignupResponseDto signup(SignupRequestDto requestDto) {
@@ -64,7 +70,10 @@ public class UserService {
 
 		User user = findUserByEmail(email);
 
-		return UserWithPostListResponseDto.builder().user(user).postList(user.getPostList()).build();
+		List<Post> freedomList = getPostsByCategory(user, Category.FREEDOM);
+		List<Post> boastList = getPostsByCategory(user, Category.BOAST);
+
+		return UserWithPostListResponseDto.builder().user(user).freedomList(freedomList).boastList(boastList).build();
 	}
 
 	@Transactional(readOnly = true)
@@ -91,5 +100,17 @@ public class UserService {
 	public User findUserById(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException(GlobalMessage.USER_NOT_FOUND.getMessage()));
+	}
+
+	private List<Post> getPostsByCategory(User user, Category category) {
+		String jpql = "SELECT p FROM Post p " + "WHERE p.user = :user " + "AND p.category = :category "
+			+ "ORDER BY p.createdAt DESC";
+
+		TypedQuery<Post> query = entityManager.createQuery(jpql, Post.class);
+		query.setParameter("user", user);
+		query.setParameter("category", category);
+		query.setMaxResults(5);
+
+		return query.getResultList();
 	}
 }
