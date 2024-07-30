@@ -70,10 +70,9 @@ public class UserService {
 
 		User user = findUserByEmail(email);
 
-		List<Post> freedomList = getPostsByCategory(user, Category.FREEDOM);
-		List<Post> boastList = getPostsByCategory(user, Category.BOAST);
+		List<Post> postList = getPostsByCategory(user, Category.DEFAULT);
 
-		return UserWithPostListResponseDto.builder().user(user).freedomList(freedomList).boastList(boastList).build();
+		return UserWithPostListResponseDto.builder().user(user).postList(postList).build();
 	}
 
 	@Transactional(readOnly = true)
@@ -103,13 +102,15 @@ public class UserService {
 	}
 
 	private List<Post> getPostsByCategory(User user, Category category) {
-		String jpql = "SELECT p FROM Post p " + "WHERE p.user = :user " + "AND p.category = :category "
-			+ "ORDER BY p.createdAt DESC";
+		String jpql = "SELECT p FROM Post p " + "WHERE p.user = :user " + (category == Category.DEFAULT ? "" :
+			"AND p.category = :category ") + "ORDER BY p.createdAt DESC";
 
 		TypedQuery<Post> query = entityManager.createQuery(jpql, Post.class);
 		query.setParameter("user", user);
-		query.setParameter("category", category);
-		query.setMaxResults(5);
+		if (category != Category.DEFAULT) {
+			query.setParameter("category", category);
+		}
+		query.setMaxResults(10);
 
 		return query.getResultList();
 	}
