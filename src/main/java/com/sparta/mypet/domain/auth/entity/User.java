@@ -88,6 +88,10 @@ public class User extends Timestamped {
 		this.penaltyEndDatetime = penaltyEndDatetime;
 	}
 
+	public void updateNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
 	public void addPost(Post post) {
 		this.postList.add(post);
 	}

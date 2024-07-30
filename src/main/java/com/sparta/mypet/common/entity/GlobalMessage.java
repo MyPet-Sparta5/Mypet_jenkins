@@ -23,6 +23,7 @@ public enum GlobalMessage {
 	REFRESH_TOKEN_SUCCESS("토큰 재발급이 성공적으로 완료되었습니다."),
 	GET_USER_SUCCESS("회원 조회가 성공적으로 완료되었습니다."),
 	WITHDRAW_USER_SUCCESS("회원 탈퇴가 성공적으로 완료되었습니다."),
+	UPDATE_USER_SUCCESS("회원 정보 수정이 성공적으로 완료되었습니다."),
 
 	// Report
 	CREATE_REPORT_SUCCESS("유저 신고가 성공적으로 완료되었습니다."),
@@ -36,6 +37,7 @@ public enum GlobalMessage {
 	REFRESH_INVALID("검증되지 않은 Refresh 토큰입니다."),
 	USER_STATUS_WITHDRAWAL("해당 유저는 탈퇴 상태입니다."),
 	USER_STATUS_STOP("해당 유저는 정지 상태입니다."),
+	USER_NICKNAME_DUPLICATE("현재 닉네임과 같습니다."),
 
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),

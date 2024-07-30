@@ -50,3 +50,14 @@ Authorization: {{Authorization}}
 PUT /api/users/withdraw HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
+
+### 회원 정보 수정(현재는 Nickname만!)
+PUT /api/users HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "newNickname": "KIM",
+  "currentPassword": "Test1234!@"
+}
