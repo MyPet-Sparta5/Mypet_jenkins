@@ -56,7 +56,7 @@ public class JwtService {
 	 * HTTP 응답 헤더에 Access 토큰을 저장합니다.
 	 * @param accessToken 설정할 Access 토큰
 	 */
-	public void setHeaderWithAccessToken(String accessToken) {
+	public void setAccessTokenAtHeader(String accessToken) {
 		HttpServletResponse response = ((ServletRequestAttributes)Objects.requireNonNull(
 			RequestContextHolder.getRequestAttributes())).getResponse();
 
