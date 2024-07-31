@@ -15,7 +15,7 @@ public class ReportListResponseDto {
 	private Long handleUserId; //신고를 처리한 ADMIN USER
 	private Long reporterUserId; //신고를 한 유저
 	private Long reportedUserId; //신고를 당한 유저 아이디
-	private String reportedUserNickname; //신고를 당한 유저 닉네임
+	private String reportedUserEmail; //신고를 당한 유저 닉네임
 	private LocalDateTime createdAt;
 
 	public ReportListResponseDto(Report report) {
@@ -25,7 +25,7 @@ public class ReportListResponseDto {
 		this.handleUserId = report.getHandleUserId();
 		this.reporterUserId = report.getReporterUserId();
 		this.reportedUserId = report.getReportedUser().getId();
-		this.reportedUserNickname = report.getReportedUser().getNickname();
+		this.reportedUserEmail = report.getReportedUser().getEmail();
 		this.createdAt = report.getCreatedAt();
 	}
 }
