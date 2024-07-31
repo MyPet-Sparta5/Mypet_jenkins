@@ -1,13 +1,24 @@
-### 게시물 작성 (자랑 게시판) - 사용 X
-POST /api/posts
+### 게시물 생성, 파일 업로드
+POST /api/posts?category=BOAST HTTP/1.1
 Host: {{root-path}}
-Content-Type: application/json
 Authorization: {{Authorization}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="requestDto"
+Content-Type: application/json
 
 {
   "title": "제목 테스트",
   "content": "내용테스트"
 }
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="dogs.gif"
+Content-Type: image/gif
+
+< ./files/dogs.gif
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
 
 ### 게시물 수정
 PUT /api/posts/{{postId}} HTTP/1.1
