@@ -82,22 +82,27 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy, String category) {
+	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy, String category, String email) {
 
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
 		Page<Post> postList;
 		Category categoryEnum;
 
-		try {
-			categoryEnum = Category.valueOf(category);
-		} catch (IllegalArgumentException e) {
-			throw new InvalidCategoryException(GlobalMessage.INVALID_ENUM_CATEGORY.getMessage());
+		if (!email.isEmpty()) {
+			userService.findUserByEmail(email);
+			postList = postRepository.findByUserName(email, pageable);
+		} else {
+
+			try {
+				categoryEnum = Category.valueOf(category);
+			} catch (IllegalArgumentException e) {
+				throw new InvalidCategoryException(GlobalMessage.INVALID_ENUM_CATEGORY.getMessage());
+			}
+
+			postList = categoryEnum.equals(Category.DEFAULT) ? postRepository.findAll(pageable) :
+				postRepository.findByCategory(categoryEnum, pageable);
 		}
-
-		postList = categoryEnum.equals(Category.DEFAULT) ? postRepository.findAll(pageable) :
-			postRepository.findByCategory(categoryEnum, pageable);
-
 		return postList.map(PostResponseDto::new);
 	}
 
