@@ -21,6 +21,7 @@ import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
+import com.sparta.mypet.domain.post.entity.PostStatus;
 import com.sparta.mypet.domain.s3.FileService;
 import com.sparta.mypet.domain.s3.entity.File;
 
@@ -82,8 +83,8 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy, String category, String email) {
-
+	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy, String category, String email,
+		String postStatus) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
 		Page<Post> postList;
@@ -100,8 +101,10 @@ public class PostService {
 				throw new InvalidCategoryException(GlobalMessage.INVALID_ENUM_CATEGORY.getMessage());
 			}
 
-			postList = categoryEnum.equals(Category.DEFAULT) ? postRepository.findAll(pageable) :
-				postRepository.findByCategory(categoryEnum, pageable);
+			postList = categoryEnum.equals(Category.DEFAULT) ?
+				postRepository.findByPostStatus(postStatusEnum, pageable) :
+				postRepository.findByCategoryAndPostStatus(categoryEnum, postStatusEnum, pageable);
+
 		}
 		return postList.map(PostResponseDto::new);
 	}
@@ -115,8 +118,14 @@ public class PostService {
 		}
 
 		User user = userService.findUserByEmail(email);
-		boolean like = isLikePost(user, postId);
 
+		UserRole role = user.getRole();
+		// 게시물의 실제 상태, 권한
+		if (post.getPostStatus().equals(PostStatus.INACTIVE) && role.equals(UserRole.USER)) {
+			throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
+		}
+
+		boolean like = isLikePost(user, postId);
 		return new PostResponseDto(post, like);
 	}
 
@@ -131,7 +140,7 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
-	private void checkPostAuthor(Post post, User user) {
+	public void checkPostAuthor(Post post, User user) {
 		if (post.getUser().getId().equals(user.getId())) {
 			return;
 		}
@@ -142,7 +151,6 @@ public class PostService {
 		}
 
 		throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
-
 	}
 
 	public Post findPostById(Long postId) {
