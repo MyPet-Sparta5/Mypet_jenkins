@@ -57,13 +57,13 @@ Authorization: {{Authorization}}
 
 
 ### 게시물 단건조회 (회원일 경우)
-GET /api/posts/{{postId}} HTTP/1.1
+GET /api/posts/2 HTTP/1.1
 Host: {{root-path}}
 Content-Type: application/json
 Authorization: {{Authorization}}
 
 ### 게시물 단건조회 (비회원일 경우)
-GET /api/posts/{{postId}} HTTP/1.1
+GET /api/posts/2 HTTP/1.1
 Host: {{root-path}}
 Content-Type: application/json
 
