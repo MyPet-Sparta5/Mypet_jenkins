@@ -64,8 +64,9 @@ public class PostController {
 		@RequestParam(defaultValue = "10") int pageSize,
 		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
 		@RequestParam(defaultValue = "DEFAULT") String category,
-		@RequestParam(defaultValue = "") String userName) {
-		Page<PostResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy, category, userName);
+		@RequestParam(defaultValue = "") String userName,
+		@RequestParam(defaultValue = "ACTIVE") String postStatus) {
+		Page<PostResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy, category, userName, postStatus);
 		return ResponseFactory.ok(responseDtoList, "게시물 전체 조회 성공");
 	}
 
