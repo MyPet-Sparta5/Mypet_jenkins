@@ -22,5 +22,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	Page<Post> findByCategoryAndPostStatus(Category category, PostStatus status, Pageable pageable);
 
 	@Query("SELECT p FROM Post p WHERE p.user.email = :email AND p.postStatus = :postStatus" )
-	Page<Post> findByUserName(@Param("email") String email, @Param("postStatus") String postStatus, Pageable pageable);
+	Page<Post> findByUserName(@Param("email") String email, @Param("postStatus") PostStatus postStatus, Pageable pageable);
 }

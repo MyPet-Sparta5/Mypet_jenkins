@@ -94,12 +94,12 @@ public class PostService {
 		try { // 포스트 상태 조회
 			postStatusEnum = PostStatus.valueOf(postStatus);
 		} catch (IllegalArgumentException e) {
-			throw new InvalidCategoryException(GlobalMessage.INVALID_ENUM_POST_STATUS.getMessage());
+			throw new InvalidCategoryException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
 		}
 
 		if (!email.isEmpty()) { // 유저로 필터링할 경우
 			userService.findUserByEmail(email);
-			postList = postRepository.findByUserName(email, postStatus, pageable);
+			postList = postRepository.findByUserName(email, postStatusEnum, pageable);
 		} else { // 카테고리로 필터링, 전체조회 할 경우
 
 			try {
