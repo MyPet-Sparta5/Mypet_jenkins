@@ -1,7 +1,7 @@
 package com.sparta.mypet.domain.report.entity;
 
 import com.sparta.mypet.common.entity.Timestamped;
-import com.sparta.mypet.domain.auth.entity.User;
+import com.sparta.mypet.domain.post.entity.Post;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,26 +32,26 @@ public class Report extends Timestamped {
 	@Column(nullable = false)
 	private String reportIssue;
 
+	@Column(nullable = false)
+	private Long reporterUserId; //신고를 한 유저
+
+	@Column
+	private Long handleUserId; //신고를 처리한 ADMIN USER, null 허용
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private ReportStatus reportStatus;
 
-	@Column
-	private Long handleUserId; //신고를 처리한 ADMIN USER
-
-	@Column(nullable = false)
-	private Long reporterUserId; //신고를 한 유저
-
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "reported_user_id")
-	private User reportedUser; //신고를 당한 유저
+	@JoinColumn(name = "reported_post_id")
+	private Post reportedPost; //신고 당한 게시물
 
 	@Builder
-	public Report(User reportedUser, Long reporterUserId, ReportStatus reportStatus, String reportIssue) {
-		this.reportedUser = reportedUser;
+	public Report(String reportIssue, Long reporterUserId, ReportStatus reportStatus, Post reportedPost) {
+		this.reportIssue = reportIssue;
 		this.reporterUserId = reporterUserId;
 		this.reportStatus = reportStatus;
-		this.reportIssue = reportIssue;
+		this.reportedPost = reportedPost;
 	}
 
 	/**

@@ -27,7 +27,7 @@ public enum GlobalMessage {
 	UPDATE_USER_PASSWORD_SUCCESS("회원 비밀번호 변경이 성공적으로 완료되었습니다."),
 
 	// Report
-	CREATE_REPORT_SUCCESS("유저 신고가 성공적으로 완료되었습니다."),
+	CREATE_REPORT_SUCCESS("게시물 신고가 성공적으로 완료되었습니다."),
 
 	// 에러 메세지
 	// User
@@ -64,8 +64,9 @@ public enum GlobalMessage {
 	LIKE_NOT_FOUND("해당 포스트에 좋아요를 하지않았습니다."),
 
 	// Report
-	SELF_REPORT_NOT("자기 자신을 신고할 수 없습니다."),
-	REPORT_NOT_FOUND("존재하지 않는 신고입니다.");
+	SELF_REPORT_NOT("자신의 게시물을 신고할 수 없습니다."),
+	REPORT_NOT_FOUND("존재하지 않는 신고입니다."),
+	REPORT_DUPLICATE("이미 신고한 게시물입니다.");
 
 	// Valid
 	public static final String COMMENT_CONTENT_NOT_BLANK_MESSAGE = "댓글의 내용을 작성해야합니다.";
