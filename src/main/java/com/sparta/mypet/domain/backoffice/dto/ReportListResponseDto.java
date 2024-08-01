@@ -9,14 +9,13 @@ import lombok.Getter;
 
 @Getter
 public class ReportListResponseDto {
-	private Long id;
-	private String reportIssue;
-	private ReportStatus reportStatus;
-	private Long handleUserId; //신고를 처리한 ADMIN USER
-	private Long reporterUserId; //신고를 한 유저
-	private Long reportedUserId; //신고를 당한 유저 아이디
-	private String reportedUserEmail; //신고를 당한 유저 닉네임
-	private LocalDateTime createdAt;
+	private final Long id;
+	private final String reportIssue;
+	private final ReportStatus reportStatus;
+	private final Long handleUserId; //신고를 처리한 ADMIN USER
+	private final Long reporterUserId; //신고를 한 유저
+	private final Long reportedPostId; //신고를 당한 게시물 ID
+	private final LocalDateTime createdAt;
 
 	public ReportListResponseDto(Report report) {
 		this.id = report.getId();
@@ -24,8 +23,7 @@ public class ReportListResponseDto {
 		this.reportStatus = report.getReportStatus();
 		this.handleUserId = report.getHandleUserId();
 		this.reporterUserId = report.getReporterUserId();
-		this.reportedUserId = report.getReportedUser().getId();
-		this.reportedUserEmail = report.getReportedUser().getEmail();
+		this.reportedPostId = report.getReportedPost().getId();
 		this.createdAt = report.getCreatedAt();
 	}
 }

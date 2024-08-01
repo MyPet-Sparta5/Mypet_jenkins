@@ -29,7 +29,7 @@ public class DataInitialization implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
-		if(userRepository.count() == 0) {
+		if (userRepository.count() == 0) {
 
 			String encodePassword = passwordEncoder.encode(adminPassword);
 			String nickname = "MyPetAdmin";
@@ -38,7 +38,7 @@ public class DataInitialization implements CommandLineRunner {
 				.email(adminEmail)
 				.password(encodePassword)
 				.nickname(nickname)
-				.penaltyCount(0)
+				.suspensionCount(0)
 				.role(UserRole.ADMIN)
 				.status(UserStatus.ACTIVE)
 				.build();

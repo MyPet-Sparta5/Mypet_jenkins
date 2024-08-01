@@ -60,7 +60,7 @@ public class UserService {
 			.email(requestDto.getEmail())
 			.password(encodePassword)
 			.nickname(requestDto.getNickname())
-			.penaltyCount(0)
+			.suspensionCount(0)
 			.role(UserRole.USER)
 			.status(UserStatus.ACTIVE)
 			.build();

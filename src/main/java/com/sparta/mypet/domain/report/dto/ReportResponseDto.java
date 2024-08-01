@@ -11,7 +11,7 @@ import lombok.Getter;
 public class ReportResponseDto {
 	private final Long id;
 	private final String reportIssue;
-	private final Long reportedUserId;
+	private final Long reportedPostId;
 	private final Long reporterUserId;
 	private final LocalDateTime createdAt;
 
@@ -19,7 +19,7 @@ public class ReportResponseDto {
 	public ReportResponseDto(Report report) {
 		this.id = report.getId();
 		this.reportIssue = report.getReportIssue();
-		this.reportedUserId = report.getReportedUser().getId();
+		this.reportedPostId = report.getReportedPost().getId();
 		this.reporterUserId = report.getReporterUserId();
 		this.createdAt = report.getCreatedAt();
 	}

@@ -38,7 +38,9 @@ public class AuthService {
 
 		if (userStatus.equals(UserStatus.WITHDRAWAL)) {
 			throw new UserStatusNotActiveException(GlobalMessage.USER_STATUS_WITHDRAWAL);
-		} else if (userStatus.equals(UserStatus.SUSPENSION) || userStatus.equals(UserStatus.BAN)) {
+		}
+
+		if (userStatus.equals(UserStatus.SUSPENSION)) {
 			throw new UserStatusNotActiveException(GlobalMessage.USER_STATUS_STOP);
 		}
 

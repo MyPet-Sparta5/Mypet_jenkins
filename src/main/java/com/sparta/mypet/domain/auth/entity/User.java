@@ -1,6 +1,5 @@
 package com.sparta.mypet.domain.auth.entity;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,11 +40,8 @@ public class User extends Timestamped {
 	@Column(nullable = false)
 	private String nickname;
 
-	@Column(name = "penalty_count", nullable = false)
-	private Integer penaltyCount;
-
-	@Column(name = "penalty_end_datetime")
-	private LocalDateTime penaltyEndDatetime;
+	@Column(name = "suspension_count", nullable = false)
+	private Integer suspensionCount;
 
 	@Column
 	private String refreshToken;
@@ -62,12 +58,12 @@ public class User extends Timestamped {
 	private final List<Post> postList = new ArrayList<>();
 
 	@Builder
-	public User(String email, String password, String nickname, Integer penaltyCount, UserRole role,
+	public User(String email, String password, String nickname, Integer suspensionCount, UserRole role,
 		UserStatus status) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
-		this.penaltyCount = penaltyCount;
+		this.suspensionCount = suspensionCount;
 		this.role = role;
 		this.status = status;
 	}
@@ -82,10 +78,6 @@ public class User extends Timestamped {
 
 	public void updateUserRole(UserRole role) {
 		this.role = role;
-	}
-
-	public void updatePenaltyEndDatetime(LocalDateTime penaltyEndDatetime) {
-		this.penaltyEndDatetime = penaltyEndDatetime;
 	}
 
 	public void updateNickname(String nickname) {

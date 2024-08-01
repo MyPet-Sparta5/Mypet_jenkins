@@ -25,13 +25,13 @@ public class ReportController {
 
 	private final ReportService reportService;
 
-	@PostMapping("/reports/users/{userId}")
+	@PostMapping("/reports/posts/{postId}")
 	public ResponseEntity<DataResponseDto<ReportResponseDto>> createReport(
-		@PathVariable(value = "userId") Long reportedUserId,
+		@PathVariable(value = "postId") Long reportedPostId,
 		@Valid @RequestBody ReportRequestDto requestDto,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		ReportResponseDto responseDto = reportService.createReport(requestDto, reportedUserId,
+		ReportResponseDto responseDto = reportService.createReport(requestDto, reportedPostId,
 			userDetails.getUsername());
 
 		return ResponseFactory.created(responseDto, GlobalMessage.CREATE_REPORT_SUCCESS.getMessage());
