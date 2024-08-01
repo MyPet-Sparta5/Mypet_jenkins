@@ -44,8 +44,10 @@ public enum GlobalMessage {
 
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
-	NOT_AUTHORITY_OWNER("게시물 편집 권한이 없습니다."),
+	NOT_AUTHORITY_OWNER("게시물 접근 권한이 없습니다."),
 	INVALID_ENUM_CATEGORY("존재하지 않는 카테고리입니다."),
+	INVALID_ENUM_POST_STATUS("존재하지 않는 포스트 상태입니다."),
+
 
 	// File
 	UPLOAD_FILE_NOT_FOUND("업로드 하려는 파일이 없습니다"),

@@ -26,6 +26,7 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Table(name = "posts")
 @Entity
@@ -47,6 +48,10 @@ public class Post extends Timestamped {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Category category;
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private PostStatus postStatus;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false)
@@ -71,6 +76,7 @@ public class Post extends Timestamped {
 		this.category = category;
 		this.user = user;
 		this.likeCount = likeCount;
+		this.postStatus = PostStatus.ACTIVE;
 	}
 
 	public void updatePost(PostRequestDto requestDto) {
@@ -99,4 +105,5 @@ public class Post extends Timestamped {
 	public boolean isLikedByUser(User user) {
 		return likes.stream().anyMatch(like -> like.getUser().equals(user));
 	}
+
 }
