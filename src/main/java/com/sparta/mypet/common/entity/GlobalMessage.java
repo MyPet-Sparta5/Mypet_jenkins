@@ -41,7 +41,8 @@ public enum GlobalMessage {
 	USER_STATUS_STOP("해당 유저는 정지 상태입니다."),
 	USER_NICKNAME_DUPLICATE("현재 닉네임과 같습니다."),
 	USER_PASSWORD_DUPLICATE("현재 비밀번호와 같습니다."),
-
+	USER_STATUS_DUPLICATE("현재 상태와 같습니다."),
+	
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
 	NOT_AUTHORITY_OWNER("게시물 접근 권한이 없습니다."),

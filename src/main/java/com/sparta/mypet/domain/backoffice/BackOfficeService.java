@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PostStatusDuplicationException;
+import com.sparta.mypet.common.exception.custom.UserInfoDuplicationException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
@@ -56,9 +57,14 @@ public class BackOfficeService {
 		User updatedUser = userService.findUserById(userId);
 		UserStatus userStatus = UserStatus.valueOf(requestDto.getStatus());
 
+		if (userStatus.equals(updatedUser.getStatus())) {
+			throw new UserInfoDuplicationException(GlobalMessage.USER_STATUS_DUPLICATE);
+		}
+
 		if (userStatus.equals(UserStatus.SUSPENSION)) {
 			suspensionService.processReports(requestDto.getSuspensionIssue(), updatedUser, handleUser);
 		}
+
 		updatedUser.updateUserStatus(userStatus);
 
 		return new UserStatusResponseDto(updatedUser);
