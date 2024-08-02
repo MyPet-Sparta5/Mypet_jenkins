@@ -67,3 +67,13 @@ Authorization: {{Authorization}}
 GET /api/admin/suspension-view HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
+
+### 게시물 전체조회
+GET /api/admin/post-manage HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
+### 게시물 전체조회 - 비공개
+GET /api/admin/post-manage?postStatus=INACTIVE HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
