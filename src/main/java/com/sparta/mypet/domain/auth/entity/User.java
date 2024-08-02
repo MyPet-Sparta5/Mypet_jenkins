@@ -28,23 +28,31 @@ public class User extends Timestamped {
 
 	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private final List<Post> postList = new ArrayList<>();
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Long id;
+
 	@Column(nullable = false, unique = true)
 	private String email;
+
 	@Column(nullable = false)
 	private String password;
+
 	@Column(nullable = false)
 	private String nickname;
+
 	@Column(name = "suspension_count", nullable = false)
 	private Integer suspensionCount;
+
 	@Column
 	private String refreshToken;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserRole role;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserStatus status;

@@ -35,29 +35,37 @@ public class Post extends Timestamped {
 
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Comment> comments = new ArrayList<>();
+
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Like> likes = new ArrayList<>();
+
+	@Column(nullable = false)
+	private Long likeCount;
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<File> files = new ArrayList<>();
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "post_id")
 	private Long id;
+
 	@Column(nullable = false)
 	private String postTitle;
+
 	@Column(nullable = false)
 	private String postContent;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Category category;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private PostStatus postStatus;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
-	@Column(nullable = false)
-	private Long likeCount;
 
 	@Builder
 	public Post(String postContent, String postTitle, Category category, User user, Long likeCount) {
