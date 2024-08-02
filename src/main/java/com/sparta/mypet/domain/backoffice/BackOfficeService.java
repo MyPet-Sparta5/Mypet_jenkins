@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PostStatusDuplicationException;
+import com.sparta.mypet.common.exception.custom.ReportDuplicationException;
 import com.sparta.mypet.common.exception.custom.UserInfoDuplicationException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserService;
@@ -78,7 +79,7 @@ public class BackOfficeService {
 		if (userRole.equals(updatedUser.getRole())) {
 			throw new UserInfoDuplicationException(GlobalMessage.USER_ROLE_DUPLICATE);
 		}
-		
+
 		updatedUser.updateUserRole(userRole);
 		return new UserRoleResponseDto(updatedUser);
 	}
@@ -97,6 +98,9 @@ public class BackOfficeService {
 		Report report = reportService.findById(reportId);
 		ReportStatus reportStatus = ReportStatus.valueOf(requestDto.getReportStatus());
 
+		if (reportStatus.equals(report.getReportStatus())) {
+			throw new ReportDuplicationException(GlobalMessage.REPORT_STATUS_DUPLICATE);
+		}
 		report.updateHandleUser(user.getId());
 		report.updateReportStatus(reportStatus);
 

@@ -28,6 +28,7 @@ public enum GlobalMessage {
 
 	// Report
 	CREATE_REPORT_SUCCESS("게시물 신고가 성공적으로 완료되었습니다."),
+	REPORT_STATUS_DUPLICATE("현재 신고 상태와 같습니다."),
 
 	// 에러 메세지
 	// User
@@ -43,7 +44,7 @@ public enum GlobalMessage {
 	USER_PASSWORD_DUPLICATE("현재 비밀번호와 같습니다."),
 	USER_STATUS_DUPLICATE("현재 상태와 같습니다."),
 	USER_ROLE_DUPLICATE("현재 역할와 같습니다."),
-	
+
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
 	NOT_AUTHORITY_OWNER("게시물 접근 권한이 없습니다."),
