@@ -12,6 +12,7 @@ import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportStatusRequestDto;
+import com.sparta.mypet.domain.backoffice.dto.SuspensionListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
@@ -21,6 +22,7 @@ import com.sparta.mypet.domain.report.ReportService;
 import com.sparta.mypet.domain.report.entity.Report;
 import com.sparta.mypet.domain.report.entity.ReportStatus;
 import com.sparta.mypet.domain.suspension.SuspensionService;
+import com.sparta.mypet.domain.suspension.entity.Suspension;
 
 import lombok.RequiredArgsConstructor;
 
@@ -81,5 +83,14 @@ public class BackOfficeService {
 		report.updateReportStatus(reportStatus);
 
 		return new ReportListResponseDto(report);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<SuspensionListResponseDto> getSuspensions(int page, int pageSize, String sortBy) {
+		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
+
+		Page<Suspension> suspensionList = suspensionService.findAll(pageable);
+
+		return suspensionList.map(SuspensionListResponseDto::new);
 	}
 }

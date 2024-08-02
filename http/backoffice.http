@@ -62,3 +62,8 @@ Authorization: {{Authorization}}
 {
   "reportStatus": "IN_PROGRESS"
 }
+
+### 정지 목록 전체조회
+GET /api/admin/suspension-view HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
