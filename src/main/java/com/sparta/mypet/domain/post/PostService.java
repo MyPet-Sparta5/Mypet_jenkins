@@ -199,4 +199,9 @@ public class PostService {
 		return postRepository.findByPostStatus(status, pageable);
 	}
 
+	@Transactional(readOnly = true)
+	public Post findById(Long postId) {
+		return postRepository.findById(postId)
+			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
+	}
 }
