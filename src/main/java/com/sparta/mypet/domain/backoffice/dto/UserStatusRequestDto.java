@@ -7,4 +7,5 @@ import lombok.Getter;
 public class UserStatusRequestDto {
 	@NotBlank(message = "상태값을 선택해주세요.")
 	private String status;
+	private String suspensionIssue;
 }

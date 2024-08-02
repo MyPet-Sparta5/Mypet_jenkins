@@ -20,6 +20,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 import com.sparta.mypet.domain.report.ReportService;
 import com.sparta.mypet.domain.report.entity.Report;
 import com.sparta.mypet.domain.report.entity.ReportStatus;
+import com.sparta.mypet.domain.suspension.SuspensionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,6 +30,7 @@ public class BackOfficeService {
 
 	private final UserService userService;
 	private final ReportService reportService;
+	private final SuspensionService suspensionService;
 
 	@Transactional(readOnly = true)
 	public Page<UserListResponseDto> getUsers(int page, int pageSize, String sortBy) {
@@ -40,10 +42,13 @@ public class BackOfficeService {
 	}
 
 	@Transactional
-	public UserStatusResponseDto updateUserStatus(UserStatusRequestDto requestDto, Long userId) {
+	public UserStatusResponseDto updateUserStatus(User handleUser, UserStatusRequestDto requestDto, Long userId) {
 		User updatedUser = userService.findUserById(userId);
 		UserStatus userStatus = UserStatus.valueOf(requestDto.getStatus());
 
+		if (userStatus.equals(UserStatus.SUSPENSION)) {
+			suspensionService.processReports(requestDto.getSuspensionIssue(), updatedUser, handleUser);
+		}
 		updatedUser.updateUserStatus(userStatus);
 
 		return new UserStatusResponseDto(updatedUser);

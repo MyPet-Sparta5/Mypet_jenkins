@@ -26,36 +26,28 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User extends Timestamped {
 
+	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	private final List<Post> postList = new ArrayList<>();
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
 	private Long id;
-
 	@Column(nullable = false, unique = true)
 	private String email;
-
 	@Column(nullable = false)
 	private String password;
-
 	@Column(nullable = false)
 	private String nickname;
-
 	@Column(name = "suspension_count", nullable = false)
 	private Integer suspensionCount;
-
 	@Column
 	private String refreshToken;
-
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserRole role;
-
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserStatus status;
-
-	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-	private final List<Post> postList = new ArrayList<>();
 
 	@Builder
 	public User(String email, String password, String nickname, Integer suspensionCount, UserRole role,
@@ -90,5 +82,10 @@ public class User extends Timestamped {
 
 	public void addPost(Post post) {
 		this.postList.add(post);
+	}
+
+	public void updateSuspendUser(int newPenaltyCount) {
+		this.status = UserStatus.SUSPENSION;
+		this.suspensionCount = newPenaltyCount;
 	}
 }

@@ -43,8 +43,10 @@ public class BackOfficeController {
 
 	@PutMapping("/user-manage/{userId}/status")
 	public ResponseEntity<DataResponseDto<UserStatusResponseDto>> updateUserStatus(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@Valid @RequestBody UserStatusRequestDto requestDto, @PathVariable Long userId) {
-		UserStatusResponseDto responseDto = backOfficeService.updateUserStatus(requestDto, userId);
+		UserStatusResponseDto responseDto = backOfficeService.updateUserStatus(userDetails.getUser(), requestDto,
+			userId);
 		return ResponseFactory.ok(responseDto, "사용자 상태 변경 성공");
 	}
 
