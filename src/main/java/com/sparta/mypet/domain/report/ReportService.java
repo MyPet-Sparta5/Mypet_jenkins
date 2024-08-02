@@ -69,4 +69,9 @@ public class ReportService {
 		return reportRepository.findById(id).orElseThrow(() ->
 			new ReportNotFoundException(GlobalMessage.REPORT_NOT_FOUND.getMessage()));
 	}
+
+	public void markReportsAsCompletedAndSetHandleUser(Long reportedUserId, Long handleUserId) {
+		reportRepository.markReportsAsCompletedAndSetHandleUser(reportedUserId, handleUserId);
+	}
+
 }

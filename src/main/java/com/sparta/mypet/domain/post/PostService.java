@@ -31,10 +31,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostService {
 
+	private static final int MAX_FILE_COUNT = 5;
 	private final PostRepository postRepository;
 	private final FileService fileService;
 	private final UserService userService;
-	private static final int MAX_FILE_COUNT = 5;
 
 	@Transactional
 	public PostResponseDto createPost(String email, PostRequestDto requestDto, String category,
@@ -171,5 +171,15 @@ public class PostService {
 	public boolean isLikePost(User user, Long postId) {
 		Post post = findPostById(postId);
 		return post.isLikedByUser(user);
+	}
+
+	public void updateReportedPostsStatusByUserId(Long userId, PostStatus status) {
+		// 리포트된 게시물의 ID를 조회합니다.
+		List<Long> postIds = postRepository.findReportedPostIdsByUserId(userId);
+
+		if (!postIds.isEmpty()) {
+			// 조회된 게시물의 상태를 업데이트합니다.
+			postRepository.updatePostStatus(status, postIds);
+		}
 	}
 }
