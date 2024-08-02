@@ -63,7 +63,7 @@ public class PostService {
 
 		Post post = findPostById(postId);
 
-		checkPostAuthor(post, user);
+		checkUpdateAuthor(post, user);
 
 		post.updatePost(requestDto);
 		return new PostResponseDto(post);
@@ -74,7 +74,7 @@ public class PostService {
 		User user = userService.findUserByEmail(email);
 		Post post = findPostById(postId);
 
-		checkPostAuthor(post, user);
+		checkDeleteAuthor(post, user);
 
 		List<File> files = post.getFiles();
 		fileService.deleteFiles(files);
@@ -88,26 +88,12 @@ public class PostService {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
 		Page<Post> postList;
-		Category categoryEnum;
-		PostStatus postStatusEnum;
+		Category categoryEnum = mapToCategoryEnum(category);
+		PostStatus postStatusEnum = mapToPostStatusEnum(postStatus);
 
-		try { // 포스트 상태 조회
-			postStatusEnum = PostStatus.valueOf(postStatus);
-		} catch (IllegalArgumentException e) {
-			throw new InvalidCategoryException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
-		}
-
-		if (!email.isEmpty()) { // 유저로 필터링할 경우
-			userService.findUserByEmail(email);
+		if (!email.isEmpty()) {
 			postList = postRepository.findByUserName(email, postStatusEnum, pageable);
 		} else { // 카테고리로 필터링, 전체조회 할 경우
-
-			try {
-				categoryEnum = Category.valueOf(category);
-			} catch (IllegalArgumentException e) {
-				throw new InvalidCategoryException(GlobalMessage.INVALID_ENUM_CATEGORY.getMessage());
-			}
-
 			postList = categoryEnum.equals(Category.DEFAULT) ?
 				postRepository.findByPostStatus(postStatusEnum, pageable) :
 				postRepository.findByCategoryAndPostStatus(categoryEnum, postStatusEnum, pageable);
@@ -130,7 +116,7 @@ public class PostService {
 		User user = userService.findUserByEmail(email);
 
 		UserRole role = user.getRole();
-		// 게시물의 실제 상태, 권한
+
 		if (post.getPostStatus().equals(PostStatus.INACTIVE) && role.equals(UserRole.USER)) {
 			throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
 		}
@@ -150,17 +136,37 @@ public class PostService {
 		return postRepository.save(post);
 	}
 
-	public void checkPostAuthor(Post post, User user) {
-		if (post.getUser().getId().equals(user.getId())) {
-			return;
+	private Category mapToCategoryEnum(String category) {
+		try {
+			return Category.valueOf(category);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidCategoryException(GlobalMessage.INVALID_ENUM_CATEGORY.getMessage());
 		}
+	}
 
-		String role = user.getRole().getAuthority();
-		if (UserRole.getAdminAuthority().equals(role) || UserRole.getManagerAuthority().equals(role)) {
-			return;
+	private PostStatus mapToPostStatusEnum(String postStatus) {
+		try {
+			return PostStatus.valueOf(postStatus);
+		} catch (IllegalArgumentException e) {
+			throw new InvalidCategoryException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
 		}
+	}
 
-		throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
+	public void checkUpdateAuthor(Post post, User user) {
+		if (!post.getUser().equals(user)) {
+			throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
+		}
+	}
+
+	public void checkDeleteAuthor(Post post, User user) {
+		UserRole role = user.getRole();
+
+		boolean isPostAuthor = post.getUser().equals(user);
+		boolean isAdminOrManager = role.equals(UserRole.ADMIN) || role.equals(UserRole.MANAGER);
+
+		if (!isPostAuthor && !isAdminOrManager) {
+			throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
+		}
 	}
 
 	public Post findPostById(Long postId) {
