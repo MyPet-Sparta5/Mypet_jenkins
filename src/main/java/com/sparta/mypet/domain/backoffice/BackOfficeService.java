@@ -5,11 +5,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sparta.mypet.common.entity.GlobalMessage;
+import com.sparta.mypet.common.exception.custom.PostStatusDuplicationException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
+import com.sparta.mypet.domain.backoffice.dto.PostStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.SuspensionListResponseDto;
@@ -19,7 +22,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 import com.sparta.mypet.domain.post.PostService;
-import com.sparta.mypet.domain.post.dto.PostMappedUserResponseDto;
+import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.post.entity.PostStatus;
 import com.sparta.mypet.domain.report.ReportService;
@@ -99,7 +102,8 @@ public class BackOfficeService {
 		return suspensionList.map(SuspensionListResponseDto::new);
 	}
 
-	public Page<PostMappedUserResponseDto> getPosts(int page, int pageSize, String sortBy, String postStatus) {
+	@Transactional(readOnly = true)
+	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy, String postStatus) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 		Page<Post> postList;
 		if (postStatus.equals("ALL")) {
@@ -108,6 +112,19 @@ public class BackOfficeService {
 			PostStatus status = postService.mapToPostStatusEnum(postStatus);
 			postList = postService.findByPostStatus(status, pageable);
 		}
-		return postList.map(PostMappedUserResponseDto::new);
+		return postList.map(PostResponseDto::new);
+	}
+
+	@Transactional
+	public PostResponseDto updatePostStatus(PostStatusRequestDto requestDto, Long postId) {
+		Post post = postService.findById(postId);
+		PostStatus postStatus = PostStatus.valueOf(requestDto.getPostStatus());
+
+		if (!post.getPostStatus().equals(postStatus)) {
+			post.updatePostStatus(postStatus);
+		} else {
+			throw new PostStatusDuplicationException(GlobalMessage.POST_STATUS_DUPLICATE.getMessage());
+		}
+		return new PostResponseDto(post);
 	}
 }

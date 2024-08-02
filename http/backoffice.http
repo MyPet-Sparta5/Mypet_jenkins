@@ -77,3 +77,13 @@ Authorization: {{Authorization}}
 GET /api/admin/post-manage?postStatus=INACTIVE HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
+
+### 게시물 상태 변경
+PUT /api/admin/post-manage/1/post-status HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "postStatus": "INACTIVE"
+}
