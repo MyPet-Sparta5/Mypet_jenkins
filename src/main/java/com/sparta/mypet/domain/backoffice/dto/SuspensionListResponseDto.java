@@ -9,14 +9,16 @@ import lombok.Getter;
 @Getter
 public class SuspensionListResponseDto {
 	private final Long id;
-	private final Long suspensionHandleUserId;
+	private final Long suspensionUserId;
+	private final String suspensionUserEmail;
 	private final String suspensionIssue;
 	private final LocalDateTime suspensionStartDatetime;
 	private final LocalDateTime suspensionEndDatetime;
 
 	public SuspensionListResponseDto(Suspension suspension) {
 		this.id = suspension.getId();
-		this.suspensionHandleUserId = suspension.getSuspensionHandleUserId();
+		this.suspensionUserId = suspension.getUser().getId();
+		this.suspensionUserEmail = suspension.getUser().getEmail();
 		this.suspensionIssue = suspension.getSuspensionIssue();
 		this.suspensionStartDatetime = suspension.getSuspensionStartDatetime();
 		this.suspensionEndDatetime = suspension.getSuspensionEndDatetime();
