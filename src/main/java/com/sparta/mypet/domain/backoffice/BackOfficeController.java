@@ -21,6 +21,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
+import com.sparta.mypet.domain.post.dto.PostMappedUserResponseDto;
 import com.sparta.mypet.security.UserDetailsImpl;
 
 import jakarta.validation.Valid;
@@ -82,6 +83,17 @@ public class BackOfficeController {
 		@RequestParam(defaultValue = "10") int pageSize,
 		@RequestParam(defaultValue = "suspensionEndDatetime, desc") String sortBy) {
 		Page<SuspensionListResponseDto> responseDtoList = backOfficeService.getSuspensions(page, pageSize, sortBy);
-		return ResponseFactory.ok(responseDtoList, "신고 목록 전체 조회 성공");
+		return ResponseFactory.ok(responseDtoList, "사용자 중지 목록 전체 조회 성공");
+	}
+
+	@GetMapping("/post-manage")
+	public ResponseEntity<DataResponseDto<Page<PostMappedUserResponseDto>>> getPosts(
+		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "10") int pageSize,
+		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
+		@RequestParam(defaultValue = "ALL") String postStatus) {
+		Page<PostMappedUserResponseDto> responseDtoList = backOfficeService.getPosts(page, pageSize, sortBy,
+			postStatus);
+		return ResponseFactory.ok(responseDtoList, "게시물 목록 조회 성공");
 	}
 }
