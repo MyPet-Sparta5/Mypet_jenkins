@@ -42,6 +42,7 @@ public enum GlobalMessage {
 	USER_NICKNAME_DUPLICATE("현재 닉네임과 같습니다."),
 	USER_PASSWORD_DUPLICATE("현재 비밀번호와 같습니다."),
 	USER_STATUS_DUPLICATE("현재 상태와 같습니다."),
+	USER_ROLE_DUPLICATE("현재 역할와 같습니다."),
 	
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),

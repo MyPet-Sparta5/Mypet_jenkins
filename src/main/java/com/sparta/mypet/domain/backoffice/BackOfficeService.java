@@ -75,6 +75,10 @@ public class BackOfficeService {
 		User updatedUser = userService.findUserById(userId);
 		UserRole userRole = UserRole.valueOf(requestDto.getRole());
 
+		if (userRole.equals(updatedUser.getRole())) {
+			throw new UserInfoDuplicationException(GlobalMessage.USER_ROLE_DUPLICATE);
+		}
+		
 		updatedUser.updateUserRole(userRole);
 		return new UserRoleResponseDto(updatedUser);
 	}
