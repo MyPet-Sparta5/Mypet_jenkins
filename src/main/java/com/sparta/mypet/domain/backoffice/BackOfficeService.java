@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PostStatusDuplicationException;
+import com.sparta.mypet.common.exception.custom.ReportDuplicationException;
+import com.sparta.mypet.common.exception.custom.UserInfoDuplicationException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
@@ -56,9 +58,14 @@ public class BackOfficeService {
 		User updatedUser = userService.findUserById(userId);
 		UserStatus userStatus = UserStatus.valueOf(requestDto.getStatus());
 
+		if (userStatus.equals(updatedUser.getStatus())) {
+			throw new UserInfoDuplicationException(GlobalMessage.USER_STATUS_DUPLICATE);
+		}
+
 		if (userStatus.equals(UserStatus.SUSPENSION)) {
 			suspensionService.processReports(requestDto.getSuspensionIssue(), updatedUser, handleUser);
 		}
+
 		updatedUser.updateUserStatus(userStatus);
 
 		return new UserStatusResponseDto(updatedUser);
@@ -68,6 +75,10 @@ public class BackOfficeService {
 	public UserRoleResponseDto updateUserRole(UserRoleRequestDto requestDto, Long userId) {
 		User updatedUser = userService.findUserById(userId);
 		UserRole userRole = UserRole.valueOf(requestDto.getRole());
+
+		if (userRole.equals(updatedUser.getRole())) {
+			throw new UserInfoDuplicationException(GlobalMessage.USER_ROLE_DUPLICATE);
+		}
 
 		updatedUser.updateUserRole(userRole);
 		return new UserRoleResponseDto(updatedUser);
@@ -87,6 +98,9 @@ public class BackOfficeService {
 		Report report = reportService.findById(reportId);
 		ReportStatus reportStatus = ReportStatus.valueOf(requestDto.getReportStatus());
 
+		if (reportStatus.equals(report.getReportStatus())) {
+			throw new ReportDuplicationException(GlobalMessage.REPORT_STATUS_DUPLICATE);
+		}
 		report.updateHandleUser(user.getId());
 		report.updateReportStatus(reportStatus);
 
