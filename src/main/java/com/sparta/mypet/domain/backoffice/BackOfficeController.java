@@ -15,6 +15,7 @@ import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportStatusRequestDto;
+import com.sparta.mypet.domain.backoffice.dto.SuspensionListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
@@ -75,4 +76,12 @@ public class BackOfficeController {
 		return ResponseFactory.ok(responseDto, "사용자 권한 변경 성공");
 	}
 
+	@GetMapping("/suspension-view")
+	public ResponseEntity<DataResponseDto<Page<SuspensionListResponseDto>>> getSuspensions(
+		@RequestParam(defaultValue = "1") int page,
+		@RequestParam(defaultValue = "10") int pageSize,
+		@RequestParam(defaultValue = "suspensionEndDatetime, desc") String sortBy) {
+		Page<SuspensionListResponseDto> responseDtoList = backOfficeService.getSuspensions(page, pageSize, sortBy);
+		return ResponseFactory.ok(responseDtoList, "신고 목록 전체 조회 성공");
+	}
 }
