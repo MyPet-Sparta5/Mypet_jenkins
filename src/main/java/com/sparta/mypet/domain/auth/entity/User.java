@@ -26,9 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class User extends Timestamped {
 
-	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-	private final List<Post> postList = new ArrayList<>();
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id")
@@ -52,11 +49,14 @@ public class User extends Timestamped {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserRole role;
-	
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private UserStatus status;
 
+	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	private final List<Post> postList = new ArrayList<>();
+	
 	@Builder
 	public User(String email, String password, String nickname, Integer suspensionCount, UserRole role,
 		UserStatus status) {

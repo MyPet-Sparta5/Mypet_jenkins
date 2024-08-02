@@ -33,17 +33,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Post extends Timestamped {
 
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-	private final List<Comment> comments = new ArrayList<>();
-
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-	private final List<Like> likes = new ArrayList<>();
-
-	@Column(nullable = false)
-	private Long likeCount;
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-	private final List<File> files = new ArrayList<>();
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "post_id")
@@ -66,6 +55,17 @@ public class Post extends Timestamped {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
+
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private final List<Comment> comments = new ArrayList<>();
+
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private final List<Like> likes = new ArrayList<>();
+
+	@Column(nullable = false)
+	private Long likeCount;
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	private final List<File> files = new ArrayList<>();
 
 	@Builder
 	public Post(String postContent, String postTitle, Category category, User user, Long likeCount) {
