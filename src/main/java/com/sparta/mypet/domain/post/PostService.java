@@ -144,7 +144,7 @@ public class PostService {
 		}
 	}
 
-	private PostStatus mapToPostStatusEnum(String postStatus) {
+	public PostStatus mapToPostStatusEnum(String postStatus) {
 		try {
 			return PostStatus.valueOf(postStatus);
 		} catch (IllegalArgumentException e) {
@@ -188,4 +188,15 @@ public class PostService {
 			postRepository.updatePostStatus(status, postIds);
 		}
 	}
+
+	@Transactional(readOnly = true)
+	public Page<Post> findAll(Pageable pageable) {
+		return postRepository.findAll(pageable);
+	}
+
+	@Transactional(readOnly = true)
+	public Page<Post> findByPostStatus(PostStatus status, Pageable pageable) {
+		return postRepository.findByPostStatus(status, pageable);
+	}
+
 }

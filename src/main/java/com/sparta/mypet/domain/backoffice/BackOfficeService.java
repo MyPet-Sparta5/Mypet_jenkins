@@ -18,6 +18,10 @@ import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
+import com.sparta.mypet.domain.post.PostService;
+import com.sparta.mypet.domain.post.dto.PostMappedUserResponseDto;
+import com.sparta.mypet.domain.post.entity.Post;
+import com.sparta.mypet.domain.post.entity.PostStatus;
 import com.sparta.mypet.domain.report.ReportService;
 import com.sparta.mypet.domain.report.entity.Report;
 import com.sparta.mypet.domain.report.entity.ReportStatus;
@@ -33,6 +37,7 @@ public class BackOfficeService {
 	private final UserService userService;
 	private final ReportService reportService;
 	private final SuspensionService suspensionService;
+	private final PostService postService;
 
 	@Transactional(readOnly = true)
 	public Page<UserListResponseDto> getUsers(int page, int pageSize, String sortBy) {
@@ -92,5 +97,17 @@ public class BackOfficeService {
 		Page<Suspension> suspensionList = suspensionService.findAll(pageable);
 
 		return suspensionList.map(SuspensionListResponseDto::new);
+	}
+
+	public Page<PostMappedUserResponseDto> getPosts(int page, int pageSize, String sortBy, String postStatus) {
+		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
+		Page<Post> postList;
+		if (postStatus.equals("ALL")) {
+			postList = postService.findAll(pageable);
+		} else {
+			PostStatus status = postService.mapToPostStatusEnum(postStatus);
+			postList = postService.findByPostStatus(status, pageable);
+		}
+		return postList.map(PostMappedUserResponseDto::new);
 	}
 }
