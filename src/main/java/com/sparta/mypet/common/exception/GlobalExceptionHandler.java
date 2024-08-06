@@ -14,6 +14,7 @@ import com.sparta.mypet.common.exception.custom.LikeNotFoundException;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
 import com.sparta.mypet.common.exception.custom.RefreshTokenInvalidException;
+import com.sparta.mypet.common.exception.custom.SocialAccountLinkedException;
 import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
 import com.sparta.mypet.common.exception.custom.UserNicknameDuplicateException;
@@ -138,5 +139,12 @@ public class GlobalExceptionHandler {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.conflictError(errorMessage);
+	}
+
+	@ExceptionHandler(SocialAccountLinkedException.class)
+	public ResponseEntity<MessageResponseDto> handleSocialAccountLinkedException(SocialAccountLinkedException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.badRequest(errorMessage);
 	}
 }
