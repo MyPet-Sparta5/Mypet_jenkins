@@ -17,6 +17,7 @@ import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
+import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Category;
@@ -83,7 +84,7 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy, String category, String email,
+	public Page<PostListResponseDto> getPosts(int page, int pageSize, String sortBy, String category, String email,
 		String postStatus) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
@@ -99,7 +100,7 @@ public class PostService {
 				postRepository.findByCategoryAndPostStatus(categoryEnum, postStatusEnum, pageable);
 
 		}
-		return postList.map(PostResponseDto::new);
+		return postList.map(PostListResponseDto::new);
 	}
 
 	@Transactional(readOnly = true)

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
+import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.security.UserDetailsImpl;
@@ -59,14 +60,15 @@ public class PostController {
 	}
 
 	@GetMapping("/posts")
-	public ResponseEntity<DataResponseDto<Page<PostResponseDto>>> getPosts(
+	public ResponseEntity<DataResponseDto<Page<PostListResponseDto>>> getPosts(
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
 		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
 		@RequestParam(defaultValue = "DEFAULT") String category,
 		@RequestParam(defaultValue = "") String userName,
 		@RequestParam(defaultValue = "ACTIVE") String postStatus) {
-		Page<PostResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy, category, userName, postStatus);
+		Page<PostListResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy, category, userName,
+			postStatus);
 		return ResponseFactory.ok(responseDtoList, "게시물 전체 조회 성공");
 	}
 

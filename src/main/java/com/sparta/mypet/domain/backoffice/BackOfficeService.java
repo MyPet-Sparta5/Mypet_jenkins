@@ -24,6 +24,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 import com.sparta.mypet.domain.post.PostService;
+import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.post.entity.PostStatus;
@@ -117,7 +118,7 @@ public class BackOfficeService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<PostResponseDto> getPosts(int page, int pageSize, String sortBy, String postStatus) {
+	public Page<PostListResponseDto> getPosts(int page, int pageSize, String sortBy, String postStatus) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 		Page<Post> postList;
 		if (postStatus.equals("ALL")) {
@@ -126,7 +127,7 @@ public class BackOfficeService {
 			PostStatus status = postService.mapToPostStatusEnum(postStatus);
 			postList = postService.findByPostStatus(status, pageable);
 		}
-		return postList.map(PostResponseDto::new);
+		return postList.map(PostListResponseDto::new);
 	}
 
 	@Transactional

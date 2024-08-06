@@ -22,6 +22,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserRoleRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserRoleResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
+import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.security.UserDetailsImpl;
 
@@ -88,12 +89,12 @@ public class BackOfficeController {
 	}
 
 	@GetMapping("/post-manage")
-	public ResponseEntity<DataResponseDto<Page<PostResponseDto>>> getPosts(
+	public ResponseEntity<DataResponseDto<Page<PostListResponseDto>>> getPosts(
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
 		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
 		@RequestParam(defaultValue = "ALL") String postStatus) {
-		Page<PostResponseDto> responseDtoList = backOfficeService.getPosts(page, pageSize, sortBy,
+		Page<PostListResponseDto> responseDtoList = backOfficeService.getPosts(page, pageSize, sortBy,
 			postStatus);
 		return ResponseFactory.ok(responseDtoList, "게시물 목록 조회 성공");
 	}
