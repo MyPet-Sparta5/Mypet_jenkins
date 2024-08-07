@@ -56,12 +56,14 @@ public class WebSecurityConfig {
 		http.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests.requestMatchers(
 				PathRequest.toStaticResources().atCommonLocations()).permitAll() // resources 접근 허용 설정
 			.requestMatchers(HttpMethod.POST, "/api/users").permitAll() // 회원가입 요청 허가
+			.requestMatchers(HttpMethod.GET, "/api/users/social-account/**").permitAll()
 			.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // 로그인 요청 허가
 			.requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll() // 토큰 재발급 요청 허가
 			.requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/api/facilities/**").permitAll()
 			.requestMatchers("/api/admin/user-manage/*/role").hasAuthority("ROLE_ADMIN")
 			.requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
+			.requestMatchers("/api/oauth/kakao").permitAll()
 			.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		);
 

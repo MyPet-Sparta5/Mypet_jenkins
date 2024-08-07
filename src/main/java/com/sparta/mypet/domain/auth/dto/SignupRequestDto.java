@@ -26,4 +26,7 @@ public class SignupRequestDto {
 
 	@NotBlank(message = "이름은 공백일 수 없습니다.")
 	private String nickname;
+
+	// 소셜 관련 키
+	private String registrationKey;
 }

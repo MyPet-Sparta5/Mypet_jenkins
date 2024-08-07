@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
+import com.sparta.mypet.common.exception.custom.SocialAccountLinkedException;
 import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.common.exception.custom.UserNicknameDuplicateException;
 import com.sparta.mypet.common.exception.custom.UserNotFoundException;
@@ -26,46 +28,51 @@ import com.sparta.mypet.domain.auth.dto.UserWithdrawResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
+import com.sparta.mypet.domain.oauth.SocialAccountService;
+import com.sparta.mypet.domain.oauth.entity.SocialAccount;
+import com.sparta.mypet.domain.oauth.entity.SocialAccountInfo;
 import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j(topic = "User service")
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final SocialAccountService socialAccountService;
 	private final PasswordEncoder passwordEncoder;
 	private final EntityManager entityManager;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Transactional
 	public SignupResponseDto signup(SignupRequestDto requestDto) {
-
-		Optional<User> duplicateUser = userRepository.findByEmail(requestDto.getEmail());
-
-		if (duplicateUser.isPresent()) {
-			throw new UserEmailDuplicateException(GlobalMessage.USER_EMAIL_DUPLICATE);
-		}
 
 		if (!requestDto.getPassword().equals(requestDto.getRepeatPassword())) {
 			throw new PasswordInvalidException(GlobalMessage.REPEAT_PASSWORD_INVALID);
 		}
 
-		String encodePassword = passwordEncoder.encode(requestDto.getPassword());
+		User saveUser = createAndSaveUser(requestDto.getEmail(), requestDto.getPassword(), requestDto.getNickname());
 
-		User user = User.builder()
-			.email(requestDto.getEmail())
-			.password(encodePassword)
-			.nickname(requestDto.getNickname())
-			.suspensionCount(0)
-			.role(UserRole.USER)
-			.status(UserStatus.ACTIVE)
-			.build();
+		log.info("requestDto : {}", requestDto.getRegistrationKey());
 
-		User saveUser = userRepository.save(user);
+		if (!requestDto.getRegistrationKey().isEmpty()) {
+
+			SocialAccountInfo socialAccountInfo = (SocialAccountInfo)redisTemplate.opsForValue()
+				.get(requestDto.getRegistrationKey());
+			if (socialAccountInfo == null)
+				throw new IllegalArgumentException(GlobalMessage.REDIS_VALUE_ERROR.getMessage());
+
+			SocialAccount socialAccount = socialAccountService.createAndSaveSocialAccount(socialAccountInfo);
+			socialAccount.updateUser(saveUser);
+
+			saveUser.addSocialAccount(socialAccount);
+		}
 
 		return SignupResponseDto.builder().user(saveUser).build();
 	}
@@ -77,12 +84,24 @@ public class UserService {
 
 		List<Post> postList = getPostsByCategory(user, Category.DEFAULT);
 
-		return UserWithPostListResponseDto.builder().user(user).postList(postList).build();
+		List<String> socialLinkedList = user.getSocialAccounts()
+			.stream()
+			.map(socialAccount -> socialAccount.getSocialType().name())
+			.toList();
+
+		return UserWithPostListResponseDto.builder()
+			.user(user)
+			.postList(postList)
+			.socialLinkedList(socialLinkedList)
+			.build();
 	}
 
 	// 유저를 탈퇴 처리 후, 로그아웃 API 호출을 통해 token 초기화!
 	@Transactional
 	public UserWithdrawResponseDto withdrawUser(String email) {
+
+		if (socialAccountService.hasSocialAccount(email))
+			throw new SocialAccountLinkedException(GlobalMessage.SOCIAL_LINKED.getMessage());
 
 		User user = findUserByEmail(email);
 
@@ -139,9 +158,34 @@ public class UserService {
 		return userRepository.findAll(pageable);
 	}
 
+	public User createAndSaveUser(String email, String password, String nickname) {
+		Optional<User> duplicateUser = userRepository.findByEmail(email);
+
+		if (duplicateUser.isPresent()) {
+			throw new UserEmailDuplicateException(GlobalMessage.USER_EMAIL_DUPLICATE);
+		}
+
+		String encodePassword = passwordEncoder.encode(password);
+
+		User user = User.builder()
+			.email(email)
+			.password(encodePassword)
+			.nickname(nickname)
+			.suspensionCount(0)
+			.role(UserRole.USER)
+			.status(UserStatus.ACTIVE)
+			.build();
+
+		return userRepository.save(user);
+	}
+
 	public User findUserByEmail(String email) {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage()));
+	}
+
+	public Optional<User> findOptionalUserByEmail(String email) {
+		return userRepository.findByEmail(email);
 	}
 
 	public User findUserById(Long userId) {

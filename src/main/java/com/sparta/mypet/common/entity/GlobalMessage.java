@@ -14,6 +14,7 @@ public enum GlobalMessage {
 	MSG_CONFLICT("이미 존재하는 항목입니다."),
 	MSG_UNAUTHORIZED("요청에 대해 인증을 실패했습니다."),
 	ERROR_MESSAGE_PREFIX("Exception caught: "),
+	MSG_FOUND("요청한 리소스의 URI가 일시적으로 변경되었습니다."),
 
 	// 응답 메시지
 	// User
@@ -42,8 +43,10 @@ public enum GlobalMessage {
 	USER_STATUS_STOP("해당 유저는 정지 상태입니다."),
 	USER_NICKNAME_DUPLICATE("현재 닉네임과 같습니다."),
 	USER_PASSWORD_DUPLICATE("현재 비밀번호와 같습니다."),
+	EMAIL_ALREADY_USED("해당 이메일로 가입된 계정이 있습니다. 로그인 후 마이페이지에서 연동해주세요."),
 	USER_STATUS_DUPLICATE("현재 상태와 같습니다."),
 	USER_ROLE_DUPLICATE("현재 역할와 같습니다."),
+	SOCIAL_LINKED("소셜 계정이 연결되어있습니다."),
 
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
@@ -71,7 +74,17 @@ public enum GlobalMessage {
 	// Report
 	SELF_REPORT_NOT("자신의 게시물을 신고할 수 없습니다."),
 	REPORT_NOT_FOUND("존재하지 않는 신고입니다."),
-	REPORT_DUPLICATE("이미 신고한 게시물입니다.");
+	REPORT_DUPLICATE("이미 신고한 게시물입니다."),
+
+	// JSON
+	JSON_PARSING_ERROR("JSON 파싱에 실패했습니다."),
+
+	// SOCIAL
+	KAKAO_SERVER_ERROR("카카오 서버 오류 발생 : "),
+	SOCIAL_NOT_LINKED_ERROR("해당 소셜 계정에 연동되어있지 않습니다."),
+
+	// REDIS
+	REDIS_VALUE_ERROR("Redis 캐시에 해당 키값이 존재하지 않습니다.");
 
 	// Valid
 	public static final String COMMENT_CONTENT_NOT_BLANK_MESSAGE = "댓글의 내용을 작성해야합니다.";

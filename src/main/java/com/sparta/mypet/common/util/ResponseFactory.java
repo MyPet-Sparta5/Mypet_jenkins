@@ -17,6 +17,7 @@ public class ResponseFactory {
 	private static final int STATUS_OK = HttpStatus.OK.value();
 	private static final int STATUS_CREATED = HttpStatus.CREATED.value();
 	private static final int STATUS_NO_CONTENT = HttpStatus.NO_CONTENT.value();
+	private static final int STATUS_FOUND = HttpStatus.FOUND.value();
 	private static final int STATUS_BAD_REQUEST = HttpStatus.BAD_REQUEST.value();
 	private static final int STATUS_NOT_FOUND = HttpStatus.NOT_FOUND.value();
 	private static final int STATUS_CONFLICT = HttpStatus.CONFLICT.value();
@@ -95,6 +96,14 @@ public class ResponseFactory {
 	 */
 	public static ResponseEntity<Void> noContent() {
 		return ResponseEntity.status(STATUS_NO_CONTENT).build();
+	}
+
+	// 리다이렉트 관련
+
+	public static <T> ResponseEntity<DataResponseDto<T>> found(T data, String message) {
+		String okMessage = invalidMessage(message) ? GlobalMessage.MSG_FOUND.getMessage() : message;
+		DataResponseDto<T> responseDto = new DataResponseDto<>(STATUS_FOUND, okMessage, data);
+		return ResponseEntity.status(STATUS_FOUND).body(responseDto);
 	}
 
 	// 에러 응답을 위한 메서드들

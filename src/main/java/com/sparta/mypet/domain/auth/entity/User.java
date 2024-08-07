@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sparta.mypet.common.entity.Timestamped;
+import com.sparta.mypet.domain.oauth.entity.SocialAccount;
 import com.sparta.mypet.domain.post.entity.Post;
 
 import jakarta.persistence.CascadeType;
@@ -56,7 +57,11 @@ public class User extends Timestamped {
 
 	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
 	private final List<Post> postList = new ArrayList<>();
-	
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private final List<SocialAccount> socialAccounts = new ArrayList<>();
+
+
 	@Builder
 	public User(String email, String password, String nickname, Integer suspensionCount, UserRole role,
 		UserStatus status) {
@@ -90,6 +95,10 @@ public class User extends Timestamped {
 
 	public void addPost(Post post) {
 		this.postList.add(post);
+	}
+
+	public void addSocialAccount(SocialAccount socialAccount) {
+		this.socialAccounts.add(socialAccount);
 	}
 
 	public void updateSuspendUser(int newPenaltyCount) {
