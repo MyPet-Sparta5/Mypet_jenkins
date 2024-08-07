@@ -13,7 +13,6 @@ import com.sparta.mypet.domain.auth.dto.LoginResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.security.JwtService;
-import com.sparta.mypet.security.TokenType;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -44,17 +43,15 @@ public class AuthService {
 			throw new UserStatusNotActiveException(GlobalMessage.USER_STATUS_STOP);
 		}
 
-		String accessToken = jwtService.generateToken(TokenType.ACCESS, user.getRole(), user.getEmail());
-		String refreshToken = jwtService.generateToken(TokenType.REFRESH, user.getRole(), user.getEmail());
+		String accessToken = jwtService.generateAccessToken(user.getRole(), user.getEmail());
+		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
 		user.updateRefreshToken(refreshToken);
 
 		jwtService.setRefreshTokenAtCookie(refreshToken);
 		jwtService.setAccessTokenAtHeader(accessToken);
 
-		return LoginResponseDto.builder()
-			.user(user)
-			.build();
+		return LoginResponseDto.builder().user(user).build();
 	}
 
 	@Transactional
@@ -85,10 +82,8 @@ public class AuthService {
 			throw new RefreshTokenInvalidException(GlobalMessage.REFRESH_INVALID);
 		}
 
-		Object role = jwtService.extractRole(refreshToken);
-
-		String newAccessToken = jwtService.generateToken(TokenType.ACCESS, role, email);
-		String newRefreshToken = jwtService.generateToken(TokenType.REFRESH, role, email);
+		String newAccessToken = jwtService.generateAccessToken(user.getRole(), user.getEmail());
+		String newRefreshToken = jwtService.generateRefreshToken(user.getEmail());
 
 		user.updateRefreshToken(newRefreshToken);
 

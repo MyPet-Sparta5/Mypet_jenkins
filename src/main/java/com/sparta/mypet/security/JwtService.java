@@ -39,17 +39,24 @@ public class JwtService {
 	private Long refreshTokenExpiration; // refresh token 만료 시간
 
 	/**
-	 * JWT 토큰을 생성합니다.
-	 * @param tokenType 토큰의 종류 (access, refresh)
+	 * JWT Access 토큰을 생성합니다.
 	 * @param role 유저의 역할 ("ROLE_USER", "ROLE_ADMIN", "ROLE_MANAGER")
 	 * @param username 유저의 식별자 (여기서는 Email)
-	 * @return 생성된 JWT 토큰
+	 * @return 생성된 JWT Access 토큰
 	 */
-	public String generateToken(TokenType tokenType, Object role, String username) {
-		long expiration = (tokenType.equals(TokenType.ACCESS)) ? accessTokenExpiration : refreshTokenExpiration;
-
-		return JwtProvider.generateToken(AUTHORIZATION_KEY, role, username, expiration,
+	public String generateAccessToken(Object role, String username) {
+		return JwtProvider.generateAccessToken(AUTHORIZATION_KEY, role, username, accessTokenExpiration,
 			JwtProvider.getSecretKey(secretKey), SIGNATURE_ALGORITHM);
+	}
+
+	/**
+	 * JWT Refresh 토큰을 생성합니다.
+	 * @param username 유저의 식별자 (여기서는 Email)
+	 * @return 생성된 JWT Refresh 토큰
+	 */
+	public String generateRefreshToken(String username) {
+		return JwtProvider.generateRefreshToken(username, refreshTokenExpiration, JwtProvider.getSecretKey(secretKey),
+			SIGNATURE_ALGORITHM);
 	}
 
 	/**
@@ -161,15 +168,6 @@ public class JwtService {
 	 */
 	public String extractEmail(String token) {
 		return JwtProvider.extractAllClaims(token, JwtProvider.getSecretKey(secretKey)).getSubject();
-	}
-
-	/**
-	 * JWT 토큰에서 권한을 추출합니다.
-	 * @param token JWT 토큰
-	 * @return 추출된 User Role
-	 */
-	public Object extractRole(String token) {
-		return JwtProvider.extractAllClaims(token, JwtProvider.getSecretKey(secretKey)).get(AUTHORIZATION_KEY);
 	}
 
 	/**
