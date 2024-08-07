@@ -47,6 +47,7 @@ public enum GlobalMessage {
 	USER_STATUS_DUPLICATE("현재 상태와 같습니다."),
 	USER_ROLE_DUPLICATE("현재 역할와 같습니다."),
 	SOCIAL_LINKED("소셜 계정이 연결되어있습니다."),
+	USER_REACTIVE_FAIL("해당 유저 정상화에 실패했습니다."),
 
 	// Post
 	POST_NOT_FOUND("존재하지 않는 게시물입니다."),
