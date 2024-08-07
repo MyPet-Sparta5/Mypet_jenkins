@@ -1,6 +1,7 @@
 package com.sparta.mypet.domain.oauth;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +14,7 @@ import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.auth.dto.LoginResponseDto;
 import com.sparta.mypet.domain.oauth.dto.KakaoAccountRequestDto;
-import com.sparta.mypet.domain.oauth.entity.SocialAccountLeaveRequest;
+import com.sparta.mypet.security.UserDetailsImpl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,8 @@ public class KakaoAccountController {
 	}
 
 	@DeleteMapping("/oauth/kakao/leave")
-	public ResponseEntity<Void> leaveKakao(@RequestBody SocialAccountLeaveRequest requestDto) {
-		kakaoAccountService.processKakaoLeave(requestDto);
+	public ResponseEntity<Void> leaveKakao(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+		kakaoAccountService.processKakaoLeave(userDetails.getUsername());
 		return ResponseFactory.noContent();
 	}
 

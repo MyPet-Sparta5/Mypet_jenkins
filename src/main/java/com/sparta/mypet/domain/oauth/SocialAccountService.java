@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
+import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
+import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.oauth.dto.SocialAccountResponse;
 import com.sparta.mypet.domain.oauth.entity.SocialAccount;
 import com.sparta.mypet.domain.oauth.entity.SocialAccountInfo;
@@ -43,6 +45,13 @@ public class SocialAccountService {
 	@Transactional
 	public SocialAccount createAndSaveSocialAccount(SocialAccountInfo socialAccountInfo) {
 
+		Optional<SocialAccount> optionalSocialAccount = socialAccountRepository.findBySocialTypeAndSocialId(
+			socialAccountInfo.getSocialType(), socialAccountInfo.getSocialId());
+
+		if (optionalSocialAccount.isPresent()) {
+			throw new UserEmailDuplicateException(GlobalMessage.SOCIAL_ALREADY_LINKED.getMessage());
+		}
+
 		SocialAccount socialAccount = SocialAccount.builder()
 			.socialId(socialAccountInfo.getSocialId())
 			.socialType(socialAccountInfo.getSocialType())
@@ -57,12 +66,19 @@ public class SocialAccountService {
 		return socialAccountRepository.findBySocialTypeAndEmail(socialType, email);
 	}
 
+	@Transactional(readOnly = true)
 	public Optional<SocialAccount> findBySocialTypeAndSocialId(SocialType socialType, Long socialId) {
 		return socialAccountRepository.findBySocialTypeAndSocialId(socialType, socialId);
 	}
 
+	@Transactional(readOnly = true)
+	public Optional<SocialAccount> findBySocialTypeAndUser(SocialType socialType, User user) {
+		return socialAccountRepository.findBySocialTypeAndUser(socialType, user);
+	}
+
 	@Transactional
 	public void deleteSocialAccount(SocialAccount socialAccount) {
+		// 엔티티 삭제
 		socialAccountRepository.delete(socialAccount);
 	}
 

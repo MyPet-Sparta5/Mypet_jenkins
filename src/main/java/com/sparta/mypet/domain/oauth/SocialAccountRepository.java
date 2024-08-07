@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.oauth.entity.SocialAccount;
 import com.sparta.mypet.domain.oauth.entity.SocialType;
 
@@ -13,6 +14,8 @@ public interface SocialAccountRepository extends JpaRepository<SocialAccount, Lo
 	Optional<SocialAccount> findBySocialTypeAndSocialId(SocialType socialType, Long socialId);
 
 	Optional<SocialAccount> findBySocialTypeAndEmail(SocialType socialType, String email);
+
+	Optional<SocialAccount> findBySocialTypeAndUser(SocialType socialType, User user);
 
 	boolean existsSocialAccountByEmail(String email);
 

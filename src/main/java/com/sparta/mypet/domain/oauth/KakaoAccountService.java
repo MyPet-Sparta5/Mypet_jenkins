@@ -27,7 +27,6 @@ import com.sparta.mypet.domain.feign.KakaoUserApi;
 import com.sparta.mypet.domain.oauth.dto.KakaoTokenResponseDto;
 import com.sparta.mypet.domain.oauth.entity.SocialAccount;
 import com.sparta.mypet.domain.oauth.entity.SocialAccountInfo;
-import com.sparta.mypet.domain.oauth.entity.SocialAccountLeaveRequest;
 import com.sparta.mypet.domain.oauth.entity.SocialType;
 import com.sparta.mypet.security.JwtService;
 import com.sparta.mypet.security.TokenType;
@@ -53,6 +52,7 @@ public class KakaoAccountService {
 	@Value("${kakao.admin.key}")
 	private String kakaoAdminKey;
 
+	private static final int REDIS_CACHE_TTL = 30;
 	private static final String TARGET_ID_TYPE = "user_id";
 
 	private final KakaoAuthApi kakaoAuthApi;
@@ -77,17 +77,17 @@ public class KakaoAccountService {
 	}
 
 	@Transactional
-	public void processKakaoLeave(SocialAccountLeaveRequest requestDto) {
+	public void processKakaoLeave(String email) {
+
+		User user = userService.findUserByEmail(email);
 
 		// 카카오 계정 연동 확인
-		SocialAccount socialAccount = socialAccountService.findBySocialTypeAndEmail(SocialType.KAKAO,
-				requestDto.getEmail())
-			.orElseThrow(() -> new IllegalStateException(GlobalMessage.SOCIAL_NOT_LINKED_ERROR.getMessage()));
+		SocialAccount socialAccount = socialAccountService.findBySocialTypeAndUser(SocialType.KAKAO, user)
+			.orElseThrow(() -> new IllegalArgumentException(GlobalMessage.SOCIAL_NOT_LINKED_ERROR.getMessage()));
 
 		// 카카오 API를 통해 연결 끊기
 		disconnectFromKakao(socialAccount.getSocialId());
 
-		// 데이터베이스에서 소셜 계정 정보 삭제
 		socialAccountService.deleteSocialAccount(socialAccount);
 	}
 
@@ -226,7 +226,7 @@ public class KakaoAccountService {
 
 	private String saveTemporarySocialAccountInfo(SocialAccountInfo socialAccountInfo) {
 		String registrationKey = UUID.randomUUID().toString();
-		redisTemplate.opsForValue().set(registrationKey, socialAccountInfo, 30, TimeUnit.MINUTES);
+		redisTemplate.opsForValue().set(registrationKey, socialAccountInfo, REDIS_CACHE_TTL, TimeUnit.MINUTES);
 		return registrationKey;
 	}
 
