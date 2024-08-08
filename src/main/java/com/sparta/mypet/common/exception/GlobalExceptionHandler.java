@@ -3,6 +3,7 @@ package com.sparta.mypet.common.exception;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -18,6 +19,7 @@ import com.sparta.mypet.common.exception.custom.SocialAccountLinkedException;
 import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
 import com.sparta.mypet.common.exception.custom.UserNicknameDuplicateException;
+import com.sparta.mypet.common.exception.custom.UserNotFoundException;
 import com.sparta.mypet.common.exception.custom.UserPasswordDuplicationException;
 import com.sparta.mypet.common.exception.custom.UserStatusNotActiveException;
 import com.sparta.mypet.common.util.ResponseFactory;
@@ -71,6 +73,20 @@ public class GlobalExceptionHandler {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.badRequest(errorMessage);
+	}
+
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public ResponseEntity<MessageResponseDto> handleUsernameNotFoundException(UsernameNotFoundException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.notFound(errorMessage);
+	}
+
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<MessageResponseDto> handleUserNotFoundException(UserNotFoundException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.notFound(errorMessage);
 	}
 
 	@ExceptionHandler(UserEmailDuplicateException.class)
