@@ -16,9 +16,9 @@ import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
 import com.sparta.mypet.domain.auth.dto.SignupResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserPasswordUpdateRequestDto;
+import com.sparta.mypet.domain.auth.dto.UserResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserUpdateRequestDto;
 import com.sparta.mypet.domain.auth.dto.UserUpdateResponseDto;
-import com.sparta.mypet.domain.auth.dto.UserWithPostListResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserWithdrawResponseDto;
 import com.sparta.mypet.security.UserDetailsImpl;
 
@@ -41,10 +41,10 @@ public class UserController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<DataResponseDto<UserWithPostListResponseDto>> getUser(
+	public ResponseEntity<DataResponseDto<UserResponseDto>> getUser(
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-		UserWithPostListResponseDto responseDto = userService.getUser(userDetails.getUsername());
+		UserResponseDto responseDto = userService.getUser(userDetails.getUsername());
 
 		return ResponseFactory.ok(responseDto, GlobalMessage.GET_USER_SUCCESS.getMessage());
 	}
