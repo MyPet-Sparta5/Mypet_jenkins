@@ -52,6 +52,10 @@ public class File {
 	}
 
 	public String generateFileKey() {
-		return String.format("%d/%d-%s", post.getId(), id, name);
+		final int MAX_NAME_LENGTH = 200;
+
+		String truncatedName = name.length() > MAX_NAME_LENGTH ? name.substring(0, MAX_NAME_LENGTH) : name;
+
+		return String.format("%d/%d-%s", post.getId(), id, truncatedName);
 	}
 }
