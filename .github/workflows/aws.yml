@@ -35,7 +35,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image to Docker Hub
-        run: docker push myapp:${{ github.sha }}
+        run: docker push minhyuk0828/mypetdb:${{ github.sha }}
 
       - name: Deploy to EC2
         if: github.ref == 'refs/heads/develop'
