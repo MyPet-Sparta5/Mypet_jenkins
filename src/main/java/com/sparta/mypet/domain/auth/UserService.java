@@ -32,7 +32,6 @@ import com.sparta.mypet.domain.oauth.SocialAccountService;
 import com.sparta.mypet.domain.oauth.entity.SocialAccount;
 import com.sparta.mypet.domain.oauth.entity.SocialAccountInfo;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +43,6 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final SocialAccountService socialAccountService;
 	private final PasswordEncoder passwordEncoder;
-	private final EntityManager entityManager;
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Transactional
