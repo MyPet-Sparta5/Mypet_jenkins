@@ -83,6 +83,7 @@ public enum GlobalMessage {
 	// SOCIAL
 	KAKAO_SERVER_ERROR("카카오 서버 오류 발생 : "),
 	SOCIAL_NOT_LINKED_ERROR("해당 소셜 계정에 연동되어있지 않습니다."),
+	SOCIAL_ALREADY_LINKED("해당 소셜 계정이 이미 연동되어있습니다."),
 
 	// REDIS
 	REDIS_VALUE_ERROR("Redis 캐시에 해당 키값이 존재하지 않습니다.");

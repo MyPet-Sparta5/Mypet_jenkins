@@ -61,7 +61,7 @@ public class UserService {
 
 		log.info("requestDto : {}", requestDto.getRegistrationKey());
 
-		if (!requestDto.getRegistrationKey().isEmpty()) {
+		if (requestDto.getRegistrationKey() != null && !requestDto.getRegistrationKey().isEmpty()) {
 
 			SocialAccountInfo socialAccountInfo = (SocialAccountInfo)redisTemplate.opsForValue()
 				.get(requestDto.getRegistrationKey());
