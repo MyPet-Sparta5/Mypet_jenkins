@@ -32,8 +32,8 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/libs/*.jar"
-          target: "/home/ubuntu/develop"
+          source: "./build/libs/*.jar"
+          target: /home/ubuntu/develop
 
       - name: Restart server on develop
         if: github.ref == 'refs/heads/develop'
@@ -43,6 +43,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            chmod +x /home/ec2-user/*.jar
+            chmod +x /home/ubuntu/*.jar
             pkill -f 'java -jar' || true
-            nohup java -jar /home/ec2-user/develop/Mypet.jar > /dev/null 2>&1 &
+            nohup java -jar /home/ubuntu/develop/Mypet.jar > /dev/null 2>&1 &
