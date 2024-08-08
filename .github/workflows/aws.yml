@@ -26,7 +26,7 @@ jobs:
         run: ./gradlew build
 
       - name: Build Docker image
-        run: docker build -t myapp:${{ github.sha }} .
+        run: docker build -t minhyuk0828/mypetdb:${{ github.sha }} .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
