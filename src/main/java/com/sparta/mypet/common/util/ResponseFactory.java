@@ -24,6 +24,8 @@ public class ResponseFactory {
 	private static final int STATUS_INTERNAL_SERVER_ERROR = HttpStatus.INTERNAL_SERVER_ERROR.value();
 	private static final int STATUS_UNAUTHORIZED = HttpStatus.UNAUTHORIZED.value();
 
+	private static final int STATUS_TOO_MANY_REQUESTS = HttpStatus.TOO_MANY_REQUESTS.value();
+
 	// 기본 생성자 : util 클래스이기 때문에 생성되서 사용하지 않도록 private 로 설정
 	private ResponseFactory() {
 	}
@@ -165,5 +167,11 @@ public class ResponseFactory {
 		String errorMessage = invalidMessage(message) ? GlobalMessage.MSG_UNAUTHORIZED.getMessage() : message;
 		MessageResponseDto responseDto = new MessageResponseDto(STATUS_UNAUTHORIZED, errorMessage);
 		return ResponseEntity.status(STATUS_UNAUTHORIZED).body(responseDto);
+	}
+
+	public static ResponseEntity<MessageResponseDto> tooManyRequests(String message) {
+		String errorMessage = invalidMessage(message) ? GlobalMessage.TOO_MANY_REQUESTS.getMessage() : message;
+		MessageResponseDto responseDto = new MessageResponseDto(STATUS_TOO_MANY_REQUESTS, errorMessage);
+		return ResponseEntity.status(STATUS_TOO_MANY_REQUESTS).body(responseDto);
 	}
 }
