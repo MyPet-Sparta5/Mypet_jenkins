@@ -1,12 +1,17 @@
 package com.sparta.mypet.domain.s3;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.imageio.ImageIO;
+
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +39,8 @@ public class FileService {
 	@Value("${cloud.aws.s3.bucketName}")
 	private String bucket;
 
+	private static final int TARGET_HEIGHT = 650;
+
 	/**
 	 * 파일 업로드 처리
 	 *
@@ -48,22 +55,27 @@ public class FileService {
 		for (int i = 0; i < files.size(); i++) {
 			MultipartFile multiFile = files.get(i);
 
-			validFile(multiFile);
-
+			FileContentType type = validFile(multiFile);
 			String fileName = multiFile.getOriginalFilename();
 
-			File file = File.builder().post(post).url("").name(fileName).order(i).build();
+			try {
+				InputStream processedFileStream = processFile(multiFile, type);
 
-			File savedFile = fileRepository.save(file);
+				File file = File.builder().post(post).url("").name(fileName).order(i).build();
 
-			String key = savedFile.generateFileKey();
+				File savedFile = fileRepository.save(file);
 
-			uploadToS3(multiFile, key);
+				String key = savedFile.generateFileKey();
 
-			String fileUrl = generateFileUrl(key);
-			savedFile.updateUrl(fileUrl);
+				uploadToS3(processedFileStream, key, multiFile.getContentType());
 
-			uploadedFiles.add(savedFile);
+				String fileUrl = amazonS3Client.getUrl(bucket, key).toString();
+				savedFile.updateUrl(fileUrl);
+
+				uploadedFiles.add(savedFile);
+			} catch (IOException e) {
+				throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage());
+			}
 		}
 
 		return uploadedFiles;
@@ -77,22 +89,11 @@ public class FileService {
 	}
 
 	/**
-	 * 파일 URL 생성
-	 *
-	 * @param key S3에 저장된 파일 키
-	 * @return 파일의 URL
-	 */
-	private String generateFileUrl(String key) {
-		URL url = amazonS3Client.getUrl(bucket, key);
-		return url.toString();
-	}
-
-	/**
 	 * 파일 유효성 검사
 	 *
 	 * @param file 업로드할 파일
 	 */
-	private void validFile(MultipartFile file) {
+	private FileContentType validFile(MultipartFile file) {
 		if (file.isEmpty() || Objects.isNull(file.getOriginalFilename())) {
 			throw new InvalidFileException(GlobalMessage.UPLOAD_FILE_NOT_FOUND.getMessage());
 		}
@@ -106,6 +107,32 @@ public class FileService {
 		}
 
 		type.validateFileSize(fileSize);
+		return type;
+	}
+
+	private InputStream processFile(MultipartFile file, FileContentType type) throws IOException {
+		BufferedImage processedImage = null;
+
+		switch (type) {
+			case JPG, PNG, JPEG:
+				processedImage = resizeImage(file);
+				break;
+			case GIF:
+				// GIF는 원본 그대로 반환
+				return file.getInputStream();
+			case MP4, AVI:
+				// 동영상 압축 로직 추가
+				return compressVideo(file);
+			default:
+				throw new InvalidFileException(GlobalMessage.INVALID_TYPE_FILE.getMessage());
+		}
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		String formatName = type.getType().split("/")[1];
+
+		// 이미지 포맷을 설정하고 저장
+		ImageIO.write(processedImage, formatName, baos);
+		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
 	/**
@@ -114,15 +141,36 @@ public class FileService {
 	 * @param file 파일
 	 * @param key  S3에 저장할 파일 키
 	 */
-	private void uploadToS3(MultipartFile file, String key) {
+	private void uploadToS3(InputStream inputStream, String key, String contentType) {
 		ObjectMetadata metadata = new ObjectMetadata();
-		metadata.setContentType(file.getContentType());
-		metadata.setContentLength(file.getSize());
 
-		try (InputStream inputStream = file.getInputStream()) {
+		try {
+			metadata.setContentType(contentType);
+			metadata.setContentLength(inputStream.available());
+
 			amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, metadata));
 		} catch (IOException e) {
-			throw new InvalidFileException(GlobalMessage.UPLOAD_FAIL.getMessage() + e);
+			throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage() + e);
 		}
+	}
+
+	private BufferedImage resizeImage(MultipartFile multipartFile) throws IOException {
+		BufferedImage sourceImage = ImageIO.read(multipartFile.getInputStream());
+
+		if (sourceImage.getHeight() <= TARGET_HEIGHT) {
+			return sourceImage;
+		}
+
+		double sourceImageRatio = (double)sourceImage.getWidth() / sourceImage.getHeight();
+
+		int newWidth = (int)(TARGET_HEIGHT * sourceImageRatio);
+
+		return Scalr.resize(sourceImage, newWidth, TARGET_HEIGHT);
+	}
+
+	private InputStream compressVideo(MultipartFile file) throws IOException {
+		// 동영상 압축 로직을 구현합니다
+		// 예: FFmpeg 라이브러리 등을 사용할 수 있습니다
+		return file.getInputStream(); // 현재는 원본 그대로 반환
 	}
 }
