@@ -30,7 +30,6 @@ import com.sparta.mypet.domain.oauth.entity.SocialAccountInfo;
 import com.sparta.mypet.domain.oauth.entity.SocialAccountLeaveRequest;
 import com.sparta.mypet.domain.oauth.entity.SocialType;
 import com.sparta.mypet.security.JwtService;
-import com.sparta.mypet.security.TokenType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -213,8 +212,8 @@ public class KakaoAccountService {
 			throw new UserEmailDuplicateException(GlobalMessage.EMAIL_ALREADY_USED.getMessage());
 		}
 
-		String accessToken = jwtService.generateToken(TokenType.ACCESS, user.getRole(), user.getEmail());
-		String refreshToken = jwtService.generateToken(TokenType.REFRESH, user.getRole(), user.getEmail());
+		String accessToken = jwtService.generateAccessToken(user.getRole(), user.getEmail());
+		String refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
 		user.updateRefreshToken(refreshToken);
 

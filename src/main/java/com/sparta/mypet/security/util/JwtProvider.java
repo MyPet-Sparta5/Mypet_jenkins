@@ -17,20 +17,39 @@ public final class JwtProvider {
 	}
 
 	/**
-	 * JWT 토큰 생성
+	 * JWT Access Token 생성
 	 * @param authorizationKey 역할 정보가 저장될 클레임 키
 	 * @param role 사용자 역할
 	 * @param username 사용자 이름(여기서는 Email)
 	 * @param expiration 토큰 만료 시간 (밀리초)
 	 * @param secretKey 토큰 서명을 위한 비밀 키
 	 * @param signatureAlgorithm 토큰 서명 알고리즘
-	 * @return 생성된 JWT 토큰
+	 * @return 생성된 JWT Access Token
 	 */
-	public static String generateToken(String authorizationKey, Object role, String username, long expiration,
+	public static String generateAccessToken(String authorizationKey, Object role, String username, long expiration,
 		SecretKey secretKey, SignatureAlgorithm signatureAlgorithm) {
 
 		return Jwts.builder()
 			.claim(authorizationKey, role)
+			.setSubject(username)
+			.setIssuedAt(new Date(System.currentTimeMillis()))
+			.setExpiration(new Date(System.currentTimeMillis() + expiration))
+			.signWith(secretKey, signatureAlgorithm)
+			.compact();
+	}
+
+	/**
+	 * JWT Refresh Token 생성
+	 * @param username 사용자 이름(여기서는 Email)
+	 * @param expiration 토큰 만료 시간 (밀리초)
+	 * @param secretKey 토큰 서명을 위한 비밀 키
+	 * @param signatureAlgorithm 토큰 서명 알고리즘
+	 * @return 생성된 JWT Refresh Token
+	 */
+	public static String generateRefreshToken(String username, long expiration, SecretKey secretKey,
+		SignatureAlgorithm signatureAlgorithm) {
+
+		return Jwts.builder()
 			.setSubject(username)
 			.setIssuedAt(new Date(System.currentTimeMillis()))
 			.setExpiration(new Date(System.currentTimeMillis() + expiration))
