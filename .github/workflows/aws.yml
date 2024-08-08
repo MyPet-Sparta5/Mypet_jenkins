@@ -1,4 +1,4 @@
-name: Deploy to AWS EC2
+name: CI/CD Pipeline
 
 on:
   push:
@@ -6,52 +6,40 @@ on:
       - develop
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v2
-      with:
-        java-version: '17'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'  # 'temurin', 'zulu', 'adopt' 등
+          java-version: '17'
 
-    - name: Cache Gradle packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+      - name: Build with Gradle
+        run: ./gradlew build
 
-    - name: Build with Gradle
-      run: ./gradlew build
+      - name: Copy files via SSH to develop
+        if: github.ref == 'refs/heads/develop'
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: "build/libs/*"
+          target: "/home/ec2-user/develop/"
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: build
-        path: build/libs/*.jar
 
-    - name: Download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: build
-        path: .
-
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-    - name: Copy files via SSH
-      run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa build/libs/*.jar ec2-user@YOUR_EC2_PUBLIC_IP:/home/ec2-user/
-
-    - name: Execute deployment commands
-      run: |
-        ssh -o StrictHostKeyChecking=no ec2-user@YOUR_EC2_PUBLIC_IP << 'EOF'
-        pkill -f 'java -jar'
-        nohup java -jar /home/ec2-user/*.jar > /dev/null 2>&1 &
-        EOF
+      - name: Restart server on develop
+        if: github.ref == 'refs/heads/develop'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            pkill -f 'java -jar'
+            nohup java -jar /home/ec2-user/develop/your-app-name.jar &
