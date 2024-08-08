@@ -45,7 +45,16 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
+            # Ensure .env file is present
+            echo "Fetching .env file..."
+            scp -i ${{ secrets.KEY }} /path/to/.env ubuntu@${{ secrets.HOST }}:/home/ubuntu/.env
+
+            # Pull the Docker image
             docker pull minhyuk0828/mypetdb:${{ github.sha }}
+
+            # Stop and remove any existing container
             docker stop myapp || true
             docker rm myapp || true
-            docker run -d --name myapp -p 8080:8080 minhyuk0828/mypetdb:${{ github.sha }}
+
+            # Run the Docker container with environment variables
+            docker run -d --name myapp -p 8080:8080 --env-file /home/ubuntu/.env minhyuk0828/mypetdb:${{ github.sha }}
