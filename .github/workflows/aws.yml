@@ -14,10 +14,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v2
         with:
-          distribution: 'temurin'  # 'temurin', 'zulu', 'adopt' 등
+          distribution: 'temurin'  # distribution 필드 추가
           java-version: '17'
+
+      - name: Grant execute permission for Gradlew
+        run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew build
@@ -29,9 +32,8 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          source: "build/libs/*"
+          source: "build/libs/*.jar"
           target: "/home/ec2-user/develop/"
-
 
       - name: Restart server on develop
         if: github.ref == 'refs/heads/develop'
@@ -41,5 +43,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            pkill -f 'java -jar'
-            nohup java -jar /home/ec2-user/develop/your-app-name.jar &
+            chmod +x /home/ec2-user/*.jar
+            pkill -f 'java -jar' || true
+            nohup java -jar /home/ec2-user/develop/Mypet.jar > /dev/null 2>&1 &
