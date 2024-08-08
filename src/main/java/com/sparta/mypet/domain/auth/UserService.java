@@ -206,4 +206,8 @@ public class UserService {
 
 		return query.getResultList();
 	}
+
+	public List<User> findExpiredSuspendedUsers() {
+		return userRepository.findExpiredSuspendedUsers();
+	}
 }
