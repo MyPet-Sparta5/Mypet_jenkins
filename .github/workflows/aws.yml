@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           source: "build/libs/*.jar"
-          target: "/home/ec2-user/develop/"
+          target: "/home/ubuntu/develop"
 
       - name: Restart server on develop
         if: github.ref == 'refs/heads/develop'
