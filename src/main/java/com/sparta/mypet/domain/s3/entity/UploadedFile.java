@@ -54,7 +54,9 @@ public class UploadedFile {
 	public String generateFileKey() {
 		final int MAX_NAME_LENGTH = 200;
 
-		String truncatedName = name.length() > MAX_NAME_LENGTH ? name.substring(0, MAX_NAME_LENGTH) : name;
+		String truncatedName = name.length() > MAX_NAME_LENGTH
+			? name.substring(name.length() - MAX_NAME_LENGTH)
+			: name;
 
 		return String.format("%d/%d-%s", post.getId(), id, truncatedName);
 	}
