@@ -21,9 +21,9 @@ import com.sparta.mypet.common.exception.custom.UserPasswordDuplicationException
 import com.sparta.mypet.domain.auth.dto.SignupRequestDto;
 import com.sparta.mypet.domain.auth.dto.SignupResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserPasswordUpdateRequestDto;
+import com.sparta.mypet.domain.auth.dto.UserResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserUpdateRequestDto;
 import com.sparta.mypet.domain.auth.dto.UserUpdateResponseDto;
-import com.sparta.mypet.domain.auth.dto.UserWithPostListResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserWithdrawResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
@@ -31,11 +31,7 @@ import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.domain.oauth.SocialAccountService;
 import com.sparta.mypet.domain.oauth.entity.SocialAccount;
 import com.sparta.mypet.domain.oauth.entity.SocialAccountInfo;
-import com.sparta.mypet.domain.post.entity.Category;
-import com.sparta.mypet.domain.post.entity.Post;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +43,6 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final SocialAccountService socialAccountService;
 	private final PasswordEncoder passwordEncoder;
-	private final EntityManager entityManager;
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Transactional
@@ -78,20 +73,17 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public UserWithPostListResponseDto getUser(String email) {
+	public UserResponseDto getUser(String email) {
 
 		User user = findUserByEmail(email);
-
-		List<Post> postList = getPostsByCategory(user, Category.DEFAULT);
 
 		List<String> socialLinkedList = user.getSocialAccounts()
 			.stream()
 			.map(socialAccount -> socialAccount.getSocialType().name())
 			.toList();
 
-		return UserWithPostListResponseDto.builder()
+		return UserResponseDto.builder()
 			.user(user)
-			.postList(postList)
 			.socialLinkedList(socialLinkedList)
 			.build();
 	}
@@ -153,13 +145,8 @@ public class UserService {
 		user.updatePassword(encodePassword);
 	}
 
-	@Transactional(readOnly = true)
-	public Page<User> findAll(Pageable pageable) {
-		return userRepository.findAll(pageable);
-	}
-
 	public User createAndSaveUser(String email, String password, String nickname) {
-		Optional<User> duplicateUser = userRepository.findByEmail(email);
+		Optional<User> duplicateUser = findOptionalUserByEmail(email);
 
 		if (duplicateUser.isPresent()) {
 			throw new UserEmailDuplicateException(GlobalMessage.USER_EMAIL_DUPLICATE);
@@ -179,6 +166,11 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
+	@Transactional(readOnly = true)
+	public Page<User> findAll(Pageable pageable) {
+		return userRepository.findAll(pageable);
+	}
+
 	public User findUserByEmail(String email) {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new UsernameNotFoundException(GlobalMessage.USER_EMAIL_NOT_FOUND.getMessage()));
@@ -191,20 +183,6 @@ public class UserService {
 	public User findUserById(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new UserNotFoundException(GlobalMessage.USER_NOT_FOUND.getMessage()));
-	}
-
-	private List<Post> getPostsByCategory(User user, Category category) {
-		String jpql = "SELECT p FROM Post p " + "WHERE p.user = :user " + (category == Category.DEFAULT ? "" :
-			"AND p.category = :category ") + "ORDER BY p.createdAt DESC";
-
-		TypedQuery<Post> query = entityManager.createQuery(jpql, Post.class);
-		query.setParameter("user", user);
-		if (category != Category.DEFAULT) {
-			query.setParameter("category", category);
-		}
-		query.setMaxResults(10);
-
-		return query.getResultList();
 	}
 
 	public List<User> findExpiredSuspendedUsers() {

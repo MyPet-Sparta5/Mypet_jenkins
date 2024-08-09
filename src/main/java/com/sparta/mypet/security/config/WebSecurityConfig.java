@@ -58,6 +58,8 @@ public class WebSecurityConfig {
 			.requestMatchers(HttpMethod.POST, "/api/users").permitAll() // 회원가입 요청 허가
 			.requestMatchers(HttpMethod.GET, "/api/users/social-account/**").permitAll()
 			.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // 로그인 요청 허가
+			.requestMatchers(HttpMethod.POST, "/api/auth/send-verification").permitAll() // 이메일 코드 발송
+			.requestMatchers(HttpMethod.POST, "/api/auth/verify").permitAll() // 이메일 코드 인증
 			.requestMatchers(HttpMethod.POST, "/api/auth/refresh").permitAll() // 토큰 재발급 요청 허가
 			.requestMatchers(HttpMethod.GET, "/api/posts/**").permitAll()
 			.requestMatchers(HttpMethod.GET, "/api/facilities/**").permitAll()
