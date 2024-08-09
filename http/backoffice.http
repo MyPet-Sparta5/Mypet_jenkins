@@ -17,6 +17,11 @@ GET /api/admin/user-manage HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
 
+### 유저 전체조회 - 이메일 조회 (status, role도 가능)
+GET /api/admin/user-manage?email=admin HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
 ### 유저 상태 변경 - 정지제외
 PUT /api/admin/user-manage/{{userId}}/status HTTP/1.1
 Host: {{root-path}}

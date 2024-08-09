@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
+import com.sparta.mypet.domain.auth.entity.UserSearchCondition;
 import com.sparta.mypet.domain.backoffice.dto.PostStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportStatusRequestDto;
@@ -40,8 +41,9 @@ public class BackOfficeController {
 	public ResponseEntity<DataResponseDto<Page<UserListResponseDto>>> getUsers(
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
-		@RequestParam(defaultValue = "createdAt, desc") String sortBy) {
-		Page<UserListResponseDto> responseDtoList = backOfficeService.getUsers(page, pageSize, sortBy);
+		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
+		UserSearchCondition condition) {
+		Page<UserListResponseDto> responseDtoList = backOfficeService.getUsers(page, pageSize, sortBy, condition);
 		return ResponseFactory.ok(responseDtoList, "사용자 전체 조회 성공");
 	}
 
