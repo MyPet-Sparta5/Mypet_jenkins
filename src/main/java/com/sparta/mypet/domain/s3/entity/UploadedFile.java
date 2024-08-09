@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class File {
+public class UploadedFile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class File {
 	private int order;
 
 	@Builder
-	public File(Post post, String url, String name, int order) {
+	public UploadedFile(Post post, String url, String name, int order) {
 		this.post = post;
 		this.url = url;
 		this.name = name;

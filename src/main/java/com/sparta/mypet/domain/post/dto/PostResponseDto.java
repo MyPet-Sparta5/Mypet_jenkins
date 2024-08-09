@@ -36,7 +36,7 @@ public class PostResponseDto {
 		this.postStatus = post.getPostStatus();
 		this.createAt = post.getCreatedAt();
 		this.isLike = false;
-		this.files = post.getFiles().stream().map(FileResponseDto::new).toList();
+		this.files = post.getUploadedFiles().stream().map(FileResponseDto::new).toList();
 	}
 
 	public PostResponseDto(Post post, boolean isLike) {
@@ -50,6 +50,6 @@ public class PostResponseDto {
 		this.postStatus = post.getPostStatus();
 		this.createAt = post.getCreatedAt();
 		this.isLike = isLike;
-		this.files = post.getFiles().stream().map(FileResponseDto::new).toList();
+		this.files = post.getUploadedFiles().stream().map(FileResponseDto::new).toList();
 	}
 }

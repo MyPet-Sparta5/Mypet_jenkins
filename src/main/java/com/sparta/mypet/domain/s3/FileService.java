@@ -3,11 +3,14 @@ package com.sparta.mypet.domain.s3;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
@@ -17,6 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.bramp.ffmpeg.FFmpeg;
+import net.bramp.ffmpeg.FFmpegExecutor;
+import net.bramp.ffmpeg.FFprobe;
+import net.bramp.ffmpeg.builder.FFmpegBuilder;
+
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -24,11 +32,13 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.InvalidFileException;
 import com.sparta.mypet.domain.post.entity.Post;
-import com.sparta.mypet.domain.s3.entity.File;
 import com.sparta.mypet.domain.s3.entity.FileContentType;
+import com.sparta.mypet.domain.s3.entity.UploadedFile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileService {
@@ -39,18 +49,22 @@ public class FileService {
 	@Value("${cloud.aws.s3.bucketName}")
 	private String bucket;
 
-	private static final int TARGET_HEIGHT = 650;
+	@Value("${ffmpeg.location}")
+	private String ffmpegPath;
 
-	/**
-	 * 파일 업로드 처리
-	 *
-	 * @param files 업로드할 파일 목록
-	 * @param post  파일이 속한 게시물
-	 * @return 업로드된 파일 목록
-	 */
+	@Value("${ffprobe.location}")
+	private String ffprobePath;
+
+	@Value("${temp.file.path}")
+	private String tempFilePath;
+
+	private static final int TARGET_HEIGHT = 650;
+	private static final long MAX_FILE_SIZE_MB = 30; // 최대 비디오 크기 (MB)
+	private static final int VIDEO_BITRATE = 10000000;  // 비트레이트 설정 (대략 10Mbps)
+
 	@Transactional
-	public List<File> uploadFile(List<MultipartFile> files, Post post) {
-		List<File> uploadedFiles = new ArrayList<>();
+	public List<UploadedFile> uploadFile(List<MultipartFile> files, Post post) {
+		List<UploadedFile> uploadedFiles = new ArrayList<>();
 
 		for (int i = 0; i < files.size(); i++) {
 			MultipartFile multiFile = files.get(i);
@@ -59,40 +73,31 @@ public class FileService {
 			String fileName = multiFile.getOriginalFilename();
 
 			try {
-				InputStream processedFileStream = processFile(multiFile, type);
+				UploadedFile uploadedFile = UploadedFile.builder()
+					.post(post)
+					.url("")
+					.name(fileName)
+					.order(i)
+					.build();
 
-				File file = File.builder().post(post).url("").name(fileName).order(i).build();
-
-				File savedFile = fileRepository.save(file);
-
-				String key = savedFile.generateFileKey();
-
-				uploadToS3(processedFileStream, key, multiFile.getContentType());
-
-				String fileUrl = amazonS3Client.getUrl(bucket, key).toString();
-				savedFile.updateUrl(fileUrl);
+				UploadedFile savedFile = processFile(multiFile, type, uploadedFile);
 
 				uploadedFiles.add(savedFile);
 			} catch (IOException e) {
-				throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage());
+				throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage() + e);
 			}
 		}
 
 		return uploadedFiles;
 	}
 
-	public void deleteFiles(List<File> files) {
-		for (File file : files) {
+	public void deleteFiles(List<UploadedFile> files) {
+		for (UploadedFile file : files) {
 			String key = file.generateFileKey();
 			amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, key));
 		}
 	}
 
-	/**
-	 * 파일 유효성 검사
-	 *
-	 * @param file 업로드할 파일
-	 */
 	private FileContentType validFile(MultipartFile file) {
 		if (file.isEmpty() || Objects.isNull(file.getOriginalFilename())) {
 			throw new InvalidFileException(GlobalMessage.UPLOAD_FILE_NOT_FOUND.getMessage());
@@ -110,37 +115,55 @@ public class FileService {
 		return type;
 	}
 
-	private InputStream processFile(MultipartFile file, FileContentType type) throws IOException {
-		BufferedImage processedImage = null;
+	private UploadedFile processFile(MultipartFile file, FileContentType type, UploadedFile uploadedFile) throws
+		IOException {
+		InputStream inputStream;
 
 		switch (type) {
 			case JPG, PNG, JPEG:
-				processedImage = resizeImage(file);
-				break;
+				inputStream = processImage(file, type);
+				return getS3UploadedFile(file, uploadedFile, inputStream);
 			case GIF:
-				// GIF는 원본 그대로 반환
-				return file.getInputStream();
+				inputStream = file.getInputStream();
+				return getS3UploadedFile(file, uploadedFile, inputStream);
 			case MP4, AVI:
-				// 동영상 압축 로직 추가
-				return compressVideo(file);
+				String outPath = compressVideo(file);
+				// 압축된 파일을 S3에 업로드
+				File compressedFile = new File(outPath);
+				inputStream = new FileInputStream(compressedFile);
+				var s3UploadedFile = getS3UploadedFile(file, uploadedFile, inputStream);
+				if (compressedFile.delete()) {
+					log.error("삭제 실패 compressedFile: {}", compressedFile);
+				}
+				return s3UploadedFile;
 			default:
 				throw new InvalidFileException(GlobalMessage.INVALID_TYPE_FILE.getMessage());
 		}
+	}
 
+	private UploadedFile getS3UploadedFile(MultipartFile file, UploadedFile uploadedFile, InputStream inputStream) {
+		UploadedFile savedFile = fileRepository.save(uploadedFile);
+
+		String key = savedFile.generateFileKey();
+
+		uploadToS3(inputStream, key, file.getContentType());
+
+		String fileUrl = amazonS3Client.getUrl(bucket, key).toString();
+
+		savedFile.updateUrl(fileUrl);
+		return savedFile;
+	}
+
+	private InputStream processImage(MultipartFile file, FileContentType type) throws IOException {
+		BufferedImage processedImage = resizeImage(file);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		String formatName = type.getType().split("/")[1];
 
-		// 이미지 포맷을 설정하고 저장
+		// 포맷을 설정하고 저장
 		ImageIO.write(processedImage, formatName, baos);
 		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
-	/**
-	 * S3에 파일 업로드
-	 *
-	 * @param file 파일
-	 * @param key  S3에 저장할 파일 키
-	 */
 	private void uploadToS3(InputStream inputStream, String key, String contentType) {
 		ObjectMetadata metadata = new ObjectMetadata();
 
@@ -162,15 +185,52 @@ public class FileService {
 		}
 
 		double sourceImageRatio = (double)sourceImage.getWidth() / sourceImage.getHeight();
-
 		int newWidth = (int)(TARGET_HEIGHT * sourceImageRatio);
 
 		return Scalr.resize(sourceImage, newWidth, TARGET_HEIGHT);
 	}
 
-	private InputStream compressVideo(MultipartFile file) throws IOException {
-		// 동영상 압축 로직을 구현합니다
-		// 예: FFmpeg 라이브러리 등을 사용할 수 있습니다
-		return file.getInputStream(); // 현재는 원본 그대로 반환
+	private String compressVideo(MultipartFile file) {
+		String fileName = file.getOriginalFilename();
+		String uniqueId = UUID.randomUUID().toString();
+		String filePath = tempFilePath + uniqueId + "_" + fileName;
+		String outPath = tempFilePath + uniqueId + "_compressed_" + fileName;
+
+		try {
+			// 임시 파일로 저장
+			File tempFile = new File(filePath);
+			tempFile.getParentFile().mkdirs();
+			file.transferTo(tempFile);
+
+			// 동영상 파일 크기 확인
+			if (tempFile.length() > (MAX_FILE_SIZE_MB * 1024 * 1024)) {
+				FFmpegBuilder builder = new FFmpegBuilder()
+					.setInput(filePath)
+					.addOutput(outPath)
+					.setFormat("mp4")
+					.disableSubtitle()
+					.setVideoCodec("libx264")
+					.setAudioCodec("aac")
+					.setVideoBitRate(VIDEO_BITRATE)
+					.setVideoFrameRate(30)
+					.done();
+
+				// FFmpeg 실행
+				FFmpegExecutor executor = new FFmpegExecutor(new FFmpeg(ffmpegPath), new FFprobe(ffprobePath));
+				executor.createJob(builder).run();
+			} else {
+				// 압축할 필요 없는 경우 원본 파일 반환
+				outPath = filePath;
+			}
+		} catch (IOException e) {
+			throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage() + e);
+		} finally {
+			// 임시 파일 삭제
+			new File(filePath).delete();
+
+		}
+
+		return outPath;
 	}
+
 }

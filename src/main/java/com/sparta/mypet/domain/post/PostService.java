@@ -24,7 +24,7 @@ import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.post.entity.PostStatus;
 import com.sparta.mypet.domain.s3.FileService;
-import com.sparta.mypet.domain.s3.entity.File;
+import com.sparta.mypet.domain.s3.entity.UploadedFile;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,8 +51,8 @@ public class PostService {
 		Post post = createAndSavePost(user, requestDto.getTitle(), requestDto.getContent(), postCategory);
 		user.addPost(post);
 		if (files != null && postCategory.equals(Category.BOAST)) {
-			List<File> postFiles = fileService.uploadFile(files, post);
-			post.addFiles(postFiles);
+			List<UploadedFile> postUploadedFiles = fileService.uploadFile(files, post);
+			post.addFiles(postUploadedFiles);
 		}
 
 		return new PostResponseDto(post);
@@ -77,8 +77,8 @@ public class PostService {
 
 		checkDeleteAuthor(post, user);
 
-		List<File> files = post.getFiles();
-		fileService.deleteFiles(files);
+		List<UploadedFile> uploadedFiles = post.getUploadedFiles();
+		fileService.deleteFiles(uploadedFiles);
 
 		postRepository.delete(post);
 	}
