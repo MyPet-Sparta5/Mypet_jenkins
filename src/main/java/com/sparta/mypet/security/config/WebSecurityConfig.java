@@ -77,7 +77,8 @@ public class WebSecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:3000")); // 리액트 앱의 주소
+		configuration.setAllowedOrigins(
+			List.of("http://localhost:3000", "http://www.petzoa.site", "http://api.petzoa.site")); // 리액트 앱의 주소
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);
