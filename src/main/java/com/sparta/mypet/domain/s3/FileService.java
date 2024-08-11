@@ -81,7 +81,6 @@ public class FileService {
 					.build();
 
 				UploadedFile savedFile = processFile(multiFile, type, uploadedFile);
-
 				uploadedFiles.add(savedFile);
 			} catch (IOException e) {
 				throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage() + e);
@@ -123,33 +122,47 @@ public class FileService {
 			case JPG, PNG, JPEG:
 				inputStream = processImage(file, type);
 				return getS3UploadedFile(file, uploadedFile, inputStream);
+
 			case GIF:
 				inputStream = file.getInputStream();
 				return getS3UploadedFile(file, uploadedFile, inputStream);
+
 			case MP4, AVI:
-				String outPath = compressVideo(file);
-				// 압축된 파일을 S3에 업로드
-				File compressedFile = new File(outPath);
-				inputStream = new FileInputStream(compressedFile);
-				var s3UploadedFile = getS3UploadedFile(file, uploadedFile, inputStream);
-				if (compressedFile.delete()) {
-					log.error("삭제 실패 compressedFile: {}", compressedFile);
+				File tempFile = null;
+				try {
+					if (isFileTooLarge(file)) {
+						// 파일이 너무 크면 압축을 위해 임시 파일을 저장
+						String filePath = saveTempFile(file);
+						String compressedFilePath = compressVideo(filePath);
+						tempFile = new File(compressedFilePath);
+						inputStream = new FileInputStream(tempFile);
+					} else {
+						// 파일이 크지 않으면 원본 파일을 직접 사용
+						inputStream = file.getInputStream();
+					}
+
+					return getS3UploadedFile(file, uploadedFile, inputStream);
+				} finally {
+					// 임시 파일 삭제
+					if (tempFile != null && tempFile.exists() && !tempFile.delete()) {
+						log.info("");
+					}
 				}
-				return s3UploadedFile;
+
 			default:
 				throw new InvalidFileException(GlobalMessage.INVALID_TYPE_FILE.getMessage());
 		}
 	}
 
+	private boolean isFileTooLarge(MultipartFile file) {
+		return file.getSize() > (MAX_FILE_SIZE_MB * 1024 * 1024);
+	}
+
 	private UploadedFile getS3UploadedFile(MultipartFile file, UploadedFile uploadedFile, InputStream inputStream) {
 		UploadedFile savedFile = fileRepository.save(uploadedFile);
-
 		String key = savedFile.generateFileKey();
-
 		uploadToS3(inputStream, key, file.getContentType());
-
 		String fileUrl = amazonS3Client.getUrl(bucket, key).toString();
-
 		savedFile.updateUrl(fileUrl);
 		return savedFile;
 	}
@@ -158,19 +171,15 @@ public class FileService {
 		BufferedImage processedImage = resizeImage(file);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		String formatName = type.getType().split("/")[1];
-
-		// 포맷을 설정하고 저장
 		ImageIO.write(processedImage, formatName, baos);
 		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
 	private void uploadToS3(InputStream inputStream, String key, String contentType) {
 		ObjectMetadata metadata = new ObjectMetadata();
-
 		try {
 			metadata.setContentType(contentType);
 			metadata.setContentLength(inputStream.available());
-
 			amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, metadata));
 		} catch (IOException e) {
 			throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage() + e);
@@ -179,48 +188,49 @@ public class FileService {
 
 	private BufferedImage resizeImage(MultipartFile multipartFile) throws IOException {
 		BufferedImage sourceImage = ImageIO.read(multipartFile.getInputStream());
-
 		if (sourceImage.getHeight() <= TARGET_HEIGHT) {
 			return sourceImage;
 		}
-
 		double sourceImageRatio = (double)sourceImage.getWidth() / sourceImage.getHeight();
 		int newWidth = (int)(TARGET_HEIGHT * sourceImageRatio);
-
 		return Scalr.resize(sourceImage, newWidth, TARGET_HEIGHT);
 	}
 
-	private String compressVideo(MultipartFile file) {
-		String fileName = file.getOriginalFilename();
+	private String saveTempFile(MultipartFile file) throws IOException {
 		String uniqueId = UUID.randomUUID().toString();
+		String fileName = file.getOriginalFilename();
 		String filePath = tempFilePath + uniqueId + "_" + fileName;
-		String outPath = tempFilePath + uniqueId + "_compressed_" + fileName;
+
+		File tempFile = new File(filePath);
+		tempFile.getParentFile().mkdirs();
+		file.transferTo(tempFile);
+
+		return filePath;
+	}
+
+	private String compressVideo(String filePath) {
+		String fileName = new File(filePath).getName();
+		String uniqueId = UUID.randomUUID().toString();
+		String compressedFilePath = tempFilePath + uniqueId + "_compressed_" + fileName;
 
 		try {
-			// 임시 파일로 저장
-			File tempFile = new File(filePath);
-			tempFile.getParentFile().mkdirs();
-			file.transferTo(tempFile);
+			FFmpegBuilder builder = new FFmpegBuilder()
+				.setInput(filePath)
+				.addOutput(compressedFilePath)
+				.setFormat("mp4")
+				.disableSubtitle()
+				.setVideoCodec("libx264")
+				.setAudioCodec("aac")
+				.setVideoBitRate(VIDEO_BITRATE)
+				.setVideoFrameRate(30)
+				.done();
 
-			// 동영상 파일 크기 확인
-			if (tempFile.length() > (MAX_FILE_SIZE_MB * 1024 * 1024)) {
-				FFmpegBuilder builder = new FFmpegBuilder()
-					.setInput(filePath)
-					.addOutput(outPath)
-					.setFormat("mp4")
-					.disableSubtitle()
-					.setVideoCodec("libx264")
-					.setAudioCodec("aac")
-					.setVideoBitRate(VIDEO_BITRATE)
-					.setVideoFrameRate(30)
-					.done();
+			FFmpegExecutor executor = new FFmpegExecutor(new FFmpeg(ffmpegPath), new FFprobe(ffprobePath));
+			executor.createJob(builder).run();
 
-				// FFmpeg 실행
-				FFmpegExecutor executor = new FFmpegExecutor(new FFmpeg(ffmpegPath), new FFprobe(ffprobePath));
-				executor.createJob(builder).run();
-			} else {
-				// 압축할 필요 없는 경우 원본 파일 반환
-				outPath = filePath;
+			File compressedFile = new File(compressedFilePath);
+			if (!compressedFile.exists()) {
+				throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage());
 			}
 		} catch (IOException e) {
 			throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage() + e);
@@ -230,7 +240,6 @@ public class FileService {
 
 		}
 
-		return outPath;
+		return compressedFilePath;
 	}
-
 }
