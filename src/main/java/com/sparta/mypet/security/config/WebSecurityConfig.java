@@ -66,6 +66,7 @@ public class WebSecurityConfig {
 			.requestMatchers("/api/admin/user-manage/*/role").hasAuthority("ROLE_ADMIN")
 			.requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER")
 			.requestMatchers("/api/oauth/kakao").permitAll()
+			.requestMatchers("/api/oauth/google").permitAll()
 			.anyRequest().authenticated() // 그 외 모든 요청 인증처리
 		);
 
