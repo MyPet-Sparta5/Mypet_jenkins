@@ -84,6 +84,7 @@ public enum GlobalMessage {
 	KAKAO_SERVER_ERROR("카카오 서버 오류 발생 : "),
 	SOCIAL_NOT_LINKED_ERROR("해당 소셜 계정에 연동되어있지 않습니다."),
 	SOCIAL_ALREADY_LINKED("해당 소셜 계정이 이미 연동되어있습니다."),
+	GOOGLE_SERVER_ERROR("구글 서버 오류 발생 : "),
 
 	TOO_MANY_REQUESTS("잠시 후에 잠시 시도해주세요."),
 
