@@ -11,7 +11,7 @@ import com.sparta.mypet.domain.oauth.entity.SocialType;
 
 @Repository
 public interface SocialAccountRepository extends JpaRepository<SocialAccount, Long> {
-	Optional<SocialAccount> findBySocialTypeAndSocialId(SocialType socialType, Long socialId);
+	Optional<SocialAccount> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
 
 	Optional<SocialAccount> findBySocialTypeAndEmail(SocialType socialType, String email);
 

@@ -32,20 +32,33 @@ public class SocialAccount {
 	private SocialType socialType;
 
 	@Column(name = "social_id", nullable = false)
-	private Long socialId;
+	private String socialId;
 
 	@Column(nullable = false)
 	private String email;
+
+	@Column
+	private String accessToken;
+	@Column
+	private String refreshToken;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	@Builder
-	public SocialAccount(SocialType socialType, Long socialId, String email) {
+	public SocialAccount(SocialType socialType, String socialId, String email) {
 		this.socialType = socialType;
 		this.socialId = socialId;
 		this.email = email;
+	}
+
+	public void updateRefreshToken(String refreshToken) {
+		this.refreshToken = refreshToken;
+	}
+
+	public void updateAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
 
 	public void updateUser(User user) {

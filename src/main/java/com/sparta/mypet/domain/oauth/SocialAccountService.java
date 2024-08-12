@@ -58,6 +58,9 @@ public class SocialAccountService {
 			.email(socialAccountInfo.getEmail())
 			.build();
 
+		socialAccount.updateAccessToken(socialAccountInfo.getAccessToken());
+		socialAccount.updateRefreshToken(socialAccount.getRefreshToken());
+
 		return socialAccountRepository.save(socialAccount);
 	}
 
@@ -67,7 +70,7 @@ public class SocialAccountService {
 	}
 
 	@Transactional(readOnly = true)
-	public Optional<SocialAccount> findBySocialTypeAndSocialId(SocialType socialType, Long socialId) {
+	public Optional<SocialAccount> findBySocialTypeAndSocialId(SocialType socialType, String socialId) {
 		return socialAccountRepository.findBySocialTypeAndSocialId(socialType, socialId);
 	}
 

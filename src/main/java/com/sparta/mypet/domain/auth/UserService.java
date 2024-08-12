@@ -93,10 +93,10 @@ public class UserService {
 	@Transactional
 	public UserWithdrawResponseDto withdrawUser(String email) {
 
-		if (socialAccountService.hasSocialAccount(email))
-			throw new SocialAccountLinkedException(GlobalMessage.SOCIAL_LINKED.getMessage());
-
 		User user = findUserByEmail(email);
+
+		if (!user.getSocialAccounts().isEmpty())
+			throw new SocialAccountLinkedException(GlobalMessage.SOCIAL_LINKED.getMessage());
 
 		user.updateUserStatus(UserStatus.WITHDRAWAL);
 
