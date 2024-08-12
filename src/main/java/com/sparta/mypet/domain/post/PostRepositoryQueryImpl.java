@@ -97,7 +97,7 @@ public class PostRepositoryQueryImpl implements PostRepositoryQuery {
 	private OrderSpecifier<?> getOrderSpecifier(Pageable pageable) {
 		Sort.Order order = pageable.getSort().iterator().next();
 		PathBuilder<Post> pathBuilder = new PathBuilder<>(post.getType(), post.getMetadata());
-		return new OrderSpecifier(order.isAscending() ? Order.ASC : Order.DESC,
-			pathBuilder.get(order.getProperty()));
+		return new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC,
+			pathBuilder.getComparable(order.getProperty(), Comparable.class));
 	}
 }

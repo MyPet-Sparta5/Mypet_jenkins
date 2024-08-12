@@ -81,8 +81,8 @@ public class UserRepositoryQueryImpl implements UserRepositoryQuery {
 	private OrderSpecifier<?> getOrderSpecifier(Pageable pageable) {
 		Sort.Order order = pageable.getSort().iterator().next();
 		PathBuilder<User> pathBuilder = new PathBuilder<>(user.getType(), user.getMetadata());
-		return new OrderSpecifier(order.isAscending() ? Order.ASC : Order.DESC,
-			pathBuilder.get(order.getProperty()));
+		return new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC,
+			pathBuilder.getComparable(order.getProperty(), Comparable.class));
 	}
 
 	private BooleanExpression eqStatus(UserStatus status) {
