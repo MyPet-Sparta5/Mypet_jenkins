@@ -55,12 +55,11 @@ public class User extends Timestamped {
 	@Column(nullable = false)
 	private UserStatus status;
 
-	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<Post> postList = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private final List<SocialAccount> socialAccounts = new ArrayList<>();
-
 
 	@Builder
 	public User(String email, String password, String nickname, Integer suspensionCount, UserRole role,
