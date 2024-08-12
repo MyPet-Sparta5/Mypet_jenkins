@@ -50,7 +50,7 @@ Authorization: {{Authorization}}
 
 
 ### 게시물 삭제
-DELETE /api/posts/{{postId}} HTTP/1.1
+PUT /api/posts/{{postId}}}}/delete HTTP/1.1
 Host: {{root-path}}
 Content-Type: application/json
 Authorization: {{Authorization}}

@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,11 +51,12 @@ public class PostController {
 		return ResponseFactory.ok(responseDto, "게시물 수정 성공");
 	}
 
-	@DeleteMapping("/posts/{postId}")
-	public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+	@PutMapping("/posts/{postId}/delete")
+	public ResponseEntity<DataResponseDto<PostResponseDto>> deletePost(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@PathVariable Long postId) {
-		postService.deletePost(userDetails.getUsername(), postId);
-		return ResponseFactory.noContent();
+		PostResponseDto responseDto = postService.deletePost(userDetails.getUsername(), postId);
+		return ResponseFactory.ok(responseDto, "게시물 삭제 성공");
 	}
 
 	@GetMapping("/posts")
