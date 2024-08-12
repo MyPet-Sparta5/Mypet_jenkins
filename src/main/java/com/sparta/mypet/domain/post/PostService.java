@@ -51,7 +51,7 @@ public class PostService {
 		Post post = createAndSavePost(user, requestDto.getTitle(), requestDto.getContent(), postCategory);
 		user.addPost(post);
 		if (files != null && postCategory.equals(Category.BOAST)) {
-			List<UploadedFile> postUploadedFiles = fileService.uploadFile(files, post);
+			List<UploadedFile> postUploadedFiles = fileService.uploadFiles(files, post);
 			post.addFiles(postUploadedFiles);
 		}
 
