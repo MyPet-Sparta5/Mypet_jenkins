@@ -27,6 +27,7 @@ import com.sparta.mypet.domain.auth.dto.UserUpdateResponseDto;
 import com.sparta.mypet.domain.auth.dto.UserWithdrawResponseDto;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
+import com.sparta.mypet.domain.auth.entity.UserSearchCondition;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.domain.oauth.SocialAccountService;
 import com.sparta.mypet.domain.oauth.entity.SocialAccount;
@@ -167,8 +168,8 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<User> findAll(Pageable pageable) {
-		return userRepository.findAll(pageable);
+	public Page<User> findBySearchCond(UserSearchCondition condition, Pageable pageable) {
+		return userRepository.findBySearchCond(condition, pageable);
 	}
 
 	public User findUserByEmail(String email) {

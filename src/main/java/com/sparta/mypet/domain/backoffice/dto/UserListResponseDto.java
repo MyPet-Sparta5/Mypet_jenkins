@@ -14,7 +14,7 @@ public class UserListResponseDto {
 	private final String userRole;
 	private final String userStatus;
 	private final Integer suspensionCount;
-	private final LocalDateTime createAt;
+	private final LocalDateTime createdAt;
 
 	public UserListResponseDto(User user) {
 		this.id = user.getId();
@@ -22,6 +22,6 @@ public class UserListResponseDto {
 		this.userRole = user.getRole().getAuthority();
 		this.userStatus = user.getStatus().toString();
 		this.suspensionCount = user.getSuspensionCount();
-		this.createAt = user.getCreatedAt();
+		this.createdAt = user.getCreatedAt();
 	}
 }
