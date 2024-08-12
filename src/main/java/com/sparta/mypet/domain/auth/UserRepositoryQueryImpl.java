@@ -15,9 +15,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.mypet.domain.auth.entity.QUser;
+import com.sparta.mypet.domain.auth.dto.UserSearchCondition;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
-import com.sparta.mypet.domain.auth.entity.UserSearchCondition;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.domain.suspension.entity.QSuspension;
 

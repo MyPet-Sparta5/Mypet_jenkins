@@ -11,9 +11,9 @@ import com.sparta.mypet.common.exception.custom.ReportDuplicationException;
 import com.sparta.mypet.common.exception.custom.UserInfoDuplicationException;
 import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserService;
+import com.sparta.mypet.domain.auth.dto.UserSearchCondition;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
-import com.sparta.mypet.domain.auth.entity.UserSearchCondition;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.domain.backoffice.dto.PostStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
@@ -27,6 +27,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 import com.sparta.mypet.domain.post.PostService;
 import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
+import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.post.entity.PostStatus;
 import com.sparta.mypet.domain.report.ReportService;
@@ -119,15 +120,9 @@ public class BackOfficeService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<PostListResponseDto> getPosts(int page, int pageSize, String sortBy, String postStatus) {
+	public Page<PostListResponseDto> getPosts(int page, int pageSize, String sortBy, PostSearchCondition condition) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
-		Page<Post> postList;
-		if (postStatus.equals("ALL")) {
-			postList = postService.findAll(pageable);
-		} else {
-			PostStatus status = postService.mapToPostStatusEnum(postStatus);
-			postList = postService.findByPostStatus(status, pageable);
-		}
+		Page<Post> postList = postService.findBySearchCond(condition, pageable);
 		return postList.map(PostListResponseDto::new);
 	}
 

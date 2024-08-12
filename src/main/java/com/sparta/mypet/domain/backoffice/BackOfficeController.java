@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
-import com.sparta.mypet.domain.auth.entity.UserSearchCondition;
+import com.sparta.mypet.domain.auth.dto.UserSearchCondition;
 import com.sparta.mypet.domain.backoffice.dto.PostStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportStatusRequestDto;
@@ -25,6 +25,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
+import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.security.UserDetailsImpl;
 
 import jakarta.validation.Valid;
@@ -95,9 +96,8 @@ public class BackOfficeController {
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
 		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
-		@RequestParam(defaultValue = "ALL") String postStatus) {
-		Page<PostListResponseDto> responseDtoList = backOfficeService.getPosts(page, pageSize, sortBy,
-			postStatus);
+		PostSearchCondition condition) {
+		Page<PostListResponseDto> responseDtoList = backOfficeService.getPosts(page, pageSize, sortBy, condition);
 		return ResponseFactory.ok(responseDtoList, "게시물 목록 조회 성공");
 	}
 

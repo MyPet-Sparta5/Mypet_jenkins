@@ -20,6 +20,7 @@ import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
+import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.post.entity.PostStatus;
@@ -192,18 +193,12 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<Post> findAll(Pageable pageable) {
-		return postRepository.findAll(pageable);
-	}
-
-	@Transactional(readOnly = true)
-	public Page<Post> findByPostStatus(PostStatus status, Pageable pageable) {
-		return postRepository.findByPostStatus(status, pageable);
-	}
-
-	@Transactional(readOnly = true)
 	public Post findById(Long postId) {
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
+	}
+
+	public Page<Post> findBySearchCond(PostSearchCondition condition, Pageable pageable) {
+		return postRepository.findBySearchCond(condition, pageable);
 	}
 }

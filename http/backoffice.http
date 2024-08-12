@@ -79,7 +79,12 @@ Host: {{root-path}}
 Authorization: {{Authorization}}
 
 ### 게시물 전체조회 - 비공개
-GET /api/admin/post-manage?postStatus=INACTIVE HTTP/1.1
+GET /api/admin/post-manage?status=INACTIVE HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
+### 게시물 전체조회 - 카테고리 & 날짜 검색
+GET /api/admin/post-manage?category=BOAST&startDate=2024-08-12&endDate=2024-08-12 HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
 
