@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class File {
+public class UploadedFile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class File {
 	private int order;
 
 	@Builder
-	public File(Post post, String url, String name, int order) {
+	public UploadedFile(Post post, String url, String name, int order) {
 		this.post = post;
 		this.url = url;
 		this.name = name;
@@ -52,6 +52,12 @@ public class File {
 	}
 
 	public String generateFileKey() {
-		return String.format("%d/%d-%s", post.getId(), id, name);
+		final int MAX_NAME_LENGTH = 200;
+
+		String truncatedName = name.length() > MAX_NAME_LENGTH
+			? name.substring(name.length() - MAX_NAME_LENGTH)
+			: name;
+
+		return String.format("%d/%d-%s", post.getId(), id, truncatedName);
 	}
 }

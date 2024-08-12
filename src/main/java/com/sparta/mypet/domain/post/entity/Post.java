@@ -8,7 +8,7 @@ import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.comment.entity.Comment;
 import com.sparta.mypet.domain.like.entity.Like;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
-import com.sparta.mypet.domain.s3.entity.File;
+import com.sparta.mypet.domain.s3.entity.UploadedFile;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -65,7 +65,7 @@ public class Post extends Timestamped {
 	@Column(nullable = false)
 	private Long likeCount;
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-	private final List<File> files = new ArrayList<>();
+	private final List<UploadedFile> uploadedFiles = new ArrayList<>();
 
 	@Builder
 	public Post(String postContent, String postTitle, Category category, User user, Long likeCount) {
@@ -96,8 +96,8 @@ public class Post extends Timestamped {
 		likeCount--;
 	}
 
-	public void addFiles(List<File> files) {
-		this.files.addAll(files);
+	public void addFiles(List<UploadedFile> uploadedFiles) {
+		this.uploadedFiles.addAll(uploadedFiles);
 	}
 
 	public boolean isLikedByUser(User user) {
