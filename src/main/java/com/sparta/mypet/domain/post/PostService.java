@@ -71,16 +71,15 @@ public class PostService {
 	}
 
 	@Transactional
-	public void deletePost(String email, Long postId) {
+	public PostResponseDto deletePost(String email, Long postId) {
 		User user = userService.findUserByEmail(email);
 		Post post = findPostById(postId);
 
 		checkDeleteAuthor(post, user);
 
-		List<UploadedFile> uploadedFiles = post.getUploadedFiles();
-		fileService.deleteFiles(uploadedFiles);
+		post.updatePostStatus(PostStatus.DELETED);
 
-		postRepository.delete(post);
+		return new PostResponseDto(post);
 	}
 
 	@Transactional(readOnly = true)
@@ -106,9 +105,10 @@ public class PostService {
 	@Transactional(readOnly = true)
 	public PostResponseDto getPost(Long postId, String email) {
 		Post post = findPostById(postId);
+		PostStatus postStatus = post.getPostStatus();
 
 		if (email.isEmpty()) {
-			if (post.getPostStatus().equals(PostStatus.ACTIVE)) {
+			if (postStatus.equals(PostStatus.ACTIVE)) {
 				return new PostResponseDto(post);
 			}
 			throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
@@ -118,7 +118,8 @@ public class PostService {
 
 		UserRole role = user.getRole();
 
-		if (post.getPostStatus().equals(PostStatus.INACTIVE) && role.equals(UserRole.USER)) {
+		if ((postStatus.equals(PostStatus.INACTIVE) || postStatus.equals(PostStatus.DELETED))
+			&& role.equals(UserRole.USER)) {
 			throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
 		}
 
