@@ -32,6 +32,12 @@ dependencies {
     // amazon
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+    // ImgScalr
+    implementation 'org.imgscalr:imgscalr-lib:4.2'
+
+    // FFmpeg
+    implementation group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.7.0'
+
     // OAuth2
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 

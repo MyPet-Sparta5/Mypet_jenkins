@@ -13,6 +13,7 @@ import com.sparta.mypet.common.util.PaginationUtil;
 import com.sparta.mypet.domain.auth.UserService;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
+import com.sparta.mypet.domain.auth.entity.UserSearchCondition;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
 import com.sparta.mypet.domain.backoffice.dto.PostStatusRequestDto;
 import com.sparta.mypet.domain.backoffice.dto.ReportListResponseDto;
@@ -46,10 +47,10 @@ public class BackOfficeService {
 	private final PostService postService;
 
 	@Transactional(readOnly = true)
-	public Page<UserListResponseDto> getUsers(int page, int pageSize, String sortBy) {
+	public Page<UserListResponseDto> getUsers(int page, int pageSize, String sortBy, UserSearchCondition condition) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
-		Page<User> userList = userService.findAll(pageable);
+		Page<User> userList = userService.findBySearchCond(condition, pageable);
 
 		return userList.map(UserListResponseDto::new);
 	}

@@ -59,7 +59,7 @@ public enum GlobalMessage {
 	// File
 	UPLOAD_FILE_NOT_FOUND("업로드 하려는 파일이 없습니다"),
 	MAX_FILE_COUNT_EXCEEDED("파일을 5개 이상 업로드할 수 없습니다."),
-	UPLOAD_FAIL("업로드를 실패했습니다"),
+	PROCESSING_FILE_FAILED("업로드를 실패했습니다"),
 	INVALID_TYPE_FILE("지원하지 않는 타입의 파일입니다"),
 	INVALID_SIZE_IMAGE("image파일은 최대 10MB까지 업로드 가능합니다."),
 	INVALID_SIZE_VIDEO("vidoe파일은 최대 200MB까지 업로드 가능합니다."),
