@@ -8,10 +8,14 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.domain.post.entity.Category;
@@ -28,21 +32,28 @@ public class PostRepositoryQueryImpl implements PostRepositoryQuery {
 
 	@Override
 	public Page<Post> findBySearchCond(PostSearchCondition searchCondition, Pageable pageable) {
+
+		OrderSpecifier<?> orderSpecifier = getOrderSpecifier(pageable);
+
 		List<Post> posts = queryFactory.selectFrom(post)
 			.where(eqCategory(searchCondition.getCategory())
 				, eqStatus(searchCondition.getStatus())
 				, containsTitle(searchCondition.getTitle())
 				, containsNickname(searchCondition.getNickname())
+				, eqEmail(searchCondition.getEmail())
 				, betweenDate(searchCondition.getStartDate(), searchCondition.getEndDate()))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
+			.orderBy(orderSpecifier)
 			.fetch();
 
 		Long countResult = queryFactory.select(post.count())
 			.from(post)
 			.where(eqCategory(searchCondition.getCategory())
+				, eqStatus(searchCondition.getStatus())
 				, containsTitle(searchCondition.getTitle())
 				, containsNickname(searchCondition.getNickname())
+				, eqEmail(searchCondition.getEmail())
 				, betweenDate(searchCondition.getStartDate(), searchCondition.getEndDate()))
 			.fetchOne();
 
@@ -67,6 +78,10 @@ public class PostRepositoryQueryImpl implements PostRepositoryQuery {
 		return StringUtils.hasText(nickname) ? post.user.nickname.containsIgnoreCase(nickname) : null;
 	}
 
+	private BooleanExpression eqEmail(String email) {
+		return StringUtils.hasText(email) ? post.user.email.eq(email) : null;
+	}
+
 	private BooleanExpression betweenDate(LocalDate startDate, LocalDate endDate) {
 		if (startDate != null && endDate != null) {
 			return post.createdAt.between(startDate.atStartOfDay(), endDate.plusDays(1).atStartOfDay());
@@ -77,5 +92,12 @@ public class PostRepositoryQueryImpl implements PostRepositoryQuery {
 		} else {
 			return null;
 		}
+	}
+
+	private OrderSpecifier<?> getOrderSpecifier(Pageable pageable) {
+		Sort.Order order = pageable.getSort().iterator().next();
+		PathBuilder<Post> pathBuilder = new PathBuilder<>(post.getType(), post.getMetadata());
+		return new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC,
+			pathBuilder.getComparable(order.getProperty(), Comparable.class));
 	}
 }

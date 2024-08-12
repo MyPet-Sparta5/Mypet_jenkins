@@ -78,6 +78,6 @@ Host: {{root-path}}
 Content-Type: application/json
 
 ### test2@email.com 의 게시글 전체 조회
-GET /api/posts?userName=test2@email.com HTTP/1.1
+GET /api/posts?email=test2@email.com HTTP/1.1
 Host: {{root-path}}
 Content-Type: application/json
