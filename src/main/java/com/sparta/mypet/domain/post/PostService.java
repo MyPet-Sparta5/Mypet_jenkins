@@ -20,6 +20,7 @@ import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
+import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.post.entity.PostStatus;
@@ -71,16 +72,15 @@ public class PostService {
 	}
 
 	@Transactional
-	public void deletePost(String email, Long postId) {
+	public PostResponseDto deletePost(String email, Long postId) {
 		User user = userService.findUserByEmail(email);
 		Post post = findPostById(postId);
 
 		checkDeleteAuthor(post, user);
 
-		List<UploadedFile> uploadedFiles = post.getUploadedFiles();
-		fileService.deleteFiles(uploadedFiles);
+		post.updatePostStatus(PostStatus.DELETED);
 
-		postRepository.delete(post);
+		return new PostResponseDto(post);
 	}
 
 	@Transactional(readOnly = true)
@@ -106,9 +106,10 @@ public class PostService {
 	@Transactional(readOnly = true)
 	public PostResponseDto getPost(Long postId, String email) {
 		Post post = findPostById(postId);
+		PostStatus postStatus = post.getPostStatus();
 
 		if (email.isEmpty()) {
-			if (post.getPostStatus().equals(PostStatus.ACTIVE)) {
+			if (postStatus.equals(PostStatus.ACTIVE)) {
 				return new PostResponseDto(post);
 			}
 			throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
@@ -118,7 +119,8 @@ public class PostService {
 
 		UserRole role = user.getRole();
 
-		if (post.getPostStatus().equals(PostStatus.INACTIVE) && role.equals(UserRole.USER)) {
+		if ((postStatus.equals(PostStatus.INACTIVE) || postStatus.equals(PostStatus.DELETED))
+			&& role.equals(UserRole.USER)) {
 			throw new UserMisMatchException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
 		}
 
@@ -191,18 +193,12 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<Post> findAll(Pageable pageable) {
-		return postRepository.findAll(pageable);
-	}
-
-	@Transactional(readOnly = true)
-	public Page<Post> findByPostStatus(PostStatus status, Pageable pageable) {
-		return postRepository.findByPostStatus(status, pageable);
-	}
-
-	@Transactional(readOnly = true)
 	public Post findById(Long postId) {
 		return postRepository.findById(postId)
 			.orElseThrow(() -> new PostNotFoundException(GlobalMessage.POST_NOT_FOUND.getMessage()));
+	}
+
+	public Page<Post> findBySearchCond(PostSearchCondition condition, Pageable pageable) {
+		return postRepository.findBySearchCond(condition, pageable);
 	}
 }

@@ -2,6 +2,7 @@ package com.sparta.mypet.domain.auth;
 
 import static com.sparta.mypet.domain.auth.entity.QUser.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -11,11 +12,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.mypet.domain.auth.entity.QUser;
 import com.sparta.mypet.domain.auth.dto.UserSearchCondition;
 import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.auth.entity.UserRole;
 import com.sparta.mypet.domain.auth.entity.UserStatus;
+import com.sparta.mypet.domain.suspension.entity.QSuspension;
 
 import lombok.RequiredArgsConstructor;
 
@@ -58,5 +62,24 @@ public class UserRepositoryQueryImpl implements UserRepositoryQuery {
 
 	private BooleanExpression eqEmail(String email) {
 		return StringUtils.hasText(email) ? user.email.containsIgnoreCase(email) : null;
+	}
+
+	@Override
+	public List<User> findExpiredSuspendedUsers() {
+		QUser user = QUser.user;
+		QSuspension suspension = QSuspension.suspension;
+
+		return queryFactory.select(user)
+			.from(user)
+			.innerJoin(suspension)
+			.on(user.id.eq(suspension.user.id)
+				.and(suspension.suspensionEndDatetime.eq(
+					JPAExpressions.select(suspension.suspensionEndDatetime.max())
+						.from(suspension)
+						.where(suspension.user.id.eq(user.id))
+				)))
+			.where(user.status.eq(UserStatus.SUSPENSION)
+				.and(suspension.suspensionEndDatetime.before(LocalDateTime.now())))
+			.fetch();
 	}
 }

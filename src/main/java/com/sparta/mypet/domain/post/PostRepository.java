@@ -17,7 +17,7 @@ import com.sparta.mypet.domain.post.entity.PostStatus;
 import io.lettuce.core.dynamic.annotation.Param;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryQuery {
 
 	Page<Post> findByCategory(Category category, Pageable pageable);
 
