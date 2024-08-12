@@ -33,6 +33,7 @@ public class PostRepositoryQueryImpl implements PostRepositoryQuery {
 				, eqStatus(searchCondition.getStatus())
 				, containsTitle(searchCondition.getTitle())
 				, containsNickname(searchCondition.getNickname())
+				, eqEmail(searchCondition.getEmail())
 				, betweenDate(searchCondition.getStartDate(), searchCondition.getEndDate()))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -41,8 +42,10 @@ public class PostRepositoryQueryImpl implements PostRepositoryQuery {
 		Long countResult = queryFactory.select(post.count())
 			.from(post)
 			.where(eqCategory(searchCondition.getCategory())
+				, eqStatus(searchCondition.getStatus())
 				, containsTitle(searchCondition.getTitle())
 				, containsNickname(searchCondition.getNickname())
+				, eqEmail(searchCondition.getEmail())
 				, betweenDate(searchCondition.getStartDate(), searchCondition.getEndDate()))
 			.fetchOne();
 
@@ -65,6 +68,10 @@ public class PostRepositoryQueryImpl implements PostRepositoryQuery {
 
 	private BooleanExpression containsNickname(String nickname) {
 		return StringUtils.hasText(nickname) ? post.user.nickname.containsIgnoreCase(nickname) : null;
+	}
+
+	private BooleanExpression eqEmail(String email) {
+		return StringUtils.hasText(email) ? post.user.email.eq(email) : null;
 	}
 
 	private BooleanExpression betweenDate(LocalDate startDate, LocalDate endDate) {

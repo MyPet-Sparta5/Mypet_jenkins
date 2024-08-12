@@ -21,6 +21,7 @@ import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostRequestDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
+import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.security.UserDetailsImpl;
 
 import jakarta.validation.Valid;
@@ -64,11 +65,8 @@ public class PostController {
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
 		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
-		@RequestParam(defaultValue = "DEFAULT") String category,
-		@RequestParam(defaultValue = "") String userName,
-		@RequestParam(defaultValue = "ACTIVE") String postStatus) {
-		Page<PostListResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy, category, userName,
-			postStatus);
+		PostSearchCondition condition) {
+		Page<PostListResponseDto> responseDtoList = postService.getPosts(page, pageSize, sortBy, condition);
 		return ResponseFactory.ok(responseDtoList, "게시물 전체 조회 성공");
 	}
 

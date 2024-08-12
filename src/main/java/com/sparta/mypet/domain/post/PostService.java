@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sparta.mypet.common.entity.GlobalMessage;
-import com.sparta.mypet.common.exception.custom.InvalidCategoryException;
 import com.sparta.mypet.common.exception.custom.InvalidFileException;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
@@ -84,22 +83,9 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<PostListResponseDto> getPosts(int page, int pageSize, String sortBy, String category, String email,
-		String postStatus) {
+	public Page<PostListResponseDto> getPosts(int page, int pageSize, String sortBy, PostSearchCondition condition) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
-
-		Page<Post> postList;
-		Category categoryEnum = mapToCategoryEnum(category);
-		PostStatus postStatusEnum = mapToPostStatusEnum(postStatus);
-
-		if (!email.isEmpty()) {
-			postList = postRepository.findByUserName(email, postStatusEnum, pageable);
-		} else { // 카테고리로 필터링, 전체조회 할 경우
-			postList = categoryEnum.equals(Category.DEFAULT) ?
-				postRepository.findByPostStatus(postStatusEnum, pageable) :
-				postRepository.findByCategoryAndPostStatus(categoryEnum, postStatusEnum, pageable);
-
-		}
+		Page<Post> postList = postRepository.findBySearchCond(condition, pageable);
 		return postList.map(PostListResponseDto::new);
 	}
 
@@ -137,22 +123,6 @@ public class PostService {
 			.likeCount(0L)
 			.build();
 		return postRepository.save(post);
-	}
-
-	private Category mapToCategoryEnum(String category) {
-		try {
-			return Category.valueOf(category);
-		} catch (IllegalArgumentException e) {
-			throw new InvalidCategoryException(GlobalMessage.INVALID_ENUM_CATEGORY.getMessage());
-		}
-	}
-
-	public PostStatus mapToPostStatusEnum(String postStatus) {
-		try {
-			return PostStatus.valueOf(postStatus);
-		} catch (IllegalArgumentException e) {
-			throw new InvalidCategoryException(GlobalMessage.NOT_AUTHORITY_OWNER.getMessage());
-		}
 	}
 
 	public void checkUpdateAuthor(Post post, User user) {

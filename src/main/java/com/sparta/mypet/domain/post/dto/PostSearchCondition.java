@@ -13,6 +13,7 @@ public class PostSearchCondition {
 	private PostStatus status;
 	private String title;
 	private String nickname;
+	private String email;
 	private LocalDate startDate;
 	private LocalDate endDate;
 }
