@@ -57,4 +57,4 @@ jobs:
             scp -i ${{ secrets.KEY }} .env ubuntu@${{ secrets.HOST }}:/home/ubuntu/.env
 
             # Run the Docker container with environment variables from the existing .env file on the EC2 instance
-            docker run -d --name myapp -p 8080:8080 --env-file /home/ubuntu/.env --add-host host.docker.internal:host-gateway minhyuk0828/mypetdb:${{ github.sha }}
+            docker run -d --name myapp -p 80:8080 --env-file /home/ubuntu/.env --add-host host.docker.internal:host-gateway minhyuk0828/mypetdb:${{ github.sha }}
