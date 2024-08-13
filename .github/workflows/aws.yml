@@ -77,7 +77,7 @@ jobs:
                   - mysql
                   - redis
                 networks:
-                  - mypet_network
+                  - mypetdb_network
               mysql:
                 platform: linux/x86_64
                 image: mysql:8.0
@@ -87,7 +87,7 @@ jobs:
                 volumes:
                   - mysql_data:/var/lib/mysql
                 networks:
-                  - mypet_network
+                  - mypetdb_network
               redis:
                 image: redis:7.2
                 ports:
@@ -95,7 +95,7 @@ jobs:
                 volumes:
                   - redis_data:/data
                 networks:
-                  - mypet_network
+                  - mypetdb_network
             volumes:
               mysql_data:
               redis_data:
