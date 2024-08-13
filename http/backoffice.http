@@ -58,6 +58,12 @@ GET /api/admin/report-view HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
 
+### 신고 목록 조회 - report status = completed & startdate >=2024-08-01
+GET /api/admin/report-view?status=COMPLETED&startDate=2024-08-01 HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
+
 ### 신고 상태 변경
 PUT /api/admin/report-view/{{reportId}}/report-status HTTP/1.1
 Host: {{root-path}}
