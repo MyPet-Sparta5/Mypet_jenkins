@@ -34,6 +34,9 @@ public abstract class OAuthService {
 	@Value("${oauth2.grant-type}")
 	protected String grantType;
 
+	@Value("${signup.url}")
+	protected String signupUrl;
+
 	protected final RedisTemplate<String, Object> redisTemplate;
 	protected final SocialAccountService socialAccountService;
 	protected final ObjectMapper objectMapper;
@@ -51,6 +54,14 @@ public abstract class OAuthService {
 	public void processLeave(String email) {
 		User user = userService.findUserByEmail(email);
 		SocialAccount socialAccount = socialAccountService.findBySocialTypeAndUser(getSocialType(), user)
+			.orElseThrow(() -> new IllegalArgumentException(GlobalMessage.SOCIAL_NOT_LINKED_ERROR.getMessage()));
+		revokeSocialAccess(socialAccount);
+		socialAccountService.deleteSocialAccount(socialAccount);
+	}
+
+	@Transactional
+	public void processLeaveCallback(String socialId) {
+		SocialAccount socialAccount = socialAccountService.findBySocialTypeAndSocialId(getSocialType(), socialId)
 			.orElseThrow(() -> new IllegalArgumentException(GlobalMessage.SOCIAL_NOT_LINKED_ERROR.getMessage()));
 		revokeSocialAccess(socialAccount);
 		socialAccountService.deleteSocialAccount(socialAccount);
@@ -130,7 +141,7 @@ public abstract class OAuthService {
 	}
 
 	protected String generateRegistrationUrl(String registrationKey) {
-		return "http://localhost:3000/signup?key=" + registrationKey;
+		return signupUrl + registrationKey;
 	}
 
 	protected void handleUserStatusError(UserStatus userStatus) {

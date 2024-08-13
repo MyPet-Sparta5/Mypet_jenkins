@@ -16,6 +16,7 @@ import com.sparta.mypet.common.dto.MessageResponseDto;
 import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.auth.dto.LoginResponseDto;
+import com.sparta.mypet.domain.oauth.dto.LeaveCallbackRequestDto;
 import com.sparta.mypet.domain.oauth.dto.SocialAccountRequestDto;
 import com.sparta.mypet.security.UserDetailsImpl;
 
@@ -33,10 +34,8 @@ public class OAuthController {
 	@PostMapping("/oauth/{provider}")
 	public ResponseEntity<DataResponseDto<LoginResponseDto>> loginWithSocial(@PathVariable String provider,
 		@RequestBody SocialAccountRequestDto requestBody) {
-		log.info("code = {}", requestBody.getCode());
 
 		OAuthService service = getOAuthService(provider);
-		log.info(service.getSocialType().name());
 		LoginResponseDto result = service.processLogin(requestBody.getCode());
 
 		if (result.getRegistrationUrl() == null || result.getRegistrationUrl().isEmpty()) {
@@ -50,8 +49,15 @@ public class OAuthController {
 	public ResponseEntity<Void> leaveSocial(@PathVariable String provider,
 		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		OAuthService service = getOAuthService(provider);
-		log.info(service.getSocialType().name());
 		service.processLeave(userDetails.getUsername());
+		return ResponseFactory.noContent();
+	}
+
+	@PostMapping("/oauth/{provider}/leave/callback")
+	public ResponseEntity<Void> leaveSocialCallback(@PathVariable String provider,
+		@RequestBody LeaveCallbackRequestDto requestDto) {
+		OAuthService service = getOAuthService(provider);
+		service.processLeaveCallback(requestDto.getUserId());
 		return ResponseFactory.noContent();
 	}
 
@@ -59,13 +65,11 @@ public class OAuthController {
 	public ResponseEntity<MessageResponseDto> linkSocial(@PathVariable String provider,
 		@RequestBody SocialAccountRequestDto requestDto) {
 		OAuthService service = getOAuthService(provider);
-		log.info(service.getSocialType().name());
 		service.processLink(requestDto.getEmail(), requestDto.getCode());
 		return ResponseFactory.ok(null);
 	}
 
 	private OAuthService getOAuthService(String provider) {
-		log.info("what : " + provider);
 		return oAuthServices.get(provider + "AccountService");
 	}
 }
