@@ -102,5 +102,10 @@ jobs:
               redis_data:
             EOF
             
+            # Load environment variables from .env file
+            set -a
+            source /home/ubuntu/.env
+            set +a
+            
             # Run Docker Compose
             docker-compose up -d
