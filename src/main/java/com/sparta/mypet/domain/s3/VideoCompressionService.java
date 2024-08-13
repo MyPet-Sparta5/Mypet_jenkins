@@ -14,6 +14,7 @@ import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 
+import com.sparta.mypet.common.entity.GlobalMessage;
 import com.sparta.mypet.common.exception.custom.InvalidFileException;
 
 @Service
@@ -37,7 +38,7 @@ public class VideoCompressionService {
 			Files.delete(new File(filePath).toPath());
 			return compressedFilePath;
 		} catch (IOException e) {
-			throw new InvalidFileException("비디오 압축 중 오류가 발생했습니다." + e);
+			throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage());
 		}
 	}
 
@@ -75,10 +76,10 @@ public class VideoCompressionService {
 
 			File compressedFile = new File(compressedFilePath);
 			if (!compressedFile.exists()) {
-				throw new InvalidFileException("비디오 압축 실패");
+				throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage());
 			}
 		} catch (IOException e) {
-			throw new InvalidFileException("비디오 압축 중 오류가 발생했습니다." + e);
+			throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage());
 		}
 
 		return compressedFilePath;

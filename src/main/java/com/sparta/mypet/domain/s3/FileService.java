@@ -71,7 +71,7 @@ public class FileService {
 			try {
 				amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, key));
 			} catch (Exception e) {
-				log.error("Failed to delete file from S3: {}", key, e);
+				log.info("");
 			}
 		}
 	}
@@ -124,7 +124,6 @@ public class FileService {
 			return uploadToS3(file, uploadedFile, inputStream);
 
 		} catch (IOException e) {
-			log.error("Error processing file: {}", file.getOriginalFilename(), e);
 			throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage() + e);
 		} finally {
 			if (inputStream != null) {
@@ -160,7 +159,6 @@ public class FileService {
 			metadata.setContentLength(inputStream.available());
 			amazonS3Client.putObject(new PutObjectRequest(bucket, key, inputStream, metadata));
 		} catch (IOException e) {
-			log.error("Failed to upload file to S3: {}", key, e);
 			throw new InvalidFileException(GlobalMessage.PROCESSING_FILE_FAILED.getMessage() + e);
 		}
 	}
