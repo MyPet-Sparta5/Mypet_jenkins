@@ -67,6 +67,10 @@ jobs:
             # docker-compose.yml 파일 생성
             cat << EOF > docker-compose.yml
             version: '3.8'
+            networks:
+              mypetdb_network:
+                name: mypetdb_network
+                driver: bridge
             services:
               app:
                 image: minhyuk0828/mypetdb:${{ github.sha }}
