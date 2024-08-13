@@ -57,7 +57,7 @@ public class OAuthController {
 	public ResponseEntity<Void> leaveSocialCallback(@PathVariable String provider,
 		@RequestBody LeaveCallbackRequestDto requestDto) {
 		OAuthService service = getOAuthService(provider);
-		service.processLeave(requestDto.getUserId());
+		service.processLeaveCallback(requestDto.getUserId());
 		return ResponseFactory.noContent();
 	}
 
