@@ -45,27 +45,21 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            # Remove existing Docker Compose installation
-            sudo rm -f /usr/local/bin/docker-compose
-            
-            # Install latest Docker Compose
-            DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-            mkdir -p $DOCKER_CONFIG/cli-plugins
-            curl -SL https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-            chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-            
-            # Verify installation
-            docker compose version
-            
-            # Rest of your deployment script...
-            # Pull the Docker image
-            docker pull minhyuk0828/mypetdb:${{ github.sha }}
-            
-            # Copy the .env file from GitHub Actions to EC2 instance
-            echo "Fetching .env file..."
-            scp -i ${{ secrets.KEY }} .env ubuntu@${{ secrets.HOST }}:/home/ubuntu/.env
+            # Docker Compose 설치 확인 및 설치
+            if ! command -v docker compose &> /dev/null
+            then
+                sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                sudo chmod +x /usr/local/bin/docker-compose
+                sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+            fi
 
-            # Create docker-compose.yml file
+            # Docker Compose 버전 확인
+            docker compose version
+
+            # Docker 이미지 pull
+            docker pull minhyuk0828/mypetdb:${{ github.sha }}
+
+            # docker-compose.yml 파일 생성
             cat << EOF > docker-compose.yml
             version: '3.8'
             services:
@@ -73,39 +67,28 @@ jobs:
                 image: minhyuk0828/mypetdb:${{ github.sha }}
                 ports:
                   - "8080:8080"
-                environment:
-                  - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/mypet
-                  - SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }}
-                  - SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}
-                  - SPRING_REDIS_HOST=redis
+                env_file: /home/ubuntu/.env
                 depends_on:
                   - mysql
                   - redis
-            mysql:
-              platform: linux/x86_64
-              image: mysql:8.0               
-              ports:
-                - "3307:3306"
-               environment:
-                - MYSQL_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-                - MYSQL_DATABASE=mypet
-              volumes:
-                - mysql_data:/var/lib/mysql
-            redis:
-              image: redis:7.2
-              ports:
-                - "6379:6379"
-              volumes:
-                - redis_data:/data
+              mysql:
+                platform: linux/x86_64
+                image: mysql:8.0
+                ports:
+                  - "3307:3306"
+                env_file: /home/ubuntu/.env
+                volumes:
+                  - mysql_data:/var/lib/mysql
+              redis:
+                image: redis:7.2
+                ports:
+                  - "6379:6379"
+                volumes:
+                  - redis_data:/data
             volumes:
               mysql_data:
               redis_data:
             EOF
-            
-            # Load environment variables from .env file
-            set -a
-            source /home/ubuntu/.env
-            set +a
-            
-            # Run Docker Compose
-            docker-compose up -d
+
+            # Docker Compose 실행
+            docker compose up -d
