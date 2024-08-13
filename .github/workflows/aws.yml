@@ -103,6 +103,9 @@ jobs:
                 image: redis:7.2
                 ports:
                   - "6379:6379"
+
+                container_name:${{ secret.REDIS_NAME }}
+                hostname :${{ secret.REDIS_HOST_NAME }}
                 volumes:
                   - redis_data:/data
                 networks:
