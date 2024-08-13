@@ -75,7 +75,7 @@ jobs:
               app:
                 image: minhyuk0828/mypetdb:${{ github.sha }}
                 ports:
-                  - "8080:8080"
+                  - "8080:80"
                 env_file: /home/ubuntu/.env
                 depends_on:
                   - mysql
@@ -86,9 +86,9 @@ jobs:
                 platform: linux/x86_64
                 image: mysql:8.0
                 environment:
-                  - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
-                  - MYSQL_ROOT_USER=${DB_USERNAME}
-                  - MYSQL_PASSWORD=${DB_PASSWORD}
+                  - MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }}
+                  - MYSQL_ROOT_USER=${{ secrets.DB_USERNAME }}
+                  - MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}
                   - MYSQL_DATABASE=mypet
                 ports:
                   - "3307:3306"
