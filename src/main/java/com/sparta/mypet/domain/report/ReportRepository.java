@@ -12,7 +12,7 @@ import com.sparta.mypet.domain.report.entity.Report;
 import io.lettuce.core.dynamic.annotation.Param;
 
 @Repository
-public interface ReportRepository extends JpaRepository<Report, Long> {
+public interface ReportRepository extends JpaRepository<Report, Long>, ReportRepositoryQuery {
 	Optional<Report> findByReportedPost_IdAndReporterUserId(Long reportedPostId, Long reporterUserId);
 
 	@Modifying

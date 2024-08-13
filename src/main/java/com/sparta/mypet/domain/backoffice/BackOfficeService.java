@@ -31,6 +31,7 @@ import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.post.entity.PostStatus;
 import com.sparta.mypet.domain.report.ReportService;
+import com.sparta.mypet.domain.report.dto.ReportSearchCondition;
 import com.sparta.mypet.domain.report.entity.Report;
 import com.sparta.mypet.domain.report.entity.ReportStatus;
 import com.sparta.mypet.domain.suspension.SuspensionService;
@@ -88,10 +89,11 @@ public class BackOfficeService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<ReportListResponseDto> getReports(int page, int pageSize, String sortBy) {
+	public Page<ReportListResponseDto> getReports(int page, int pageSize, String sortBy,
+		ReportSearchCondition condition) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
-		Page<Report> reportList = reportService.findAll(pageable);
+		Page<Report> reportList = reportService.findBySearchCond(condition, pageable);
 
 		return reportList.map(ReportListResponseDto::new);
 	}

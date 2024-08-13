@@ -16,6 +16,7 @@ import com.sparta.mypet.domain.post.PostService;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.report.dto.ReportRequestDto;
 import com.sparta.mypet.domain.report.dto.ReportResponseDto;
+import com.sparta.mypet.domain.report.dto.ReportSearchCondition;
 import com.sparta.mypet.domain.report.entity.Report;
 import com.sparta.mypet.domain.report.entity.ReportStatus;
 
@@ -60,11 +61,6 @@ public class ReportService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<Report> findAll(Pageable pageable) {
-		return reportRepository.findAll(pageable);
-	}
-
-	@Transactional(readOnly = true)
 	public Report findById(Long id) {
 		return reportRepository.findById(id).orElseThrow(() ->
 			new ReportNotFoundException(GlobalMessage.REPORT_NOT_FOUND.getMessage()));
@@ -74,4 +70,7 @@ public class ReportService {
 		reportRepository.markReportsAsCompletedAndSetHandleUser(reportedUserId, handleUserId);
 	}
 
+	public Page<Report> findBySearchCond(ReportSearchCondition condition, Pageable pageable) {
+		return reportRepository.findBySearchCond(condition, pageable);
+	}
 }
