@@ -45,6 +45,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
+            # 기존 MySQL 서비스 중지 및 비활성화
+            sudo systemctl stop mysql || true
+            sudo systemctl disable mysql || true
+            
             # Docker Compose 설치 확인 및 설치
             if ! command -v docker compose &> /dev/null
             then
@@ -53,8 +57,9 @@ jobs:
                 sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
             fi
 
-            # Docker Compose 버전 확인
-            docker compose version
+            # 기존 Docker 컨테이너 정리
+            docker stop $(docker ps -aq) || true
+            docker rm $(docker ps -aq) || true
 
             # Docker 이미지 pull
             docker pull minhyuk0828/mypetdb:${{ github.sha }}
