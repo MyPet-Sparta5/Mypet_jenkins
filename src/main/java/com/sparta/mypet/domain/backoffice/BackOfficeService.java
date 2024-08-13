@@ -35,6 +35,7 @@ import com.sparta.mypet.domain.report.dto.ReportSearchCondition;
 import com.sparta.mypet.domain.report.entity.Report;
 import com.sparta.mypet.domain.report.entity.ReportStatus;
 import com.sparta.mypet.domain.suspension.SuspensionService;
+import com.sparta.mypet.domain.suspension.dto.SuspensionSearchCondition;
 import com.sparta.mypet.domain.suspension.entity.Suspension;
 
 import lombok.RequiredArgsConstructor;
@@ -113,10 +114,11 @@ public class BackOfficeService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<SuspensionListResponseDto> getSuspensions(int page, int pageSize, String sortBy) {
+	public Page<SuspensionListResponseDto> getSuspensions(int page, int pageSize, String sortBy,
+		SuspensionSearchCondition condition) {
 		Pageable pageable = PaginationUtil.createPageable(page, pageSize, sortBy);
 
-		Page<Suspension> suspensionList = suspensionService.findAll(pageable);
+		Page<Suspension> suspensionList = suspensionService.findBySearchCond(condition, pageable);
 
 		return suspensionList.map(SuspensionListResponseDto::new);
 	}
