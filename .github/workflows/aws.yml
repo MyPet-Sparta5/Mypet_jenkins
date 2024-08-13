@@ -78,7 +78,8 @@ jobs:
                   - "8080:80"
                 env_file: /home/ubuntu/.env
                 depends_on:
-                  - mysql
+                  mysql:
+                    condition: service_healthy
                   - redis
                 networks:
                   - mypetdb_network
