@@ -48,7 +48,7 @@ jobs:
             # 기존 MySQL 서비스 중지 및 비활성화
             sudo systemctl stop mysql || true
             sudo systemctl disable mysql || true
-            
+
             # Docker Compose 설치 확인 및 설치
             if ! command -v docker compose &> /dev/null
             then
@@ -67,10 +67,6 @@ jobs:
             # docker-compose.yml 파일 생성
             cat << EOF > docker-compose.yml
             version: '3.8'
-            networks:
-              mypetdb_network:
-                name: mypetdb_network
-                driver: bridge
             services:
               app:
                 image: minhyuk0828/mypetdb:${{ github.sha }}
@@ -80,35 +76,50 @@ jobs:
                 depends_on:
                   mysql:
                     condition: service_healthy
-                    redis: service_healthy
+                  redis:
+                    condition: service_healthy
                 networks:
                   - mypetdb_network
-            mysql:
-              platform: linux/x86_64
-              image: mysql:8.0
-              environment:
-                - MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }}
-                - MYSQL_ROOT_USER=${{ secrets.DB_USERNAME }}
-                - MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}
-                - MYSQL_DATABASE=mypet
-              ports:
-                - "3307:3306"
-              env_file: /home/ubuntu/.env
-              volumes:
-                - mysql_data:/var/lib/mysql
-              networks:
-                - mypetdb_network
-            redis:
-              image: redis:7.2
-              ports:
-                - "6379:6379"
-              volumes:
-                - redis_data:/data
-              networks:
-                - mypetdb_network
+              mysql:
+                platform: linux/x86_64
+                image: mysql:8.0
+                environment:
+                  - MYSQL_ROOT_PASSWORD=${{ secrets.DB_PASSWORD }}
+                  - MYSQL_DATABASE=mypet
+                ports:
+                  - "3307:3306"
+                env_file: /home/ubuntu/.env
+                volumes:
+                  - mysql_data:/var/lib/mysql
+                networks:
+                  - mypetdb_network
+                healthcheck:
+                  test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+                  interval: 10s
+                  timeout: 5s
+                  retries: 5
+              redis:
+                image: redis:7.2
+                ports:
+                  - "6379:6379"
+                volumes:
+                  - redis_data:/data
+                networks:
+                  - mypetdb_network
+                healthcheck:
+                  test: ["CMD", "redis-cli", "ping"]
+                  interval: 10s
+                  timeout: 5s
+                  retries: 5
+
             volumes:
               mysql_data:
               redis_data:
+
+            networks:
+              mypetdb_network:
+                name: mypetdb_network
+                driver: bridge
             EOF
 
             # Docker Compose 실행
