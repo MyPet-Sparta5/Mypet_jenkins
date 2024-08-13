@@ -105,7 +105,7 @@ jobs:
                   - "6379:6379"
 
                 container_name:${{ secrets.REDIS_NAME }}
-                hostname :${{ secrets.REDIS_HOST_NAME }}
+                hostname:${{ secrets.REDIS_HOST_NAME }}
                 volumes:
                   - redis_data:/data
                 networks:
