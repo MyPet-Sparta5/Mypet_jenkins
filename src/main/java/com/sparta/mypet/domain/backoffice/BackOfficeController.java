@@ -26,6 +26,7 @@ import com.sparta.mypet.domain.backoffice.dto.UserStatusResponseDto;
 import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.dto.PostSearchCondition;
+import com.sparta.mypet.domain.report.dto.ReportSearchCondition;
 import com.sparta.mypet.security.UserDetailsImpl;
 
 import jakarta.validation.Valid;
@@ -68,8 +69,9 @@ public class BackOfficeController {
 	public ResponseEntity<DataResponseDto<Page<ReportListResponseDto>>> getReports(
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
-		@RequestParam(defaultValue = "createdAt, desc") String sortBy) {
-		Page<ReportListResponseDto> responseDtoList = backOfficeService.getReports(page, pageSize, sortBy);
+		@RequestParam(defaultValue = "createdAt, desc") String sortBy,
+		ReportSearchCondition condition) {
+		Page<ReportListResponseDto> responseDtoList = backOfficeService.getReports(page, pageSize, sortBy, condition);
 		return ResponseFactory.ok(responseDtoList, "신고 목록 전체 조회 성공");
 	}
 
