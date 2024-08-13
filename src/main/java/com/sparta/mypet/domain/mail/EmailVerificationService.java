@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.sparta.mypet.domain.mail.dto.VerificationResponse;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,12 +26,13 @@ public class EmailVerificationService {
 
 	private final EmailService emailService;
 
-	public boolean sendVerificationEmail(String email) {
+	public VerificationResponse sendVerificationEmail(String email) {
 		String cooldownKey = COOL_DOWN_PREFIX + email;
 		String verificationKey = VERIFICATION_CODE_PREFIX + email;
 
-		if (Boolean.TRUE.equals(redisTemplate.hasKey(cooldownKey))) {
-			return false;
+		Long remainingTime = redisTemplate.getExpire(cooldownKey, TimeUnit.SECONDS);
+		if (remainingTime != null && remainingTime > 0) {
+			return new VerificationResponse(false, remainingTime);
 		}
 
 		String verificationCode = createVerificationCode();
@@ -39,7 +42,7 @@ public class EmailVerificationService {
 
 		emailService.sendEmail(email, verificationCode);
 
-		return true;
+		return new VerificationResponse(true, 0L);
 	}
 
 	public boolean verifyCode(String email, String code) {
@@ -56,5 +59,23 @@ public class EmailVerificationService {
 
 	private String createVerificationCode() {
 		return String.format("%06d", ThreadLocalRandom.current().nextInt(RANDOM_CODE_RANGE));
+	}
+
+	public static class SendVerificationResult {
+		private final boolean success;
+		private final Long remainingTime;
+
+		public SendVerificationResult(boolean success, Long remainingTime) {
+			this.success = success;
+			this.remainingTime = remainingTime;
+		}
+
+		public boolean isSuccess() {
+			return success;
+		}
+
+		public Long getRemainingTime() {
+			return remainingTime;
+		}
 	}
 }

@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sparta.mypet.common.dto.DataResponseDto;
 import com.sparta.mypet.common.dto.MessageResponseDto;
 import com.sparta.mypet.common.util.ResponseFactory;
 import com.sparta.mypet.domain.mail.dto.VerificationRequest;
+import com.sparta.mypet.domain.mail.dto.VerificationResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,13 +22,14 @@ public class EmailVerificationController {
 	private final EmailVerificationService emailVerificationService;
 
 	@PostMapping("/auth/send-verification")
-	public ResponseEntity<MessageResponseDto> sendVerificationCode(@RequestBody VerificationRequest request) {
+	public ResponseEntity<DataResponseDto<VerificationResponse>> sendVerificationCode(
+		@RequestBody VerificationRequest request) {
 
-		boolean result = emailVerificationService.sendVerificationEmail(request.getEmail());
-		if (result) {
-			return ResponseFactory.ok(null);
+		VerificationResponse result = emailVerificationService.sendVerificationEmail(request.getEmail());
+		if (result.isSuccess()) {
+			return ResponseFactory.ok(result, null);
 		} else {
-			return ResponseFactory.tooManyRequests(null);
+			return ResponseFactory.tooManyRequests(result, null);
 		}
 	}
 
