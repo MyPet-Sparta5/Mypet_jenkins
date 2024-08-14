@@ -12,7 +12,7 @@ public enum FileContentType {
 	GIF("image/gif");
 
 	private static final long MAX_FILE_SIZE = 20 * 1024 * 1024L; // 20MB
-	private static final long MAX_VIDEO_SIZE = 500 * 1024 * 1024L; // 500MB
+	private static final long MAX_VIDEO_SIZE = 100 * 1024 * 1024L; // 100MB
 
 	private final String type;
 

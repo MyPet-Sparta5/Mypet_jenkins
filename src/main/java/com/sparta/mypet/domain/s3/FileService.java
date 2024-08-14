@@ -36,7 +36,7 @@ public class FileService {
 	private final ImageCompressionService imageCompressionService;
 	private final VideoCompressionService videoCompressionService;
 
-	private static final int MAX_FILE_SIZE_MB = 30; // 동영상 최대 MB
+	private static final int MAX_FILE_SIZE_MB = 150; // 동영상 최대 MB
 
 	@Value("${cloud.aws.s3.bucketName}")
 	private String bucket;
