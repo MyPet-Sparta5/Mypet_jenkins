@@ -174,4 +174,10 @@ public class ResponseFactory {
 		MessageResponseDto responseDto = new MessageResponseDto(STATUS_TOO_MANY_REQUESTS, errorMessage);
 		return ResponseEntity.status(STATUS_TOO_MANY_REQUESTS).body(responseDto);
 	}
+
+	public static <T> ResponseEntity<DataResponseDto<T>> tooManyRequests(T data, String message) {
+		String errorMessage = invalidMessage(message) ? GlobalMessage.TOO_MANY_REQUESTS.getMessage() : message;
+		DataResponseDto<T> responseDto = new DataResponseDto<>(STATUS_TOO_MANY_REQUESTS, errorMessage, data);
+		return ResponseEntity.status(STATUS_TOO_MANY_REQUESTS).body(responseDto);
+	}
 }
