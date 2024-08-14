@@ -1,0 +1,75 @@
+### 회원가입
+POST /api/users HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+{
+  "email": "test2@email.com",
+  "password": "Test1234!@",
+  "repeatPassword": "Test1234!@",
+  "nickname": "Lee"
+}
+
+### 로그인
+POST /api/auth/login HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+{
+  "email": "test2@email.com",
+  "password": "Test1234!@"
+}
+
+> {%
+    client.global.set("Authorization", response.headers.valueOf("Authorization"));
+%}
+
+### 로그아웃
+POST /api/auth/logout HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
+> {%
+    client.global.set("Authorization", "");
+%}
+
+### 리프레쉬 에세스 토큰
+POST /api/auth/refresh HTTP/1.1
+Host: {{root-path}}
+
+> {%
+    client.global.set("Authorization", response.headers.valueOf("Authorization"));
+%}
+
+### 회원 단건 조회(마이 페이지)
+GET /api/users HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
+### 회원 탈퇴(상태 변경 : ACTIVE => WITHDRAWAL)
+PUT /api/users/withdraw HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
+### 회원 정보 수정(현재는 Nickname만!)
+PUT /api/users HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "newNickname": "KIM",
+  "currentPassword": "Test1234!@"
+}
+
+### 회원 비밀번호 변경
+PUT /api/users/password HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "currentPassword": "Test1234!@",
+  "newPassword": "Test1234!@@",
+  "newRepeatPassword": "Test1234!@@"
+}

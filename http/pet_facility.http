@@ -1,0 +1,3 @@
+GET /api/facilities/search?category=ANIMAL_HOSPITAL&x=126.916718459396&y=37.6167175632402&radius=1000&page=1&size=20&sort=id,desc HTTP/1.1
+Host: localhost:8080
+Content-Type: application/json

@@ -1,0 +1,14 @@
+### 좋아요 추가
+
+POST /api/posts/{{postId}}/likes HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+
+### 좋아요 삭제
+
+DELETE /api/posts/{{postId}}/likes HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}

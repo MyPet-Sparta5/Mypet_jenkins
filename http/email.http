@@ -1,0 +1,20 @@
+### 이메일 인증 코드 보내기
+
+POST /api/auth/send-verification HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+{
+  "email": ""
+}
+
+### 인증
+
+POST /api/auth/verify HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+{
+  "email": "",
+  "code": "336205"
+}

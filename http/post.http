@@ -1,0 +1,83 @@
+### 게시물 생성, 파일 업로드 (자랑게시판)
+POST /api/posts?category=BOAST HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="requestDto"
+Content-Type: application/json
+
+{
+  "title": "제목 테스트",
+  "content": "내용테스트"
+}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="dogs.gif"
+Content-Type: image/gif
+
+< ./files/dogs.gif
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+### 게시물 생성(자유게시글 파일x)
+POST /api/posts?category=FREEDOM HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="requestDto"
+Content-Type: application/json
+
+{
+  "title": "제목 테스트",
+  "content": "내용테스트"
+}
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+### 게시물 수정
+PUT /api/posts/{{postId}} HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+{
+  "title": "수정된 게시글",
+  "content": "설명설명수정수정~"
+}
+
+
+### 게시물 삭제
+PUT /api/posts/{{postId}}}}/delete HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+
+### 게시물 단건조회 (회원일 경우)
+GET /api/posts/2 HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+Authorization: {{Authorization}}
+
+### 게시물 단건조회 (비회원일 경우)
+GET /api/posts/2 HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+### 게시물 전체조회
+GET /api/posts HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+### 자랑 게시물 조회
+GET /api/posts?category=BOAST HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
+
+### test2@email.com 의 게시글 전체 조회
+GET /api/posts?email=test2@email.com HTTP/1.1
+Host: {{root-path}}
+Content-Type: application/json
