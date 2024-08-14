@@ -1,4 +1,4 @@
-![header](https://capsule-render.vercel.app/api?type=slice&color=FFF9EB&height=100&section=header&text=😸나만,펫%20프로젝트😸&fontSize=60&fontAlignY=55)
+![header](https://capsule-render.vercel.app/api?type=soft&color=FFF9EB&height=100&section=header&text=😸나만,펫%20프로젝트😸&fontSize=60&fontAlignY=55)
 
 ## 목차
 - [👨🏻‍👩🏻‍👧🏻‍👦🏻 Team 소개](#team)
@@ -227,6 +227,7 @@
 <summary> 🔨 API 명세서</summary>
 <div markdown="1">
   
+![제목 없음](https://github.com/user-attachments/assets/592accf3-5355-4463-b20a-51b3d7036338)
 
 
 </div>
