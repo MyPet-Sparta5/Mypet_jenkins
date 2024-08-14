@@ -11,6 +11,7 @@ import com.sparta.mypet.domain.auth.entity.User;
 import com.sparta.mypet.domain.post.PostService;
 import com.sparta.mypet.domain.post.entity.PostStatus;
 import com.sparta.mypet.domain.report.ReportService;
+import com.sparta.mypet.domain.suspension.dto.SuspensionSearchCondition;
 import com.sparta.mypet.domain.suspension.entity.Suspension;
 
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ public class SuspensionService {
 		};
 	}
 
-	public Page<Suspension> findAll(Pageable pageable) {
-		return suspensionRepository.findAll(pageable);
+	public Page<Suspension> findBySearchCond(SuspensionSearchCondition condition, Pageable pageable) {
+		return suspensionRepository.findBySearchCond(condition, pageable);
 	}
 }

@@ -79,6 +79,11 @@ GET /api/admin/suspension-view HTTP/1.1
 Host: {{root-path}}
 Authorization: {{Authorization}}
 
+### 정지 목록 조회 - 날짜
+GET /api/admin/suspension-view?startDate=2024-08-13&endDate=2024-08-20 HTTP/1.1
+Host: {{root-path}}
+Authorization: {{Authorization}}
+
 ### 게시물 전체조회
 GET /api/admin/post-manage HTTP/1.1
 Host: {{root-path}}

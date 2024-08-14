@@ -27,6 +27,7 @@ import com.sparta.mypet.domain.post.dto.PostListResponseDto;
 import com.sparta.mypet.domain.post.dto.PostResponseDto;
 import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.domain.report.dto.ReportSearchCondition;
+import com.sparta.mypet.domain.suspension.dto.SuspensionSearchCondition;
 import com.sparta.mypet.security.UserDetailsImpl;
 
 import jakarta.validation.Valid;
@@ -88,8 +89,10 @@ public class BackOfficeController {
 	public ResponseEntity<DataResponseDto<Page<SuspensionListResponseDto>>> getSuspensions(
 		@RequestParam(defaultValue = "1") int page,
 		@RequestParam(defaultValue = "10") int pageSize,
-		@RequestParam(defaultValue = "suspensionEndDatetime, desc") String sortBy) {
-		Page<SuspensionListResponseDto> responseDtoList = backOfficeService.getSuspensions(page, pageSize, sortBy);
+		@RequestParam(defaultValue = "suspensionEndDatetime, desc") String sortBy,
+		SuspensionSearchCondition condition) {
+		Page<SuspensionListResponseDto> responseDtoList = backOfficeService.getSuspensions(page, pageSize, sortBy,
+			condition);
 		return ResponseFactory.ok(responseDtoList, "사용자 중지 목록 전체 조회 성공");
 	}
 
