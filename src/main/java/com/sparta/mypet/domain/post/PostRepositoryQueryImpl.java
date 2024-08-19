@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.Order;
@@ -21,6 +22,9 @@ import com.sparta.mypet.domain.post.dto.PostSearchCondition;
 import com.sparta.mypet.domain.post.entity.Category;
 import com.sparta.mypet.domain.post.entity.Post;
 import com.sparta.mypet.domain.post.entity.PostStatus;
+import com.sparta.mypet.domain.post.entity.QPost;
+import com.sparta.mypet.domain.report.entity.QReport;
+import com.sparta.mypet.domain.report.entity.ReportStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -99,5 +103,31 @@ public class PostRepositoryQueryImpl implements PostRepositoryQuery {
 		PathBuilder<Post> pathBuilder = new PathBuilder<>(post.getType(), post.getMetadata());
 		return new OrderSpecifier<>(order.isAscending() ? Order.ASC : Order.DESC,
 			pathBuilder.getComparable(order.getProperty(), Comparable.class));
+	}
+
+	@Override
+	public List<Long> findReportedPostIdsByUserId(Long userId) {
+		QReport report = QReport.report;
+		QPost post = QPost.post;
+
+		return queryFactory.select(post.id)
+			.distinct()
+			.from(report)
+			.leftJoin(post)
+			.on(report.reportedPost.id.eq(post.id))
+			.where(post.user.id.eq(userId)
+				.and(report.reportStatus.ne(ReportStatus.REJECTED)))
+			.fetch();
+	}
+
+	@Override
+	@Transactional
+	public void updatePostStatus(PostStatus status, List<Long> postIds) {
+		QPost post = QPost.post;
+
+		queryFactory.update(post)
+			.set(post.postStatus, status)
+			.where(post.id.in(postIds))
+			.execute();
 	}
 }
