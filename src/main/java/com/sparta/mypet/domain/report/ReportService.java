@@ -1,5 +1,6 @@
 package com.sparta.mypet.domain.report;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -66,8 +67,12 @@ public class ReportService {
 			new ReportNotFoundException(GlobalMessage.REPORT_NOT_FOUND.getMessage()));
 	}
 
-	public void markReportsAsCompletedAndSetHandleUser(Long reportedUserId, Long handleUserId) {
-		reportRepository.markReportsAsCompletedAndSetHandleUser(reportedUserId, handleUserId);
+	public void markReportsAsCompletedAndSetHandleUser(Long suspendingUserId, Long handleUserId) {
+		List<Long> reportIds = reportRepository.findReportIdsByPostUserId(suspendingUserId);
+
+		if (!reportIds.isEmpty()) {
+			reportRepository.updateReportStatusAndHandleUserIdByReportIds(handleUserId, reportIds);
+		}
 	}
 
 	public Page<Report> findBySearchCond(ReportSearchCondition condition, Pageable pageable) {
