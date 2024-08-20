@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.Order;
@@ -17,7 +18,9 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.mypet.domain.post.entity.QPost;
 import com.sparta.mypet.domain.report.dto.ReportSearchCondition;
+import com.sparta.mypet.domain.report.entity.QReport;
 import com.sparta.mypet.domain.report.entity.Report;
 import com.sparta.mypet.domain.report.entity.ReportStatus;
 
@@ -79,5 +82,31 @@ public class ReportRepositoryQueryImpl implements ReportRepositoryQuery {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public List<Long> findReportIdsByPostUserId(Long userId) {
+		QReport report = QReport.report;
+		QPost post = QPost.post;
+
+		return queryFactory.select(report.id)
+			.from(report)
+			.leftJoin(post)
+			.on(report.reportedPost.id.eq(post.id))
+			.where(post.user.id.eq(userId)
+				.and(report.reportStatus.in(ReportStatus.IN_PROGRESS, ReportStatus.PENDING)))
+			.fetch();
+	}
+
+	@Override
+	@Transactional
+	public void updateReportStatusAndHandleUserIdByReportIds(Long handleUserId, List<Long> reportIds) {
+		QReport report = QReport.report;
+
+		queryFactory.update(report)
+			.set(report.reportStatus, ReportStatus.COMPLETED)
+			.set(report.handleUserId, handleUserId)
+			.where(report.id.in(reportIds))
+			.execute();
 	}
 }

@@ -39,7 +39,7 @@ public class SuspensionService {
 
 		//유저 상태 변경 및 count 변경
 		user.updateSuspendUser(newSuspensionCount);
-		//해당 user의 Report 상태가 Pending이나 in_progress인 경우 completed로 바꾸고, handleuser는 status 변경하는 관리자로 지정
+		//해당 user 게시물의 Report 상태가 Pending이나 in_progress인 경우 completed로 바꾸고, handleuser는 status 변경하는 관리자로 지정
 		reportService.markReportsAsCompletedAndSetHandleUser(user.getId(), handleUser.getId());
 		//report 반려상태가 아닌 post의 status를 inactive 상태로 변경
 		postService.updateReportedPostsStatusByUserId(user.getId(), PostStatus.INACTIVE);

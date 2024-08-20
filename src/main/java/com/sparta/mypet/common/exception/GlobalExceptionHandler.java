@@ -15,6 +15,7 @@ import com.sparta.mypet.common.exception.custom.LikeNotFoundException;
 import com.sparta.mypet.common.exception.custom.PasswordInvalidException;
 import com.sparta.mypet.common.exception.custom.PostNotFoundException;
 import com.sparta.mypet.common.exception.custom.RefreshTokenInvalidException;
+import com.sparta.mypet.common.exception.custom.ReportDuplicationException;
 import com.sparta.mypet.common.exception.custom.SocialAccountLinkedException;
 import com.sparta.mypet.common.exception.custom.UserEmailDuplicateException;
 import com.sparta.mypet.common.exception.custom.UserMisMatchException;
@@ -69,7 +70,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(IllegalArgumentException.class)
 	public ResponseEntity<MessageResponseDto> handleIllegalArgumentException(IllegalArgumentException e) {
-
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.badRequest(errorMessage);
@@ -91,7 +91,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserEmailDuplicateException.class)
 	public ResponseEntity<MessageResponseDto> handleUserEmailDuplicateException(UserEmailDuplicateException e) {
-
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.conflictError(errorMessage);
@@ -99,7 +98,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(PasswordInvalidException.class)
 	public ResponseEntity<MessageResponseDto> handlePasswordInvalidException(PasswordInvalidException e) {
-
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.authorizedError(errorMessage);
@@ -142,7 +140,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(UserNicknameDuplicateException.class)
 	public ResponseEntity<MessageResponseDto> handleUserNicknameDuplicateException(UserNicknameDuplicateException e) {
-
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.conflictError(errorMessage);
@@ -151,7 +148,6 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UserPasswordDuplicationException.class)
 	public ResponseEntity<MessageResponseDto> handleUserPasswordDuplicationException(
 		UserPasswordDuplicationException e) {
-
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.conflictError(errorMessage);
@@ -162,5 +158,12 @@ public class GlobalExceptionHandler {
 		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
 
 		return ResponseFactory.badRequest(errorMessage);
+	}
+
+	@ExceptionHandler(ReportDuplicationException.class)
+	public ResponseEntity<MessageResponseDto> handleReportDuplicationException(ReportDuplicationException e) {
+		String errorMessage = GlobalMessage.ERROR_MESSAGE_PREFIX.getMessage() + e.getMessage();
+
+		return ResponseFactory.conflictError(errorMessage);
 	}
 }

@@ -153,7 +153,7 @@ public class PostService {
 	}
 
 	public void updateReportedPostsStatusByUserId(Long userId, PostStatus status) {
-		// 리포트된 게시물의 ID를 조회합니다.
+		// 신고 상태가 "REJECTED"인 신고를 제외한 신고된 게시물의 ID를 조회합니다.
 		List<Long> postIds = postRepository.findReportedPostIdsByUserId(userId);
 
 		if (!postIds.isEmpty()) {
