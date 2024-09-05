@@ -41,3 +41,4 @@ db/
 
 ### env ###
 .env
+application-secrets.yml
